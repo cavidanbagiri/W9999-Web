@@ -10,6 +10,7 @@ import Words from "../pages/Words";
 import Auth from "../pages/Auth";
 import Profile from "../pages/Profile";
 import Login_Register from "../pages/Login_Register";
+import CardDetail from "../pages/CardDetailScreen";
 
 
 const router = createBrowserRouter([
@@ -24,6 +25,10 @@ const router = createBrowserRouter([
             {
                 path: "/words",
                 element: <Words/>
+            },
+            {
+                path:'/card-detail',
+                element: <CardDetail/>
             },
             {
                 path: "/learned",
