@@ -1,0 +1,100 @@
+
+#Problems:
+#    1 - Need to solve the words section problem in frontend. Because in the store we only show the first words combination.
+#    2 - Spanish words doesnt show up. Doesnt fetch from the backend.
+
+
+#Today Fix:
+#    1
+
+# Future:
+#    1 - Add user profile image to app.
+#    2 - Create messaging section to app for user communication. 
+
+
+############################################################# DEEPSEEK helper
+
+You are super. now l wanna do that. if the user choose 2 langs, in words screen will show 2 button for choosing the lang. but if the one lang, directly will show the words. This is my current codes.ConnectionRefusedError
+
+1 - WordsStore.js
+        // WordService fetchWords
+        builder.addCase(WordService.fetchWords.pending, (state, action) => {
+            state.words_pending = true;
+        })
+        builder.addCase(WordService.fetchWords.fulfilled, (state, action) => {
+            // console.log('coming words is .....', action.payload.payload);
+            state.words_pending = false;
+            if (action.payload.payload?.length === 0) {
+                console.log('enter if')
+                state.words = [];
+                return;
+            }
+            else{
+                console.log('enter elkse')
+                state.words = action.payload?.payload
+            }
+            console.log('words is ', state.words)
+            state.is_words_success = true;
+        });
+        builder.addCase(WordService.fetchWords.rejected, (state, action) => {
+            state.words_pending = false;
+            state.is_words_error = true;
+        });
+
+2 - WordsScreen.jsx
+
+export default function WordScreen() {
+
+    const dispatch = useDispatch();
+
+    const { is_auth } = useSelector((state) => state.authSlice);
+
+    const { words, words_pending, is_words_error, is_words_success } = useSelector((state) => state.wordSlice);
+
+    useFocusEffect(
+        useCallback(() => {
+            if (is_auth) {
+            dispatch(WordService.fetchWords({ filter: 'all' }));
+            }
+        }, [is_auth, dispatch])
+    );
+
+    return (
+
+        <SafeAreaView className={'bg-white'}>
+            <FilterComponent screen='all'/>
+
+            <ScrollView contentContainerStyle={styles.container}>
+                {words_pending && (
+                    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 }}>
+                        <ActivityIndicator
+                            size="large"
+                            color="#0000ff" // Change to your preferred color
+                        />
+                        <Text style={{ marginTop: 10 }}>Loading words...</Text>
+                    </View>
+                )}
+
+                {!words_pending && words?.length === 0 && (
+                    <Text style={{ textAlign: 'center', marginTop: 20 }}>
+                        There is not any starred word
+                    </Text>
+                )}
+
+                {/* Words list */}
+                {/* {!words_pending && words?.length > 0 &&
+                    words.map((word, index) => (
+                        <VocabCard word={word} key={index} />
+                    ))
+                } */}
+
+
+            </ScrollView>
+        </SafeAreaView>
+
+    )
+}
+
+
+
+
