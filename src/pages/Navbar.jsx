@@ -5,6 +5,8 @@ import { Outlet } from "react-router-dom";
 
 import { RxDashboard } from "react-icons/rx";
 import { CiHome } from "react-icons/ci";
+import { IoMdBook } from "react-icons/io";
+
 
 import { PiFloppyDisk } from "react-icons/pi";
 import { PiBrainLight } from "react-icons/pi";
@@ -31,7 +33,7 @@ function Navbar() {
                     <div className='sticky top-0 left-0 z-20  float-left h-screen flex flex-col items-center p-0 '>
 
                         <NavIcon to="/" icon={CiHome} label="Dashboard" />
-                        <NavIcon to="/savedwords" icon={PiFloppyDisk} label="Saved Words" />
+                        <NavIcon to="/words" icon={IoMdBook} label="Saved Words" />
                         <NavIcon to="/learned" icon={PiBrainLight} label="Learned" />
                         <NavIcon to="/profile" icon={FiUser} label="Profile" />
 
