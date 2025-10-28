@@ -66,6 +66,16 @@ export const authSlice = createSlice({
             state.login_success = true;
             state.login_message = 'Successfully registered';
             state.user.target_langs = []
+            localStorage.setItem('token', action.payload?.payload?.access_token);
+            localStorage.setItem('sub', action.payload?.payload?.user?.sub);  
+            localStorage.setItem('username', action.payload?.payload?.user?.username); 
+            if (action.payload.payload.user.native === null) {
+                localStorage.setItem('native', '');
+            }
+            else {
+                localStorage.setItem('native', action.payload.payload.user.native);
+                state.native_lang = action.payload.payload.user.native
+            }
             // saveToStorage('token', action.payload?.payload?.access_token);
             // saveToStorage('sub', action.payload?.payload?.user?.sub);  
             // saveToStorage('username', action.payload?.payload?.user?.username); 
@@ -90,22 +100,23 @@ export const authSlice = createSlice({
             state.login_pending = true;
         })
         builder.addCase(AuthService.login.fulfilled, (state, action) => {
+            console.log('after login coming response is ', action.payload)
             state.is_auth = true;
             state.login_pending = false;
             state.user = action.payload;
             state.login_success = true;
             state.login_message = 'Successfully logged in';
             state.user.target_langs = action.payload?.payload?.user?.learning_targets;
-            // saveToStorage('token', action.payload?.payload?.access_token);
-            // saveToStorage('sub', action.payload?.payload?.user?.sub);  
-            // saveToStorage('username', action.payload?.payload?.user?.username); 
-            // if (action.payload.payload.user.native === null) {
-            //     saveToStorage('native', '');
-            // }
-            // else {
-            //     saveToStorage('native', action.payload.payload.user.native);
-            //     state.native_lang = action.payload.payload.user.native
-            // }
+            localStorage.setItem('token', action.payload?.payload?.access_token);
+            localStorage.setItem('sub', action.payload?.payload?.user?.sub);  
+            localStorage.setItem('username', action.payload?.payload?.user?.username); 
+            if (action.payload.payload.user.native === null) {
+                localStorage.setItem('native', '');
+            }
+            else {
+                localStorage.setItem('native', action.payload.payload.user.native);
+                state.native_lang = action.payload.payload.user.native
+            }
         });
         builder.addCase(AuthService.login.rejected, (state, action) => {
             state.login_pending = false;
@@ -120,6 +131,17 @@ export const authSlice = createSlice({
         builder.addCase(AuthService.refresh.fulfilled, (state, action) => {
             state.is_auth = true;
             state.user = action.payload;
+            console.log('after registration coming response is ', action.payload)
+            localStorage.setItem('token', action.payload.payload.access_token);
+            localStorage.setItem('sub', action.payload.payload.user.sub);
+            localStorage.setItem('username', action.payload.payload.user.username);
+            // if (action.payload.payload.user.native === null) {
+            //     localStorage.setItem('native', '');
+            // }
+            // else {
+            //     localStorage.setItem('native', action.payload.payload.user.native);
+            //     state.native_lang = action.payload.payload.user.native
+            // }
             // saveToStorage('token', action.payload.payload.access_token);
             // saveToStorage('sub', action.payload.payload.user.sub);
             // saveToStorage('username', action.payload.payload.user.username);
@@ -147,6 +169,7 @@ export const authSlice = createSlice({
         // UserService setNativeLanguage
         builder.addCase(AuthService.setNativeLanguage.fulfilled, (state, action) => {
             state.native_lang = action.payload?.payload?.native
+            localStorage.setItem('native', action.payload?.payload?.native);
             // saveToStorage('native', action.payload?.payload?.native); 
 
         });

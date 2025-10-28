@@ -9,6 +9,7 @@ import Learned from "../pages/Learned";
 import Words from "../pages/Words";
 import Auth from "../pages/Auth";
 import Profile from "../pages/Profile";
+import Login_Register from "../pages/Login_Register";
 
 
 const router = createBrowserRouter([
@@ -31,6 +32,10 @@ const router = createBrowserRouter([
             {
                 path: "/auth",
                 element: <Auth/>
+            },
+            {
+                path: "/login-register",
+                element: <Login_Register/>
             },
             {
                 path: "/profile",

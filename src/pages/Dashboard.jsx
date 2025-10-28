@@ -3,14 +3,11 @@ import { useSelector, useDispatch } from 'react-redux';
 // import { getFromStorage } from '../../utils/storage';
 
 import MsgBox from '../layouts/MsgBox';
-// import ChooseLangComponent from '../components/home/ChooseLangComponent';
 import { setNewTargetLanguageCondFalse } from '../store/auth_store';
-// import LanguagesStatisticsComponents from '../components/home/LanguagesStatisticsComponents';
 import LanguagesStatisticsComponents from '../components/home/LanguagesStatisticsComponents';
 import HeaderComponent from '../components/home/HeaderComponent';
 import ChooseLangComponent from '../components/home/ChooseLangComponent';
 import InitialPageComponent from '../components/home/InitialPageComponent';
-// import InitialPageComponent from '../components/home/InitialPageComponent';
 
 export default function HomeScreen() {
   const dispatch = useDispatch();
@@ -33,7 +30,7 @@ export default function HomeScreen() {
   useEffect(() => {
     const loadUsername = async () => {
       // let storedUsername = await getFromStorage('username'); 
-      let storedUsername = 'cavidan'
+      let storedUsername = await localStorage.getItem('username');
       if (is_auth === false) {
         setUsername('');
         storedUsername = '';
@@ -46,7 +43,7 @@ export default function HomeScreen() {
   useEffect(() => {
     const loadNativeLanguage = async () => {
       // let storedNativeLanguage = await getFromStorage('native');
-      let storedNativeLanguage = 'en'
+      let storedNativeLanguage = await localStorage.getItem('native');
       if (is_auth === false) {
         setNativeLanguage('');
         storedNativeLanguage = '';
@@ -85,7 +82,6 @@ export default function HomeScreen() {
         </div>
       ) : (
         <InitialPageComponent />
-        // <span>InitialPageComponent</span>
       )}
     </div>
   );

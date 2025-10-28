@@ -3,7 +3,24 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 // import { getFromStorage } from '../../utils/storage';
 import AuthService from '../../services/AuthService';
-import LANGUAGES from '../../constants/Languages';
+// import LANGUAGES from '../../constants/Languages';
+
+import Spanish_flag from '../../assets/flags/spanish.png';
+import Russian_flag from '../../assets/flags/russian.png';
+import English_flag from '../../assets/flags/england.png';
+
+const LANGUAGES = [
+    // { name: 'Spanish', image: require('../../assets/flags/spanish.png'), code: 'es' },
+    // { name: 'Russian', image: require('../../assets/flags/russian.png'), code: 'ru' },
+    // { name: 'English', image: require('../../assets/flags/england.png'), code: 'en' },
+    // { name: 'Turkish', image: require('../../assets/flags/turkish.png'), code: 'tr' },
+
+    { name: 'Spanish', image: Spanish_flag, code: 'es' },
+    { name: 'Russian', image: Russian_flag, code: 'ru' },
+    { name: 'English', image: English_flag, code: 'en' },
+
+];
+
 
 export default function ChooseLangComponent({ selectedLanguage, setSelectedLanguage }) {
   const dispatch = useDispatch();
@@ -22,10 +39,10 @@ export default function ChooseLangComponent({ selectedLanguage, setSelectedLangu
 
   // Load native language from storage
   useEffect(() => {
-    const getNativeLang = async () => {
+    const getNativeLang = () => {
       try {
-        // const native = await getFromStorage('native');
-        const native = 'en';
+        const native = localStorage.getItem('native');
+        console.log('native lang is ', native);
         setNativeLangName(native);
       } catch (error) {
         setNativeLangName(null);
@@ -45,6 +62,7 @@ export default function ChooseLangComponent({ selectedLanguage, setSelectedLangu
         !selectedLangCodes.includes(lang.code) &&
         lang.name !== nativeLangName
     );
+    console.log('filtered is ', filtered);
 
     setFilteredLanguages(filtered);
   }, [isLoading, selectedLangCodes, nativeLangName]);

@@ -61,7 +61,7 @@ export default function HeaderComponent({ username }) {
     const getNativeLang = async () => {
       try {
         // const native = await getFromStorage('native');
-        const native = 'en';
+        const native = await localStorage.getItem('native');
         setNativeLangCode(native);
 
         if (native && FLAG_IMAGES[native]) {

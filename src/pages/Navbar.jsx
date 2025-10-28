@@ -20,12 +20,14 @@ import Auth from "../pages/Auth";
 
 function Navbar() {
 
+    const is_auth = useSelector((state) => state.authSlice.is_auth);
+
     return (
 
         <div className='relative '>
 
             {
-                true ?
+                is_auth ?
                     <div className='sticky top-0 left-0 z-20  float-left h-screen flex flex-col items-center p-0 '>
 
                         <NavIcon to="/" icon={CiHome} label="Dashboard" />
@@ -49,11 +51,11 @@ function Navbar() {
             }
 
 
-            {/* {
+            {
                 is_auth &&
                 <Outlet />
-            } */}
-            <Outlet />
+            }
+            {/* <Outlet /> */}
 
         </div>
 
