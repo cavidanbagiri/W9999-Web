@@ -39,7 +39,7 @@ export default function VocabCard({ word, language }) {
   return (
     <div
       onClick={handleCardClick}
-      className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm mb-4 mx-3 cursor-pointer hover:shadow-md transition-shadow duration-200"
+      className="bg-white p-5 w-[24%] rounded-2xl border border-gray-100 shadow-sm mb-4 mx-0 cursor-pointer hover:shadow-md transition-shadow duration-200"
     >
       {/* Top Row: Word + Level Badge */}
       <div className="flex items-start justify-between mb-3">

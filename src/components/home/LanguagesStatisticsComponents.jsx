@@ -70,9 +70,9 @@ export default function LanguagesStatisticsComponents() {
   };
 
   return (
-    <div className="flex-1 bg-slate-50 px-4 pt-5">
+    <div className="flex flex-col bg-white px-4 pt-5">
       {/* Header Section */}
-      <div className="text-center mb-6">
+      <div className="text-left mb-6">
         <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
           Language Progress
         </h1>
@@ -82,7 +82,7 @@ export default function LanguagesStatisticsComponents() {
       </div>
 
       {/* Stats Grid */}
-      <div className="space-y-4 pb-5">
+      <div className="flex flex-row pb-5">
         {statistics && statistics.length > 0 ? (
           statistics.map((item, index) => {
             const progressPercentage = (item.learned_words / item.total_words) * 100;
@@ -92,11 +92,11 @@ export default function LanguagesStatisticsComponents() {
               <div
                 key={index}
                 onClick={() => handleLanguageSelect(item.language_code)}
-                className="bg-white rounded-2xl shadow-lg overflow-hidden cursor-pointer transition-transform hover:scale-[1.02] active:scale-[0.99]"
+                className="bg-white  p-5 rounded-2xl mr-3 shadow-lg overflow-hidden cursor-pointer transition-transform hover:scale-[1.02] active:scale-[0.99]"
               >
                 {/* Card Header with Gradient */}
                 <div 
-                  className="p-6"
+                  className="p-6 rounded-xl"
                   style={{
                     background: `linear-gradient(135deg, ${gradientColors[0]}, ${gradientColors[1]})`
                   }}
@@ -113,7 +113,7 @@ export default function LanguagesStatisticsComponents() {
                     
                     {/* Progress Circle */}
                     <div className="w-15 h-15 rounded-full bg-white bg-opacity-20 border-2 border-white border-opacity-30 flex items-center justify-center">
-                      <span className="text-white font-bold text-base">
+                      <span className="text-black font-bold text-base">
                         {Math.round(progressPercentage)}%
                       </span>
                     </div>
@@ -196,7 +196,7 @@ export default function LanguagesStatisticsComponents() {
             );
           })
         ) : (
-          <div className="text-center py-16">
+          <div className="w-full text-center py-16">
             <div className="text-5xl mb-4">📚</div>
             <h3 className="text-xl font-semibold text-gray-900 mb-2">
               No Progress Yet

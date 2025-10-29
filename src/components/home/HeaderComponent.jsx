@@ -124,7 +124,7 @@ export default function HeaderComponent({ username }) {
     : '0%';
 
   return (
-    <div className={`px-4 pt-2 pb-4 transition-all duration-600 ease-in-out ${
+    <div className={`px-4 pt-2 pb-4 transition-all duration-600 ease-in-out bg-white w-1/3 ${
       isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
     }`}>
       {/* Hero Card */}

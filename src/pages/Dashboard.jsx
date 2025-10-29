@@ -54,7 +54,7 @@ export default function HomeScreen() {
   }, [native_lang, is_auth]);
 
   return (
-    <div className="min-h-screen bg-slate-100 relative">
+    <div className="min-h-screen bg-white relative flex flex-col">
       <MsgBox
         message={new_target_lang_cond.msg}
         visible={new_target_lang_cond.is_cond}

@@ -30,7 +30,7 @@ function Navbar() {
 
             {
                 is_auth ?
-                    <div className='sticky top-0 left-0 z-20  float-left h-screen flex flex-col items-center p-0 '>
+                    <div className='sticky top-0 left-0 z-20  float-left h-screen flex flex-col items-center p-0 bg-white'>
 
                         <NavIcon to="/" icon={CiHome} label="Dashboard" />
                         <NavIcon to="/words" icon={IoMdBook} label="Saved Words" />

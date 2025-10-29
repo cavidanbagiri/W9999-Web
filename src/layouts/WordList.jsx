@@ -40,7 +40,7 @@ export function WordList({ screen }) {
     }, [selectedLanguage, filter]);
 
     return (
-        <div className="bg-white mt-1">
+        <div className="mt-1">
             {/* Loading indicator */}
             {loading && page === 1 && (
                 <div className="flex justify-center items-center py-4">
@@ -49,7 +49,7 @@ export function WordList({ screen }) {
             )}
             
             {/* Words List */}
-            <div className="space-y-3">
+            <div className="space-y-3 flex flex-wrap justify-around ">
                 {words?.map((item) => (
                     <VocabCard 
                         key={item.id.toString()} 

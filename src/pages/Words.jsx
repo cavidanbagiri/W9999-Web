@@ -55,7 +55,7 @@ export default function WordScreen() {
     }, [statistics, dispatch]);
 
     return (
-        <div className="min-h-screen bg-white">
+        <div className="min-h-screen bg-white flex flex-col">
             {selectedLanguage && (
                 <FilterComponent
                     filter={filter}

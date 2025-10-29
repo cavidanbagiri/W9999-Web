@@ -3,17 +3,21 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setSelectedLanguage } from '../store/word_store';
 import WordService from '../services/WordService';
 
+import English from '../assets/flags/england.png';
+
 const FLAG_IMAGES = {
-  English: '/assets/flags/england.png',
-  Spanish: '/assets/flags/spanish.png',
-  Russian: '/assets/flags/russian.png',
-  Turkish: '/assets/flags/turkish.png',
+  English: '/src/assets/flags/england.png',
+  Spanish: '/src/assets/flags/spanish.png',
+  Russian: '/src/assets/flags/russian.png',
+  Turkish: '/src/assets/flags/turkish.png',
 };
+
 
 export default function LanguageSelected({ screen }) {
   const dispatch = useDispatch();
   const { selectedLanguage, statistics } = useSelector((state) => state.wordSlice);
 
+  
   const handleLanguagePress = (langCode) => {
     dispatch(setSelectedLanguage(langCode));
     const filter = screen === 'LearnedScreen' ? 'learned' : 'all';
