@@ -12,6 +12,9 @@ import Profile from "../pages/Profile";
 import Login_Register from "../pages/Login_Register";
 import CardDetail from "../pages/CardDetailScreen";
 import AIScreen from "../pages/AIScreen";
+import Translate from "../pages/Translate";
+import Favorites from "../pages/Favorites";
+import CategoryWordsScreen from "../pages/CategoryWords";
 
 
 const router = createBrowserRouter([
@@ -34,6 +37,18 @@ const router = createBrowserRouter([
             {
                 path:'/card-detail',
                 element: <CardDetail/>
+            },
+            {
+                path: "/translate",
+                element: <Translate/>
+            },
+            {
+                path: "/favorites",
+                element: <Favorites/>
+            },
+            {
+                path: "/category-words",
+                element: <CategoryWordsScreen/>
             },
             {
                 path: "/learned",

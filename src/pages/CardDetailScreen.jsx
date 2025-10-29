@@ -47,7 +47,7 @@ export default function CardDetailScreen() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white  ">
       {/* Header with Back Button */}
       <div className="px-6 pt-4 pb-2 border-b border-gray-100">
         <div className="flex items-center justify-between">

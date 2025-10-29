@@ -10,6 +10,7 @@ import {IoIosChatboxes} from "react-icons/io";
 
 
 
+
 import { PiFloppyDisk } from "react-icons/pi";
 import { PiBrainLight } from "react-icons/pi";
 import { FiUser } from "react-icons/fi";
@@ -37,6 +38,7 @@ function Navbar() {
                         <NavIcon to="/" icon={CiHome} label="Dashboard" />
                         <NavIcon to="/words" icon={IoMdBook} label="Saved Words" />
                         <NavIcon to="/ai-chat" icon={IoIosChatboxes} label="AI Screen" />
+                        <NavIcon to="/translate" icon={IoIosChatboxes} label="Translate" />
                         <NavIcon to="/learned" icon={PiBrainLight} label="Learned" />
                         <NavIcon to="/profile" icon={FiUser} label="Profile" />
 
