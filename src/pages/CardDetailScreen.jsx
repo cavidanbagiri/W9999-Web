@@ -126,7 +126,7 @@ export default function CardDetailScreen() {
             <button
               onClick={() => {
                 dispatch(setCurrentWord(word));
-                navigate('/ai-tutor');
+                navigate('/ai-chat');
               }}
               className="flex flex-col items-center justify-center p-3 rounded-xl hover:bg-gray-50 transition-colors"
             >

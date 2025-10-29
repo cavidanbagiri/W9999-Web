@@ -6,6 +6,8 @@ import { Outlet } from "react-router-dom";
 import { RxDashboard } from "react-icons/rx";
 import { CiHome } from "react-icons/ci";
 import { IoMdBook } from "react-icons/io";
+import {IoIosChatboxes} from "react-icons/io";
+
 
 
 import { PiFloppyDisk } from "react-icons/pi";
@@ -34,6 +36,7 @@ function Navbar() {
 
                         <NavIcon to="/" icon={CiHome} label="Dashboard" />
                         <NavIcon to="/words" icon={IoMdBook} label="Saved Words" />
+                        <NavIcon to="/ai-chat" icon={IoIosChatboxes} label="AI Screen" />
                         <NavIcon to="/learned" icon={PiBrainLight} label="Learned" />
                         <NavIcon to="/profile" icon={FiUser} label="Profile" />
 

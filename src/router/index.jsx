@@ -11,6 +11,7 @@ import Auth from "../pages/Auth";
 import Profile from "../pages/Profile";
 import Login_Register from "../pages/Login_Register";
 import CardDetail from "../pages/CardDetailScreen";
+import AIScreen from "../pages/AIScreen";
 
 
 const router = createBrowserRouter([
@@ -25,6 +26,10 @@ const router = createBrowserRouter([
             {
                 path: "/words",
                 element: <Words/>
+            },
+            {
+                path: "/ai-chat",
+                element: <AIScreen/>
             },
             {
                 path:'/card-detail',
