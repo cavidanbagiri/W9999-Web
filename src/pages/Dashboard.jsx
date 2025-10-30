@@ -30,7 +30,7 @@ export default function HomeScreen() {
   useEffect(() => {
     const loadUsername = async () => {
       // let storedUsername = await getFromStorage('username'); 
-      let storedUsername = await localStorage.getItem('username');
+      let storedUsername =  localStorage.getItem('username');
       if (is_auth === false) {
         setUsername('');
         storedUsername = '';

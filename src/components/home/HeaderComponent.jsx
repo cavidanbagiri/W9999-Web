@@ -6,10 +6,10 @@ import { setNewTargetLanguageCondFalse } from '../../store/auth_store';
 
 // Language code to flag mapping (using web-appropriate imports)
 const LANGUAGE_FLAGS = {
-  'en': '/assets/flags/england.png',
-  'es': '/assets/flags/spanish.png',
-  'ru': '/assets/flags/russian.png',
-  'tr': '/assets/flags/turkish.png',
+  'en': '/src/assets/flags/england.png',
+  'es': '/src/assets/flags/spanish.png',
+  'ru': '/src/assets/flags/russian.png',
+  'tr': '/src/assets/flags/turkish.png',
 };
 
 // Language code to full name mapping
@@ -124,7 +124,7 @@ export default function HeaderComponent({ username }) {
     : '0%';
 
   return (
-    <div className={`px-4 pt-2 pb-4 transition-all duration-600 ease-in-out bg-white w-1/3 ${
+    <div className={`px-4 pt-2 pb-4 transition-all duration-600 ease-in-out bg-white ${
       isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
     }`}>
       {/* Hero Card */}
@@ -188,8 +188,8 @@ export default function HeaderComponent({ username }) {
                   </div>
                 )}
                 <div>
-                  <p className="text-white text-xs opacity-80">Last Learned</p>
-                  <p className="text-white text-sm font-semibold truncate max-w-[80px]">
+                  <p className="text-black text-xs opacity-80">Last Learned</p>
+                  <p className="text-black text-sm font-semibold truncate max-w-[80px]">
                     {getLastLearnedLanguageName()}
                   </p>
                 </div>
