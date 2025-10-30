@@ -72,7 +72,7 @@ export default function LanguagesStatisticsComponents() {
   return (
     <div className="flex flex-col  bg-white px-4 pt-5">
       {/* Header Section */}
-      <div className="text-center lg:text-left mb-6">
+      <div className="text-center lg:text-left mb-6 pl-4">
         <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
           Language Progress
         </h1>
@@ -92,7 +92,7 @@ export default function LanguagesStatisticsComponents() {
               <div
                 key={index}
                 onClick={() => handleLanguageSelect(item.language_code)}
-                className="bg-white  p-5 rounded-2xl mr-3 shadow-lg overflow-hidden cursor-pointer transition-transform hover:scale-[1.02] active:scale-[0.99]"
+                className="bg-white mt-2 p-5 rounded-2xl mr-3 shadow-lg overflow-hidden cursor-pointer transition-transform hover:scale-[1.02] active:scale-[0.99]"
               >
                 {/* Card Header with Gradient */}
                 <div 

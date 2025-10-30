@@ -4,6 +4,14 @@ import { useDispatch } from 'react-redux';
 import WordService from '../../services/WordService';
 import VoiceButtonComponent from '../../layouts/VoiceButtonComponent';
 
+import { IoCheckmark } from "react-icons/io5";
+import { IoCheckmarkDoneOutline } from "react-icons/io5";
+
+import { CiStar } from "react-icons/ci";
+import { FaStar } from "react-icons/fa";
+
+
+
 export default function VocabCard({ word, language }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -39,7 +47,7 @@ export default function VocabCard({ word, language }) {
   return (
     <div
       onClick={handleCardClick}
-      className="bg-white p-5 w-[24%] rounded-2xl border border-gray-100 shadow-sm mb-4 mx-0 cursor-pointer hover:shadow-md transition-shadow duration-200"
+      className="bg-white p-5 w-full md:w-[45%] lg:w-[32%] 2xl:w-[24%] rounded-2xl border border-gray-100 shadow-sm mb-4 cursor-pointer hover:shadow-md transition-shadow duration-200 "
     >
       {/* Top Row: Word + Level Badge */}
       <div className="flex items-start justify-between mb-3">
@@ -93,24 +101,24 @@ export default function VocabCard({ word, language }) {
           {/* Star Toggle */}
           <button
             onClick={(e) => handleToggle('star', e)}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-2 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
             aria-label={isStarred ? "Remove from favorites" : "Add to favorites"}
             title={isStarred ? "Remove from favorites" : "Add to favorites"}
           >
             <span className={`text-xl ${isStarred ? 'text-yellow-500' : 'text-gray-600'}`}>
-              {isStarred ? '⭐' : '☆'}
+              {isStarred ? <FaStar className='text-yellow-500'/> : <CiStar/>}
             </span>
           </button>
 
           {/* Learned Toggle */}
           <button
             onClick={(e) => handleToggle('learned', e)}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-2 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
             aria-label={isLearned ? "Mark as not learned" : "Mark as learned"}
             title={isLearned ? "Mark as not learned" : "Mark as learned"}
           >
             <span className={`text-xl ${isLearned ? 'text-green-500' : 'text-gray-600'}`}>
-              {isLearned ? '✅' : '☐'}
+              {isLearned ?  <IoCheckmarkDoneOutline className='text-green-500' /> : <IoCheckmark/>}
             </span>
           </button>
 

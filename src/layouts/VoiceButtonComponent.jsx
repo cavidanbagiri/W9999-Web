@@ -80,7 +80,7 @@ export default function VoiceButtonComponent({ text, language }) {
                 e.stopPropagation();
                 playSound(text);
             }}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="p-2 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             aria-label={isPlaying ? "Playing pronunciation" : "Play pronunciation"}
             disabled={isPlaying || isLoading}
             title={isPlaying ? "Playing..." : isLoading ? "Loading..." : "Play pronunciation"}

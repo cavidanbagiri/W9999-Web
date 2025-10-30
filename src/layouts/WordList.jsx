@@ -49,7 +49,7 @@ export function WordList({ screen }) {
             )}
             
             {/* Words List */}
-            <div className="space-y-3 flex flex-wrap justify-around ">
+            <div className="space-y-3 flex flex-wrap justify-around px-2 gap-2 mt-2">
                 {words?.map((item) => (
                     <VocabCard 
                         key={item.id.toString()} 
