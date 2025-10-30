@@ -1,6 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 // import { generateSpeech } from '../../api/audio';
 
+import { CiVolume } from "react-icons/ci";
+import { CiVolumeHigh } from "react-icons/ci";
+import { PiHourglassHighThin } from "react-icons/pi";
+
+
+
+
 import {generateSpeech} from '../api/audio';
 
 export default function VoiceButtonComponent({ text, language }) {
@@ -90,7 +97,7 @@ export default function VoiceButtonComponent({ text, language }) {
                 isLoading ? 'text-gray-400' : 
                 'text-indigo-500'
             }`}>
-                {isLoading ? '⏳' : isPlaying ? '🔊' : '🔈'}
+                {isLoading ? <PiHourglassHighThin className='text-gray-400'/> : isPlaying ? <CiVolumeHigh className='text-blue-500'/> : <CiVolume className='text-indigo-500'/>}
             </span>
         </button>
     );

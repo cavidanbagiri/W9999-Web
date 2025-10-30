@@ -6,6 +6,13 @@ import WordService from '../services/WordService';
 import { setCurrentWord } from '../store/ai_store';
 import VoiceButtonComponent from '../layouts/VoiceButtonComponent';
 
+import { IoCheckmark } from "react-icons/io5";
+import { IoCheckmarkDoneOutline } from "react-icons/io5";
+
+import { CiStar } from "react-icons/ci";
+import { FaStar } from "react-icons/fa";
+
+
 export default function CardDetailScreen() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -49,7 +56,7 @@ export default function CardDetailScreen() {
   return (
     <div className="min-h-screen bg-white  ">
       {/* Header with Back Button */}
-      <div className="px-6 pt-4 pb-2 border-b border-gray-100">
+      <div className=" visible xl:invisible px-6 pt-4 lg:pt-0 pb-2 lg:pb-0 border-b border-gray-100">
         <div className="flex items-center justify-between">
           <button
             onClick={() => navigate(-1)}
@@ -77,7 +84,7 @@ export default function CardDetailScreen() {
           <div className="flex justify-around items-center">
             <button
               onClick={() => toggleStatus('is_starred')}
-              className={`flex flex-col items-center justify-center p-3 rounded-xl transition-colors ${
+              className={`flex flex-col items-center justify-center p-3 rounded-xl transition-colors cursor-pointer ${
                 detail?.is_starred ? 'bg-amber-50 hover:bg-amber-100' : 'bg-transparent hover:bg-gray-50'
               }`}
             >
@@ -85,7 +92,7 @@ export default function CardDetailScreen() {
                 detail?.is_starred ? 'bg-amber-100' : 'bg-gray-100'
               }`}>
                 <span className={`text-xl ${detail?.is_starred ? 'text-amber-500' : 'text-gray-500'}`}>
-                  {detail?.is_starred ? '⭐' : '☆'}
+                  {detail?.is_starred ? <FaStar className='text-yellow-500'/> : <CiStar/>}
                 </span>
               </div>
               <span
@@ -101,7 +108,7 @@ export default function CardDetailScreen() {
 
             <button
               onClick={() => toggleStatus('is_learned')}
-              className={`flex flex-col items-center justify-center p-3 rounded-xl transition-colors ${
+              className={`flex flex-col items-center justify-center p-3 rounded-xl transition-colors cursor-pointer ${
                 detail?.is_learned ? 'bg-emerald-50 hover:bg-emerald-100' : 'bg-transparent hover:bg-gray-50'
               }`}
             >
@@ -109,7 +116,7 @@ export default function CardDetailScreen() {
                 detail?.is_learned ? 'bg-emerald-100' : 'bg-gray-100'
               }`}>
                 <span className={`text-xl ${detail?.is_learned ? 'text-emerald-500' : 'text-gray-500'}`}>
-                  {detail?.is_learned ? '✅' : '☐'}
+                  {detail?.is_learned ? <IoCheckmarkDoneOutline className='text-green-500' /> : <IoCheckmark/>}
                 </span>
               </div>
               <span
@@ -128,7 +135,7 @@ export default function CardDetailScreen() {
                 dispatch(setCurrentWord(word));
                 navigate('/ai-chat');
               }}
-              className="flex flex-col items-center justify-center p-3 rounded-xl hover:bg-gray-50 transition-colors"
+              className="flex flex-col items-center justify-center p-3 rounded-xl hover:bg-gray-50 transition-colors cursor-pointer "
             >
               <div className="w-10 h-10 rounded-full flex items-center justify-center bg-gradient-to-r from-blue-500 to-purple-500">
                 <span className="text-white text-lg">✨</span>
