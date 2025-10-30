@@ -8,6 +8,10 @@ import AIScreenChat from './AIScreenChat';
 import { clearAIResponse, setAIResponse, clearConversation } from '../../store/ai_store';
 import TRANSLATE_LANGUAGES_LIST from '../../constants/TranslateLanguagesList';
 
+import { IoChatbox } from "react-icons/io5";
+
+
+
 export default function AIComponent() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -295,10 +299,10 @@ export default function AIComponent() {
       {!isChatOpen && (
         <button
           onClick={() => setIsChatOpen(true)}
-          className="fixed bottom-6 right-6 w-16 h-16 bg-indigo-500 rounded-full flex items-center justify-center shadow-lg hover:bg-indigo-600 transition-colors text-white text-xl"
+          className="fixed bottom-24 lg:bottom-6 right-6 w-16 h-16 bg-indigo-500 rounded-full flex items-center justify-center shadow-lg hover:bg-indigo-600 transition-colors text-white text-xl cursor-pointer"
           title="Open AI Chat"
         >
-          💬
+          <IoChatbox className='text-2xl'/>
         </button>
       )}
     </div>

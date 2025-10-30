@@ -5,6 +5,10 @@ import LANGUAGES from '../../constants/Languages';
 import TRANSLATE_LANGUAGES_LIST from '../../constants/TranslateLanguagesList';
 import { addChatMessage } from '../../store/ai_store';
 
+import { IoCloseOutline } from "react-icons/io5";
+import { IoSparklesSharp } from "react-icons/io5";
+
+
 export default function AIScreenChat({ currentWord, nativeLang, onClose }) {
   const dispatch = useDispatch();
   const [message, setMessage] = useState('');
@@ -65,7 +69,9 @@ export default function AIScreenChat({ currentWord, nativeLang, onClose }) {
       <div className="flex items-center justify-between p-4 bg-white border-b border-gray-200">
         <div className="flex items-center">
           <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center mr-3">
-            <span className="text-purple-600 text-lg">✨</span>
+            <span className="text-purple-600 text-lg">
+              <IoSparklesSharp/>
+            </span>
           </div>
           <div>
             <h2 className="text-lg font-semibold text-gray-900 font-sans">AI Language Coach</h2>
@@ -79,7 +85,9 @@ export default function AIScreenChat({ currentWord, nativeLang, onClose }) {
           className="w-10 h-10 bg-white rounded-full flex items-center justify-center hover:bg-gray-100 transition-colors shadow-sm border border-gray-200"
           title="Close chat"
         >
-          <span className="text-gray-600 text-xl">×</span>
+          <span className="text-gray-600 text-xl">
+            <IoCloseOutline/>
+          </span>
         </button>
       </div>
 
@@ -88,7 +96,9 @@ export default function AIScreenChat({ currentWord, nativeLang, onClose }) {
         {messages.length === 0 ? (
           <div className="flex flex-col items-center text-center mt-8">
             <div className="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mb-6">
-              <span className="text-purple-600 text-3xl">✨</span>
+              <span className="text-purple-600 text-3xl">
+                <IoSparklesSharp/>
+              </span>
             </div>
             <h3 className="text-2xl font-bold text-gray-900 mb-3 font-sans">
               Your Personal Language Coach
@@ -105,7 +115,7 @@ export default function AIScreenChat({ currentWord, nativeLang, onClose }) {
                 <button
                   key={index}
                   onClick={() => handlePromptPress(prompt)}
-                  className="w-full bg-white border border-gray-200 rounded-xl p-4 text-left hover:bg-gray-50 hover:border-gray-300 transition-colors shadow-sm"
+                  className="w-full bg-white border border-gray-200 rounded-xl p-4 text-left hover:bg-gray-50 hover:border-gray-300 transition-colors shadow-sm cursor-pointer"
                 >
                   <p className="text-gray-800 text-sm font-sans">{prompt}</p>
                 </button>
