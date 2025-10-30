@@ -65,14 +65,14 @@ export default function LanguagesStatisticsComponents() {
   };
 
   const handleLanguageSelect = (languageCode) => {
-    navigate('/word');
+    navigate('/words');
     dispatch(setSelectedLanguage(languageCode));
   };
 
   return (
-    <div className="flex flex-col bg-white px-4 pt-5">
+    <div className="flex flex-col  bg-white px-4 pt-5">
       {/* Header Section */}
-      <div className="text-left mb-6">
+      <div className="text-center lg:text-left mb-6">
         <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
           Language Progress
         </h1>
@@ -82,7 +82,7 @@ export default function LanguagesStatisticsComponents() {
       </div>
 
       {/* Stats Grid */}
-      <div className="flex flex-row pb-5">
+      <div className="flex flex-col lg:flex-row pb-5">
         {statistics && statistics.length > 0 ? (
           statistics.map((item, index) => {
             const progressPercentage = (item.learned_words / item.total_words) * 100;
