@@ -18,6 +18,8 @@ Problems
 
 9 - Add Google login to fastapi code
 
+10 - Need to create .env file and add client id to .env file 
+
 
 Solving
 
