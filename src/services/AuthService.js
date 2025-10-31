@@ -58,6 +58,26 @@ class AuthService {
             }
         });
 
+    // NEW: Google Sign-In
+    static googleLogin = createAsyncThunk(
+        '/auth/google',
+        async (code, thunkAPI) => {
+            try {
+                const response = await $api.post('/auth/google', { code });
+                return {
+                    payload: response.data,
+                    status: response.status,
+                };
+            } catch (error) {
+                const errorData = error.response?.data || { message: error.message };
+                const statusCode = error.response?.status || 500;
+                return thunkAPI.rejectWithValue({
+                    payload: errorData,
+                    status: statusCode,
+                });
+            }
+        });
+
     static refresh = createAsyncThunk(
         '/auth/refresh',
         async () => {

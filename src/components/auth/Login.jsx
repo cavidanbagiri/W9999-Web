@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import AuthService from '../../services/AuthService.js';
 import MsgBox from '../../layouts/MsgBox.jsx';
 import { setIsLoginErrorFalse, setIsLoginSuccessFalse } from '../../store/auth_store';
+import GoogleSignInButton from './GoogleSignInButton.jsx';
 
 export default function LoginComponent({ onLogin }) {
   const dispatch = useDispatch();
@@ -100,6 +101,7 @@ export default function LoginComponent({ onLogin }) {
           <span className="text-white text-xl font-sans">Login</span>
         )}
       </button>
+      <GoogleSignInButton />
     </div>
   );
 }

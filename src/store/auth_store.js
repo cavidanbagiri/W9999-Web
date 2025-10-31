@@ -1,9 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
 
 import AuthService from '../services/AuthService.js';
-
-axios.defaults.withCredentials = true;
 
 
 const initialState = {
@@ -76,16 +73,7 @@ export const authSlice = createSlice({
                 localStorage.setItem('native', action.payload.payload.user.native);
                 state.native_lang = action.payload.payload.user.native
             }
-            // saveToStorage('token', action.payload?.payload?.access_token);
-            // saveToStorage('sub', action.payload?.payload?.user?.sub);  
-            // saveToStorage('username', action.payload?.payload?.user?.username); 
-            // if (action.payload.payload.user.native === null) {
-            //     saveToStorage('native', '');
-            // }
-            // else {
-            //     saveToStorage('native', action.payload.payload.user.native);
-            //     state.native_lang = action.payload.payload.user.native
-            // }
+          
         });
         builder.addCase(AuthService.register.rejected, (state, action) => {
             state.login_pending = false;
@@ -100,7 +88,6 @@ export const authSlice = createSlice({
             state.login_pending = true;
         })
         builder.addCase(AuthService.login.fulfilled, (state, action) => {
-            console.log('after login coming response is ', action.payload)
             state.is_auth = true;
             state.login_pending = false;
             state.user = action.payload;
@@ -126,6 +113,36 @@ export const authSlice = createSlice({
 
         });
 
+        // NEW: Google Sign-In cases
+        builder.addCase(AuthService.googleLogin.pending, (state, action) => {
+            state.login_pending = true;
+            state.is_login_error = false;
+        })
+        builder.addCase(AuthService.googleLogin.fulfilled, (state, action) => {
+            state.is_auth = true;
+            state.login_pending = false;
+            state.user = action.payload;
+            state.login_success = true;
+            state.login_message = 'Successfully logged in with Google';
+            state.user.target_langs = action.payload?.payload?.user?.learning_targets;
+            localStorage.setItem('token', action.payload?.payload?.access_token);
+            localStorage.setItem('sub', action.payload?.payload?.user?.sub);  
+            localStorage.setItem('username', action.payload?.payload?.user?.username); 
+            if (action.payload.payload.user.native === null) {
+                localStorage.setItem('native', '');
+                state.native_lang = '';
+            } else {
+                localStorage.setItem('native', action.payload.payload.user.native);
+                state.native_lang = action.payload.payload.user.native;
+            }
+        });
+        builder.addCase(AuthService.googleLogin.rejected, (state, action) => {
+            state.login_pending = false;
+            state.is_auth = false;
+            state.is_login_error = true;
+            state.login_message = action.payload?.payload?.detail || 'Google login failed';
+        });
+
 
         // Userservice refresh
         builder.addCase(AuthService.refresh.fulfilled, (state, action) => {
@@ -135,22 +152,7 @@ export const authSlice = createSlice({
             localStorage.setItem('token', action.payload.payload.access_token);
             localStorage.setItem('sub', action.payload.payload.user.sub);
             localStorage.setItem('username', action.payload.payload.user.username);
-            // if (action.payload.payload.user.native === null) {
-            //     localStorage.setItem('native', '');
-            // }
-            // else {
-            //     localStorage.setItem('native', action.payload.payload.user.native);
-            //     state.native_lang = action.payload.payload.user.native
-            // }
-            // saveToStorage('token', action.payload.payload.access_token);
-            // saveToStorage('sub', action.payload.payload.user.sub);
-            // saveToStorage('username', action.payload.payload.user.username);
-            // if (action.payload.payload.user.native === null) {
-            //     saveToStorage('native', '');
-            // }
-            // else {
-            //     saveToStorage('native', action.payload.payload.user.native);
-            // }
+            
         });
         builder.addCase(AuthService.refresh.rejected, (state, action) => {
             console.log('refresh second', action.payload);
@@ -174,7 +176,6 @@ export const authSlice = createSlice({
 
         });
         builder.addCase(AuthService.setNativeLanguage.rejected, (state, action) => {
-            // console.log('refresh second', action.payload);
         });
 
         
