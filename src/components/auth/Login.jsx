@@ -17,6 +17,11 @@ export default function LoginComponent({ onLogin }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
+
+  const [msg_error, setMsgError] = useState(false);
+  const [msg_text, setMsgText] = useState('');
+
+
   const validateEmail = (email) => {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return re.test(email);
@@ -24,17 +29,29 @@ export default function LoginComponent({ onLogin }) {
 
   const handleLogin = async () => {
     if (!validateEmail(email)) {
-      alert('Validation Error: Please enter a valid email address');
+      // alert('Validation Error: Please enter a valid email address');
+      setMsgError(true);
+      setMsgText('Please enter a valid email address');
       return;
     }
 
     if (password.length < 8) {
-      alert('Validation Error: Password must be at least 8 characters');
+      // alert('Validation Error: Password must be at least 8 characters');
+      setMsgError(true);
+      setMsgText('Password must be at least 8 characters');
       return;
     }
 
     dispatch(AuthService.login({ email, password }));
   };
+
+  useEffect(() => {
+    if (msg_error) {
+      setTimeout(() => {
+        setMsgError(false);
+      }, 1000);
+    }
+  },)
 
   useEffect(() => {
     if (is_login_error) {
@@ -61,6 +78,8 @@ export default function LoginComponent({ onLogin }) {
           type={login_success ? 'success' : 'error'}
         />
       )}
+
+      {msg_error && <MsgBox message={msg_text} visible={msg_error} type="error" />}
 
       <h1 className="text-5xl font-bold text-center mb-8 font-sans">
         Sign In
@@ -91,11 +110,10 @@ export default function LoginComponent({ onLogin }) {
       </div>
 
       <button
-        className={`flex justify-center items-center mt-5 w-full py-4 px-4 rounded-lg transition-colors ${
-          login_pending 
-            ? 'bg-gray-400 cursor-not-allowed' 
+        className={`flex justify-center items-center mt-5 w-full py-4 px-4 rounded-lg transition-colors ${login_pending
+            ? 'bg-gray-400 cursor-not-allowed'
             : 'bg-blue-600 hover:bg-blue-700 active:bg-blue-800 cursor-pointer'
-        }`}
+          }`}
         onClick={handleLogin}
         disabled={login_pending}
       >
@@ -218,8 +236,8 @@ export default function LoginComponent({ onLogin }) {
 
 //       <button
 //         className={`flex justify-center items-center mt-5 w-full py-4 px-4 rounded-lg transition-colors ${
-//           login_pending 
-//             ? 'bg-gray-400 cursor-not-allowed' 
+//           login_pending
+//             ? 'bg-gray-400 cursor-not-allowed'
 //             : 'bg-blue-600 hover:bg-blue-700 active:bg-blue-800 cursor-pointer'
 //         }`}
 //         onClick={handleLogin}

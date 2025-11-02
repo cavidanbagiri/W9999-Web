@@ -17,7 +17,7 @@ export default function ProfileScreen() {
     if (confirm("Are you sure you want to logout?")) {
       dispatch(AuthService.userLogout());
       localStorage.clear();
-      navigate('/auth');
+      navigate('/login-register');
     }
   };
 
