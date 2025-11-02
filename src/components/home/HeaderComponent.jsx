@@ -3,6 +3,14 @@ import { useDispatch, useSelector } from 'react-redux';
 // import { getFromStorage } from '../../utils/storage';
 import WordService from '../../services/WordService';
 import { setNewTargetLanguageCondFalse } from '../../store/auth_store';
+import { IoIosRefresh } from "react-icons/io";
+import { CiSettings } from "react-icons/ci";
+import { IoBookmarksOutline } from "react-icons/io5";
+import { FaGlobeAmericas } from "react-icons/fa";
+import { IoAlarmOutline } from "react-icons/io5";
+
+
+
 
 // Language code to flag mapping (using web-appropriate imports)
 const LANGUAGE_FLAGS = {
@@ -152,21 +160,23 @@ export default function HeaderComponent({ username }) {
               >
                 {loading ? (
                   <div className="flex flex-col items-center">
-                    <span className="text-white font-bold">...</span>
+                    <span className="text-black font-bold">...</span>
                   </div>
                 ) : error ? (
                   <div className="flex flex-col items-center">
-                    <span className="text-white">↻</span>
+                    <span className="text-black">
+                      <IoIosRefresh className='text-black' />
+                    </span>
                   </div>
                 ) : (
                   <div className="flex flex-col items-center">
                     <div className="flex items-center gap-1">
-                      <span className="text-white">📚</span>
-                      <span className="text-white font-bold text-base">
+                      <span className="text-black">📚</span>
+                      <span className="text-black font-bold text-base">
                         {dailyStreak?.daily_learned_words || 0}
                       </span>
                     </div>
-                    <span className="text-white text-xs opacity-80 mt-0.5">Today's words</span>
+                    <span className="text-black text-xs opacity-80 mt-0.5">Today's words</span>
                   </div>
                 )}
               </button>
@@ -204,7 +214,9 @@ export default function HeaderComponent({ username }) {
               </p>
 
               <button className="p-1 text-white">
-                <span className="text-lg">⚙️</span>
+                <span className="text-lg">
+                  <CiSettings className='text-white' />
+                </span>
               </button>
             </div>
           </div>
@@ -212,7 +224,7 @@ export default function HeaderComponent({ username }) {
           {/* Progress Bar */}
           <div className="h-1 bg-white bg-opacity-20 rounded-full mt-3 overflow-hidden">
             <div 
-              className="h-full bg-white rounded-full transition-all duration-500 ease-out"
+              className="h-full bg-yellow-500 rounded-full transition-all duration-500 ease-out"
               style={{ width: progressWidth }}
             />
           </div>
@@ -223,19 +235,19 @@ export default function HeaderComponent({ username }) {
       <div className="flex gap-3">
         {[
           { 
-            icon: '📚', 
+            icon: <IoBookmarksOutline className='text-yellow-500'/>, 
             label: 'Today', 
             value: dailyStreak ? `${dailyStreak.daily_learned_words}` : '0', 
             color: COLORS.primary 
           },
           { 
-            icon: '🌎', 
+            icon: <FaGlobeAmericas className='text-green-500'/>, 
             label: 'Language', 
             value: dailyStreak?.last_learned_language ? dailyStreak.last_learned_language.toUpperCase() : '--', 
             color: COLORS.success 
           },
           { 
-            icon: '⏰', 
+            icon: <IoAlarmOutline className='text-red-500' />, 
             label: 'Updated', 
             value: dailyStreak ? 'Now' : '--', 
             color: COLORS.warning 

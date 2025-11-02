@@ -7,6 +7,14 @@ import { useNavigate } from 'react-router-dom';
 import VoiceButtonComponent from '../../layouts/VoiceButtonComponent';
 import WordService from '../../services/WordService';
 
+
+import { IoCheckmark } from "react-icons/io5";
+import { IoCheckmarkDoneOutline } from "react-icons/io5";
+
+import { CiStar } from "react-icons/ci";
+import { FaStar } from "react-icons/fa";
+
+
 const RenderWordComponent = ({ item, selectedLanguage, getFlagImage }) => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -65,7 +73,9 @@ const RenderWordComponent = ({ item, selectedLanguage, getFlagImage }) => {
                     )}
                     {isStarred && (
                         <span className="flex items-center gap-1 px-2 py-1 bg-yellow-50 text-yellow-700 text-xs font-medium rounded-full border border-yellow-200">
-                            <span className="text-yellow-500 text-sm">⭐</span>
+                            <span className="text-yellow-500 text-sm">
+                                <FaStar className='text-yellow-500'/>
+                            </span>
                             Starred
                         </span>
                     )}
@@ -98,7 +108,7 @@ const RenderWordComponent = ({ item, selectedLanguage, getFlagImage }) => {
                         title={isStarred ? "Remove from favorites" : "Add to favorites"}
                     >
                         <span className={`text-xl ${isStarred ? 'text-yellow-500' : 'text-gray-500'}`}>
-                            {isStarred ? '⭐' : '☆'}
+                            {isStarred ? <FaStar className='text-yellow-500'/> : <CiStar/>}
                         </span>
                     </button>
 
@@ -109,7 +119,7 @@ const RenderWordComponent = ({ item, selectedLanguage, getFlagImage }) => {
                         title={isLearned ? "Mark as not learned" : "Mark as learned"}
                     >
                         <span className={`text-xl ${isLearned ? 'text-green-500' : 'text-gray-500'}`}>
-                            {isLearned ? '✅' : '☐'}
+                            {isLearned ? <IoCheckmarkDoneOutline className='text-green-500' /> : <IoCheckmark/>}
                         </span>
                     </button>
                 </div>

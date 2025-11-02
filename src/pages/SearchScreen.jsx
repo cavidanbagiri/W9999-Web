@@ -9,10 +9,10 @@ import RenderWordComponent from '../components/search/RenderWordComponent';
 // import { getFromStorage } from '../utils/storage';
 
 const AVAILABLE_LANGUAGES = [
-    { name: 'Spanish', image: '/assets/flags/spanish.png', code: 'es' },
-    { name: 'Russian', image: '/assets/flags/russian.png', code: 'ru' },
-    { name: 'English', image: '/assets/flags/england.png', code: 'en' },
-    { name: 'Turkish', image: '/assets/flags/turkish.png', code: 'tr' },
+    { name: 'Spanish', image: '/src/assets/flags/spanish.png', code: 'es' },
+    { name: 'Russian', image: '/src/assets/flags/russian.png', code: 'ru' },
+    { name: 'English', image: '/src/assets/flags/england.png', code: 'en' },
+    { name: 'Turkish', image: '/src/assets/flags/turkish.png', code: 'tr' },
 ];
 
 export default function SearchScreen() {
@@ -87,7 +87,7 @@ export default function SearchScreen() {
         />
     ), [selectedLanguage, getFlagImage]);
 
-    const handleLanguageFilter = (languageCode) => {
+    const handleLanguageFilter = (languageCode='all') => {
         setTargetLanguage(languageCode);
         const data = {
             native_language: AVAILABLE_LANGUAGES.find(lang => lang.name === nativeLang)?.code,
@@ -159,7 +159,7 @@ export default function SearchScreen() {
                                 key={language.code}
                                 onClick={() => handleLanguageFilter(language.code)}
                                 className={`
-                                    flex items-center gap-2 px-4 py-2 rounded-full border transition-all duration-200 whitespace-nowrap
+                                    flex items-center gap-2 px-6 py-2 rounded-full border transition-all duration-200 whitespace-nowrap
                                     ${targetLanguage === language.code 
                                         ? 'bg-blue-600 border-blue-600 text-white shadow-sm' 
                                         : 'bg-white border-gray-300 text-gray-700 hover:border-gray-400'
@@ -169,7 +169,7 @@ export default function SearchScreen() {
                                 <img 
                                     src={language.image} 
                                     alt={language.name}
-                                    className="w-5 h-4 rounded object-cover"
+                                    className="w-5 h-5 rounded object-cover "
                                 />
                                 <span className="text-sm font-medium">{language.name}</span>
                             </button>
