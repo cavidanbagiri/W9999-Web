@@ -15,6 +15,7 @@ import AIScreen from "../pages/AIScreen";
 import Translate from "../pages/Translate";
 import Favorites from "../pages/Favorites";
 import CategoryWordsScreen from "../pages/CategoryWords";
+import SearchScreen from "../pages/CardScreen";
 
 
 const router = createBrowserRouter([
@@ -53,6 +54,10 @@ const router = createBrowserRouter([
             {
                 path: "/learned",
                 element: <Learned/>
+            },
+            {
+                path: "/search",
+                element: <SearchScreen/>
             },
             {
                 path: "/auth",
