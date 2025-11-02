@@ -93,10 +93,12 @@ export const authSlice = createSlice({
             state.user = action.payload;
             state.login_success = true;
             state.login_message = 'Successfully logged in';
-            state.user.target_langs = action.payload?.payload?.user?.learning_targets;
+            state.user.target_langs = action.payload?.payload?.user?.learning_targets || [];
             localStorage.setItem('token', action.payload?.payload?.access_token);
             localStorage.setItem('sub', action.payload?.payload?.user?.sub);  
             localStorage.setItem('username', action.payload?.payload?.user?.username); 
+            localStorage.setItem('native', action.payload?.payload?.user?.native);
+            localStorage.target_langs = JSON.stringify(action.payload?.payload?.user?.learning_targets || []);
             if (action.payload.payload.user.native === null) {
                 localStorage.setItem('native', '');
             }
@@ -129,11 +131,13 @@ export const authSlice = createSlice({
             localStorage.setItem('token', action.payload?.payload?.access_token);
             localStorage.setItem('sub', action.payload?.payload?.user?.sub);  
             localStorage.setItem('username', action.payload?.payload?.user?.username); 
+            localStorage.setItem('native', action.payload?.payload?.user?.native);
+            localStorage.target_langs = JSON.stringify(action.payload?.payload?.user?.learning_targets || []);
             if (action.payload.payload.user.native === null) {
                 localStorage.setItem('native', '');
                 state.native_lang = '';
             } else {
-                localStorage.setItem('native', action.payload.payload.user.native);
+                localStorage.setItem('native', action.payload?.payload?.user?.native);
                 state.native_lang = action.payload.payload.user.native;
             }
         });
@@ -149,11 +153,11 @@ export const authSlice = createSlice({
         builder.addCase(AuthService.refresh.fulfilled, (state, action) => {
             state.is_auth = true;
             state.user = action.payload;
-            console.log('after registration coming response is ', action.payload)
-            localStorage.setItem('token', action.payload.payload.access_token);
-            localStorage.setItem('sub', action.payload.payload.user.sub);
-            localStorage.setItem('username', action.payload.payload.user.username);
-            
+            localStorage.setItem('token', action.payload?.payload?.access_token);
+            localStorage.setItem('sub', action?.payload?.payload?.user?.sub);
+            localStorage.setItem('username', action?.payload?.payload?.user?.username);
+            localStorage.setItem('native', action?.payload?.payload?.user?.native);
+            localStorage.setItem('target_langs', JSON.stringify(action?.payload?.payload?.user?.target_langs));
         });
         builder.addCase(AuthService.refresh.rejected, (state, action) => {
             console.log('refresh second', action.payload);
@@ -166,13 +170,13 @@ export const authSlice = createSlice({
             state.user = null;
             state.is_login_error = false,
             state.login_success = false
+            localStorage.clear();
         });
 
         // UserService setNativeLanguage
         builder.addCase(AuthService.setNativeLanguage.fulfilled, (state, action) => {
             state.native_lang = action.payload?.payload?.native
             localStorage.setItem('native', action.payload?.payload?.native);
-            // saveToStorage('native', action.payload?.payload?.native); 
 
         });
         builder.addCase(AuthService.setNativeLanguage.rejected, (state, action) => {
@@ -184,11 +188,23 @@ export const authSlice = createSlice({
             state.choosen_lang = action.payload?.payload?.target_language_code
             state.new_target_lang_cond.is_cond = true;
             state.new_target_lang_cond.msg = action.payload?.payload?.msg; 
+            const currentLangs = localStorage.getItem('target_langs');
+            // get current target languages and add new one
+            if (currentLangs) {
+                const currentLangsArr = JSON.parse(currentLangs);
+                if (currentLangsArr.includes(action.payload?.payload?.target_language_code)) {
+                    return state; // already exists → no change
+                }
+                currentLangsArr.push(action.payload?.payload?.target_language_code);
+                localStorage.setItem('target_langs', JSON.stringify(currentLangsArr));
+            }
+            else {
+                localStorage.setItem('target_langs', JSON.stringify([action.payload?.payload?.target_language_code]));
+            }
             
-            
-            
+
             state.new_target_lang_cond.res = action.payload?.payload?.target_language_code;
-            code = action.payload?.payload?.target_language_code;
+            const code = action.payload?.payload?.target_language_code;
             if (state.user.target_langs?.includes(code)) {
                 return state; // already exists → no change
             }

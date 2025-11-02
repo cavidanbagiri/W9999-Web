@@ -42,7 +42,6 @@ export default function ChooseLangComponent({ selectedLanguage, setSelectedLangu
     const getNativeLang = () => {
       try {
         const native = localStorage.getItem('native');
-        console.log('native lang is ', native);
         setNativeLangName(native);
       } catch (error) {
         setNativeLangName(null);
@@ -62,7 +61,6 @@ export default function ChooseLangComponent({ selectedLanguage, setSelectedLangu
         !selectedLangCodes.includes(lang.code) &&
         lang.name !== nativeLangName
     );
-    console.log('filtered is ', filtered);
 
     setFilteredLanguages(filtered);
   }, [isLoading, selectedLangCodes, nativeLangName]);
