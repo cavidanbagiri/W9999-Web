@@ -9,15 +9,18 @@ import { IoBookmarksOutline } from "react-icons/io5";
 import { FaGlobeAmericas } from "react-icons/fa";
 import { IoAlarmOutline } from "react-icons/io5";
 
-
+import English from '../../assets/flags/england.png';
+import Spanish from '../../assets/flags/spanish.png';
+import Russian from '../../assets/flags/russian.png';
+import Turkish from '../../assets/flags/turkish.png';
 
 
 // Language code to flag mapping (using web-appropriate imports)
 const LANGUAGE_FLAGS = {
-  'en': '/src/assets/flags/england.png',
-  'es': '/src/assets/flags/spanish.png',
-  'ru': '/src/assets/flags/russian.png',
-  'tr': '/src/assets/flags/turkish.png',
+  'en': English,
+  'es': Spanish,
+  'ru': Russian,
+  'tr': Turkish,
 };
 
 // Language code to full name mapping

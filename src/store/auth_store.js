@@ -106,6 +106,7 @@ export const authSlice = createSlice({
             }
         });
         builder.addCase(AuthService.login.rejected, (state, action) => {
+            console.log('Login rejected the result is ', action)
             state.login_pending = false;
             state.is_auth = false;
             state.is_login_error = true;
@@ -161,7 +162,6 @@ export const authSlice = createSlice({
 
         // Userservice logout
         builder.addCase(AuthService.userLogout.fulfilled, (state, action) => {
-            
             state.is_auth = false;
             state.user = null;
             state.is_login_error = false,
