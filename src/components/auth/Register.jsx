@@ -10,10 +10,10 @@ export default function RegisterComponent({ setMode, onRegister }) {
 
   const { login_message, login_success, is_login_error, login_pending } = useSelector((state) => state.authSlice);
 
-  const [email, setEmail] = useState('temp2@gmail.com');
-  const [password, setPassword] = useState('11111111');
-  const [username, setUsername] = useState('temp2');
-  const [confirm, setConfirm] = useState('11111111');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState('');
+  const [confirm, setConfirm] = useState('');
   const [nativeLanguage, setNativeLanguage] = useState('');
 
   const validateEmail = (email) => {
@@ -66,7 +66,7 @@ export default function RegisterComponent({ setMode, onRegister }) {
   }, [login_success]);
 
   return (
-    <div className="w-full flex flex-col items-center">
+    <div className="flex flex-col items-center justify-center w-full xl:px-5 xl:w-1/3">
       {(is_login_error || login_success) && (
         <MsgBox
           message={login_message}

@@ -14,11 +14,13 @@ import { PiBookOpenTextThin } from "react-icons/pi";
 
 import NavIcon from '../components/navbar/NavIcon';
 import Auth from '../pages/Auth';
+import InitialPageComponent from '../components/home/InitialPageComponent';
+import LoginRegisterScreen from './Login_Register';
 
 function Navbar() {
   const is_auth = useSelector((state) => state.authSlice.is_auth);
 
-  if (!is_auth) return <Auth />;
+  if (!is_auth) return <LoginRegisterScreen />;
 
   return (
     <div className="relative min-h-screen flex flex-col">

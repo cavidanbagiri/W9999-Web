@@ -7,8 +7,8 @@ export default function LoginRegisterScreen({ onLogin }) {
   const [mode, setMode] = useState('login');
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-white p-8">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center p-8 w-full">
+      <div className="flex flex-col items-center justify-center w-full p-3">
         {/* {
           mode === 'login' &&
           <img
@@ -24,7 +24,8 @@ export default function LoginRegisterScreen({ onLogin }) {
           <Register setMode={setMode} onRegister={() => setMode('login')} />
         )}
 
-        <button 
+        <div className=''>
+          <button 
           onClick={() => setMode(mode === 'login' ? 'register' : 'login')}
           className="text-blue-600 text-center mt-4 hover:text-blue-700 transition-colors duration-200 cursor-pointer w-full"
         >
@@ -32,6 +33,7 @@ export default function LoginRegisterScreen({ onLogin }) {
             ? "Don't have an account? Register"
             : 'Already have an account? Login'}
         </button>
+        </div>
       </div>
     </div>
   );

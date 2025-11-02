@@ -9,7 +9,7 @@ function Auth() {
   const [show_register, setShowRegister] = useState(false);
 
   return (
-    <div>
+    <div className='w-full flex justify-center items-center h-screen'>
       {
         !show_register ?
         <Login  show_register={show_register} setShowRegister={setShowRegister} />

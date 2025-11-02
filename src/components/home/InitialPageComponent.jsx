@@ -36,6 +36,7 @@ export default function InitialPageComponent() {
       <button
         className="flex justify-center items-center mt-12 bg-blue-600 py-4 rounded-xl shadow-md hover:bg-blue-700 active:bg-blue-800 transition-colors duration-200 cursor-pointer"
         onClick={() => {
+          console.log('l am clicked')
           navigate('/login-register');
         }}
       >

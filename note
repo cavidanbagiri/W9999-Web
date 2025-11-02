@@ -2,8 +2,6 @@ Problems
 
 1 - After login target languages are saved in user_redux, user_store, after refreshing the page, the target languages are not saved in user_redux, user_store
 
-2 - Need to add search screen also
-
 3 - Need to solve the input text problem in AIChat section
 
 4 - Translate and favorites button hide on the menu bar in mobile responsive
@@ -17,6 +15,8 @@ Problems
 8 - Redesign login and logout page
 
 9 - Ai, Must be learning about the context
+
+10 - Need to Fix Search Screen icon and if the language not selected, need to set as all.
 
 
 Solving
