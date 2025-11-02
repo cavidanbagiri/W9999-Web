@@ -4,12 +4,15 @@ import { setSelectedLanguage } from '../store/word_store';
 import WordService from '../services/WordService';
 
 import English from '../assets/flags/england.png';
+import Spanish from '../assets/flags/spanish.png';
+import Russian from '../assets/flags/russian.png';
+import Turkish from '../assets/flags/turkish.png';
 
 const FLAG_IMAGES = {
-  English: '/src/assets/flags/england.png',
-  Spanish: '/src/assets/flags/spanish.png',
-  Russian: '/src/assets/flags/russian.png',
-  Turkish: '/src/assets/flags/turkish.png',
+  English: English,
+  Spanish: Spanish,
+  Russian: Russian,
+  Turkish: Turkish,
 };
 
 

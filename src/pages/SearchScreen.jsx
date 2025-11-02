@@ -8,11 +8,16 @@ import RenderWordComponent from '../components/search/RenderWordComponent';
 // import RenderWordComponent from '../components/search/RenderWordComponent';
 // import { getFromStorage } from '../utils/storage';
 
+import English from '../assets/flags/england.png';
+import Spanish from '../assets/flags/spanish.png';
+import Russian from '../assets/flags/russian.png';
+import Turkish from '../assets/flags/turkish.png';
+
 const AVAILABLE_LANGUAGES = [
-    { name: 'Spanish', image: '/src/assets/flags/spanish.png', code: 'es' },
-    { name: 'Russian', image: '/src/assets/flags/russian.png', code: 'ru' },
-    { name: 'English', image: '/src/assets/flags/england.png', code: 'en' },
-    { name: 'Turkish', image: '/src/assets/flags/turkish.png', code: 'tr' },
+    { name: 'Spanish', image: Spanish, code: 'es' },
+    { name: 'Russian', image: Russian, code: 'ru' },
+    { name: 'English', image: English, code: 'en' },
+    { name: 'Turkish', image: Turkish, code: 'tr' },
 ];
 
 export default function SearchScreen() {
