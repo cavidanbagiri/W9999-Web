@@ -39,6 +39,7 @@ class AuthService {
         '/auth/login',
         async (credentials, thunkAPI) => {
             try {
+                console.log('credentials is ', credentials)
                 const response = await $api.post('/auth/login', credentials);
                 // Return data on success
                 return {
