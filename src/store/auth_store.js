@@ -153,12 +153,16 @@ export const authSlice = createSlice({
         builder.addCase(AuthService.refresh.fulfilled, (state, action) => {
             state.is_auth = true;
             state.user = action.payload;
-            state.user.target_langs = action.payload?.payload?.user?.target_langs;
             localStorage.setItem('token', action.payload?.payload?.access_token);
             localStorage.setItem('sub', action?.payload?.payload?.user?.sub);
             localStorage.setItem('username', action?.payload?.payload?.user?.username);
             localStorage.setItem('native', action?.payload?.payload?.user?.native);
-            localStorage.setItem('target_langs', JSON.stringify(action?.payload?.payload?.user?.target_langs));
+
+            // Get the target languages from the local storage and set them to the user object
+            const target_langs = localStorage.getItem('target_langs');
+            if (target_langs) {
+                state.user.target_langs = JSON.parse(target_langs);
+            }
 
         });
         builder.addCase(AuthService.refresh.rejected, (state, action) => {

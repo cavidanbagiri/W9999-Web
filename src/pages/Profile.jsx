@@ -16,7 +16,7 @@ export default function ProfileScreen() {
   const logoutHandler = () => {
     if (confirm("Are you sure you want to logout?")) {
       dispatch(AuthService.userLogout());
-      localStorage.clear();
+      // localStorage.clear();
       navigate('/login-register');
     }
   };
