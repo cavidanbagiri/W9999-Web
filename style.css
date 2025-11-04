@@ -1,0 +1,18 @@
+/* src/style.css */
+
+/* Global styles */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 50%;
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+}
+
+#root {
+  height: 100%;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: none;
+}
