@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 // import { getFromStorage } from '../../utils/storage';
 import AuthService from '../../services/AuthService';
 // import LANGUAGES from '../../constants/Languages';
+import { useNavigate } from 'react-router-dom';
 
 import Spanish_flag from '../../assets/flags/spanish.png';
 import Russian_flag from '../../assets/flags/russian.png';
@@ -23,8 +24,20 @@ const LANGUAGES = [
 
 
 export default function ChooseLangComponent({ selectedLanguage, setSelectedLanguage }) {
+  
+  const navigate = useNavigate();
   const dispatch = useDispatch();
+
   const { user } = useSelector((state) => state.authSlice);
+
+  const is_auth = useSelector((state) => state.authSlice.is_auth);
+
+  // Force re-render when auth state changes
+  const [key, setKey] = useState(0);
+  
+  useEffect(() => {
+    setKey(prev => prev + 1);
+  }, [is_auth]);
 
   const [nativeLangName, setNativeLangName] = useState(null);
   const [filteredLanguages, setFilteredLanguages] = useState([]);
@@ -101,11 +114,21 @@ export default function ChooseLangComponent({ selectedLanguage, setSelectedLangu
                 key={lang.code}
                 onClick={() => {
                   setSelectedLanguage(lang.name);
-                  dispatch(
-                    AuthService.setTargetLanguage({
-                      target_language_code: lang.code,
-                    })
-                  );
+                  if (is_auth) {
+                    dispatch(
+                      AuthService.setTargetLanguage({
+                        target_language_code: lang.code,
+                      })
+                    );
+                  }
+                  else{
+                    navigate('/login-register');
+                  }
+                  // dispatch(
+                  //   AuthService.setTargetLanguage({
+                  //     target_language_code: lang.code,
+                  //   })
+                  // );
                 }}
                 className={`
                   w-28 flex flex-col items-center p-4 rounded-xl border-2 transition-all duration-200 ease-in-out

@@ -98,14 +98,18 @@ export default function HeaderComponent({ username }) {
     try {
       setLoading(true);
       setError(null);
-      
-      const result = await dispatch(WordService.getDailyStreak());    
-      
-      if (result && result.payload) {
-        setDailyStreak(result.payload);
-      } else {
-        setError('Failed to load daily streak');
+
+      const token = localStorage.getItem('token');
+      if (token) {
+        const result = await dispatch(WordService.getDailyStreak());    
+        
+        if (result && result.payload) {
+          setDailyStreak(result.payload);
+        } else {
+          setError('Failed to load daily streak');
+        }
       }
+      
     } catch (err) {
       setError('Error fetching daily streak');
       console.error('Daily streak error:', err);

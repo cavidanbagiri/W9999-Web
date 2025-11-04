@@ -6,15 +6,14 @@ Problems
 
 3 - Ai, Must be learning about the context
 
-4 - After registrtion, can redirect to main page
+4 - After registration, can redirect to main page
 
 5 - In phone, after refresh, return back again to login page
 
-6 - After creating new user, l choose the language, but the language again showing the choosing languages section
-
+6*** - Need to chech logout again, in production, internal server error happened 
 
 Solving
-
+6
 
 
 

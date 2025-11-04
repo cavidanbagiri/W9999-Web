@@ -1,27 +1,7 @@
-// import { useState } from 'react'
-// import './App.css'
 
-// function App() {
+import { useEffect, useState } from 'react'
 
-//   return (
-//     <>
-//       <div>
-//         <span className='text-red-400'>
-//           Hello
-//           l am here
-//         </span>
-//       </div>
-//     </>
-//   )
-// }
-
-// export default App
-
-
-
-import { useEffect } from 'react';
-
-import {RouterProvider} from "react-router-dom";
+import { RouterProvider } from "react-router-dom";
 
 import { useDispatch, useSelector } from 'react-redux';
 import AuthService from './services/AuthService.js';
@@ -35,16 +15,31 @@ function App() {
 
   const dispatch = useDispatch();
 
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+
   const is_auth = useSelector((state) => state.authSlice.is_auth);
 
   useEffect(() => {
-    if (!is_auth) {
-      dispatch(AuthService.refresh());
+    const checkAuth = () => {
+      // Check if we have a token in localStorage first
+      const token = localStorage.getItem('token');
+      // console.log('refresh token is ', token)
+
+      if (token && !is_auth) {
+        // Try to refresh with existing token
+        dispatch(AuthService.refresh());
+        setIsCheckingAuth(false);
+      };
+      
+      // dispatch(AuthService.refresh());
     }
+    checkAuth();
   }, [is_auth]);
 
+
+
   return (
-     <RouterProvider router={router} />
+    <RouterProvider router={router} />
   )
 }
 

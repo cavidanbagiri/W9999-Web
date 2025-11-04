@@ -61,7 +61,7 @@ export default function HomeScreen() {
         type="success" 
       />
       
-      {is_auth ? (
+      {/* {is_auth ? ( */}
         <div className="w-full">
           <HeaderComponent username={username} />
 
@@ -80,9 +80,9 @@ export default function HomeScreen() {
             </div>
           </div>
         </div>
-      ) : (
-        <InitialPageComponent />
-      )}
+      {/* // ) : (
+      //   <InitialPageComponent />
+      // )} */}
     </div>
   );
 }

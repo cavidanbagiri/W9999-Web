@@ -10,12 +10,16 @@ import { setIsLoginErrorFalse, setIsLoginSuccessFalse } from '../../store/auth_s
 import AuthService from '../../services/AuthService.js';
 import MsgBox from '../../layouts/MsgBox';
 import LanguageModalComponent from '../home/LanguageModalComponent.jsx';
+import { useNavigate } from 'react-router-dom';
 
 
 export default function RegisterComponent({ setMode, onRegister }) {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  const { login_message, login_success, is_login_error, login_pending } = useSelector((state) => state.authSlice);
+  const {is_auth, login_message, login_success, is_login_error, login_pending } = useSelector((state) => state.authSlice);
+
+
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -66,7 +70,14 @@ export default function RegisterComponent({ setMode, onRegister }) {
       return;
     }
 
-    dispatch(AuthService.register({ email, password, username, native: nativeLanguage }));
+    try {
+      // await dispatch(AuthService.login({ email, password })).unwrap();
+      dispatch(AuthService.register({ email, password, username, native: nativeLanguage }));
+      // Navigation will happen in the useEffect below
+    } catch (error) {
+      console.error('Login failed:', error);
+    }
+
   };
 
   
@@ -95,6 +106,18 @@ export default function RegisterComponent({ setMode, onRegister }) {
       }, 1500);
     }
   }, [login_success]);
+
+  
+    // Redirect when auth state changes
+    useEffect(() => {
+      if (is_auth) {
+        navigate('/');
+      }
+      else{
+        navigate('/login-register');
+      }
+    }, [is_auth, navigate]);
+  
 
   return (
     <div className="flex flex-col items-center justify-center w-full xl:px-5 xl:w-1/3 relative">

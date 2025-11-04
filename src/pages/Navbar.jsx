@@ -1,6 +1,7 @@
 
 
 // Navbar.jsx
+import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { Outlet } from 'react-router-dom';
 import { CiHome } from 'react-icons/ci';
@@ -8,6 +9,8 @@ import { PiSparkleThin } from "react-icons/pi";
 import { PiTranslateThin } from "react-icons/pi";
 import { PiGraduationCapThin } from "react-icons/pi";
 import { CiUser } from "react-icons/ci";
+import { CiLogin } from "react-icons/ci";
+
 
 import { PiBookOpenTextThin } from "react-icons/pi";
 
@@ -20,10 +23,19 @@ import LoginRegisterScreen from './Login_Register';
 function Navbar() {
   const is_auth = useSelector((state) => state.authSlice.is_auth);
 
-  if (!is_auth) return <LoginRegisterScreen />;
+  // Force re-render when auth state changes
+  const [key, setKey] = useState(0);
+  
+  useEffect(() => {
+    setKey(prev => prev + 1);
+  }, [is_auth]);
+
+  // if (!is_auth) return <LoginRegisterScreen />;
 
   return (
     <div className="relative min-h-screen flex flex-col">
+
+      
       {/* DESKTOP & TABLET NAVBAR (top bar with header + icons) */}
       <div className="hidden md:flex sticky top-0 z-20 w-full bg-white shadow-md items-center justify-between px-6 ">
         {/* <NavbarHeader Section /> */}
@@ -36,7 +48,10 @@ function Navbar() {
           <NavIcon to="/ai-chat" icon={PiSparkleThin} label="AI Chat" />
           <NavIcon to="/translate" icon={PiTranslateThin} label="Translate" />
           <NavIcon to="/learned" icon={PiGraduationCapThin} label="Learned" />
-          <NavIcon to="/profile" icon={CiUser} label="Profile" />
+          {/* <NavIcon to="/profile" icon={CiUser} label="Profile" /> */}
+          {
+            is_auth ? <NavIcon to="/profile" icon={CiUser} label="Profile" /> : <NavIcon to="/login-register" icon={CiLogin} label="Profile" />
+          }
         </div>
       </div>
 
@@ -54,7 +69,10 @@ function Navbar() {
           <NavIcon to="/ai-chat" icon={PiSparkleThin} label="AI" />
           <NavIcon to="/translate" icon={PiTranslateThin} label="Translate" />
           <NavIcon to="/learned" icon={PiGraduationCapThin} label="Learned" />
-          <NavIcon to="/profile" icon={CiUser} label="Profile" />
+          {/* <NavIcon to="/profile" icon={CiUser} label="Profile" /> */}
+          {
+            is_auth ? <NavIcon to="/profile" icon={CiUser} label="Profile" /> : <NavIcon to="/login-register" icon={CiLogin} label="Profile" />
+          }
         </div>
       </nav>
     </div>

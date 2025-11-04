@@ -6,13 +6,16 @@ import AuthService from '../../services/AuthService.js';
 import MsgBox from '../../layouts/MsgBox.jsx';
 import { setIsLoginErrorFalse, setIsLoginSuccessFalse } from '../../store/auth_store';
 import GoogleSignInButton from './GoogleSignInButton.jsx';
+import { useNavigate } from 'react-router-dom';
 
 
 
 export default function LoginComponent({ onLogin }) {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const { login_message, login_success, is_login_error, login_pending } = useSelector((state) => state.authSlice);
+  const is_auth = useSelector((state) => state.authSlice.is_auth);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -42,7 +45,13 @@ export default function LoginComponent({ onLogin }) {
       return;
     }
 
-    dispatch(AuthService.login({ email, password }));
+    // dispatch(AuthService.login({ email, password }));
+    try {
+      await dispatch(AuthService.login({ email, password })).unwrap();
+      // Navigation will happen in the useEffect below
+    } catch (error) {
+      console.error('Login failed:', error);
+    }
   };
 
   useEffect(() => {
@@ -68,6 +77,17 @@ export default function LoginComponent({ onLogin }) {
       }, 500);
     }
   }, [login_success]);
+
+  // Redirect when auth state changes
+  useEffect(() => {
+    if (is_auth) {
+      navigate('/');
+    }
+    else{
+      navigate('/login-register');
+    }
+  }, [is_auth, navigate]);
+
 
   return (
     <div className="flex flex-col items-center justify-center w-full xl:px-5 xl:w-1/3">

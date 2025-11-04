@@ -8,9 +8,19 @@ import LANGUAGES from '../constants/Languages';
 import LanguagePickerModal from '../components/translate/LanguagePickerModal';
 import VoiceButtonComponent from '../layouts/VoiceButtonComponent';
 import { setCurrentWord } from '../store/ai_store';
-// import { getFromStorage } from '../utils/storage';
 import { clearTranslatedText } from '../store/translate_store';
 import FavoritesService from '../services/FavoritesService';
+
+import { BiTransfer } from "react-icons/bi";
+import { FaHeart } from "react-icons/fa";
+import { FaRegHeart } from "react-icons/fa";
+import { FaRegClipboard } from "react-icons/fa";
+import { CiMedicalClipboard } from "react-icons/ci";
+import { IoSparklesOutline } from "react-icons/io5";
+
+
+
+
 
 export default function TranslateComponent({ onClose }) {
   const navigate = useNavigate();
@@ -18,6 +28,8 @@ export default function TranslateComponent({ onClose }) {
 
   const { translatedText, loading, error, payload } = useSelector((state) => state.translateSlice);
   const { selectedLanguage } = useSelector((state) => state.wordSlice);
+
+  const is_auth = useSelector((state) => state.authSlice.is_auth);
 
   const [nativeLang, setNativeLang] = useState(null);
   const [fromLang, setFromLang] = useState(null);
@@ -140,11 +152,27 @@ export default function TranslateComponent({ onClose }) {
       <div className="flex items-center justify-between px-4 py-3 bg-white border-b border-gray-200">
         <h1 className="text-lg font-semibold text-gray-900 font-sans">Translate</h1>
         <button
-          onClick={() => navigate('/favorites')}
+          onClick={() => {
+            if (is_auth) {
+              // dispatch(
+              //   AuthService.setTargetLanguage({
+              //     target_language_code: lang.code,
+              //   })
+              // );
+              navigate('/favorites');
+            }
+            else {
+              navigate('/login-register');
+            }
+            // navigate('/favorites')}
+          }}
           className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
           title="View Favorites"
         >
-          <span className="text-gray-600 text-xl">❤️</span>
+          <span className="text-gray-600 text-xl">
+            {/* <FaRegHeart className='text-red-500 text-xl' /> */}
+            <FaHeart className='text-red-500' />
+          </span>
         </button>
       </div>
 
@@ -175,7 +203,9 @@ export default function TranslateComponent({ onClose }) {
           className="p-3 bg-indigo-100 rounded-full mx-1 hover:bg-indigo-200 transition-colors"
           title="Swap languages"
         >
-          <span className="text-indigo-600 text-xl">🔄</span>
+          <span className="text-indigo-600 text-xl">
+            <BiTransfer />
+          </span>
         </button>
 
         <LanguagePickerModal
@@ -236,7 +266,9 @@ export default function TranslateComponent({ onClose }) {
                   className="p-1 hover:bg-gray-100 rounded transition-colors mr-2"
                   title="Copy text"
                 >
-                  <span className="text-gray-600 text-lg">📋</span>
+                  <span className="text-gray-600 text-lg">
+                    <CiMedicalClipboard className='text-indigo-500 text-xl' />
+                  </span>
                 </button>
                 <VoiceButtonComponent text={inputText} language={fromLang} />
                 <button
@@ -244,16 +276,17 @@ export default function TranslateComponent({ onClose }) {
                   className="p-1 hover:bg-gray-100 rounded transition-colors ml-2"
                   title="Ask AI about this text"
                 >
-                  <span className="text-gray-600 text-lg">✨</span>
+                  <span className="text-gray-600 text-lg">
+                    <IoSparklesOutline className='text-yellow-500 text-xl' />
+                  </span>
                 </button>
                 <button
                   onClick={handleSaveToFavorites}
-                  className={`p-1 rounded transition-colors ml-4 ${
-                    isFavorite ? 'text-red-500' : 'text-gray-600'
-                  }`}
+                  className={`p-1 rounded transition-colors ml-4 ${isFavorite ? 'text-red-500' : 'text-gray-600'
+                    }`}
                   title={isFavorite ? "Remove from favorites" : "Add to favorites"}
                 >
-                  <span className="text-xl">{isFavorite ? '❤️' : '🤍'}</span>
+                  <span className="text-xl">{isFavorite ? <FaHeart className='text-red-500' /> : <FaRegHeart className='text-indigo-500' />}</span>
                 </button>
               </div>
             </div>
@@ -278,7 +311,9 @@ export default function TranslateComponent({ onClose }) {
                       className="p-1 hover:bg-gray-100 rounded transition-colors ml-2"
                       title="Ask AI about this translation"
                     >
-                      <span className="text-gray-600 text-lg">✨</span>
+                      <span className="text-gray-600 text-lg">
+                        <IoSparklesOutline className='text-yellow-500 text-xl' />
+                      </span>
                     </button>
                   </div>
                 </div>
@@ -294,12 +329,11 @@ export default function TranslateComponent({ onClose }) {
       <div className="flex items-center px-5 py-4 bg-white border-t border-gray-200">
         <button
           onClick={handleSaveToFavorites}
-          className={`p-3 rounded-full mr-4 transition-colors ${
-            isFavorite ? 'bg-red-100 hover:bg-red-200' : 'bg-gray-100 hover:bg-gray-200'
-          }`}
+          className={`p-3 rounded-full mr-4 transition-colors ${isFavorite ? 'bg-red-100 hover:bg-red-200' : 'bg-gray-100 hover:bg-gray-200'
+            }`}
           title={isFavorite ? "Remove from favorites" : "Add to favorites"}
         >
-          <span className="text-xl">{isFavorite ? '❤️' : '🤍'}</span>
+          <span className="text-xl">{isFavorite ? <FaHeart className='text-red-500' /> : <FaRegHeart className='text-indigo-500' />}</span>
         </button>
 
         <button
@@ -311,11 +345,10 @@ export default function TranslateComponent({ onClose }) {
             })).unwrap();
           }}
           disabled={inputText.length === 0}
-          className={`flex-1 py-4 rounded-full text-center font-semibold font-sans transition-colors ${
-            inputText.length === 0
+          className={`flex-1 py-4 rounded-full text-center font-semibold font-sans transition-colors ${inputText.length === 0
               ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
               : 'bg-indigo-600 text-white hover:bg-indigo-700'
-          }`}
+            }`}
         >
           Translate
         </button>

@@ -26,13 +26,24 @@ export default function ProfileScreen() {
       setLoading(true);
       setError(null);
       
-      const result = await dispatch(WordService.profile_fetch_statistics());
-      
-      if (result && result.payload) {
-        setStatistics(result.payload);
-      } else {
-        setError('Failed to load statistics');
+      const token = localStorage.getItem('access_token');
+      if (token) {
+        const result = await dispatch(WordService.profile_fetch_statistics());
+        
+        if (result && result.payload) {
+          setStatistics(result.payload);
+        } else {
+          setError('Failed to load statistics');
+        }
       }
+
+      // const result = await dispatch(WordService.profile_fetch_statistics());
+      
+      // if (result && result.payload) {
+      //   setStatistics(result.payload);
+      // } else {
+      //   setError('Failed to load statistics');
+      // }
     } catch (err) {
       setError('Error fetching statistics');
       console.error('Profile statistics error:', err);
@@ -42,7 +53,6 @@ export default function ProfileScreen() {
   };
 
   useEffect(() => {
-    console.log('Profile screen mounted, fetching statistics...');
     fetchStatistics();
   }, [dispatch]);
 

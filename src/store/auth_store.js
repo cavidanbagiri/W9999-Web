@@ -214,7 +214,11 @@ export const authSlice = createSlice({
             if (state.user.target_langs?.includes(code)) {
                 return state; // already exists → no change
             }
-            state.user.target_langs = [...state.user.target_langs, action.payload?.payload?.target_language_code];
+            // state.user.target_langs = [...state.user.target_langs, action.payload?.payload?.target_language_code];
+            const target_langs = localStorage.getItem('target_langs');
+            if (target_langs) {
+                state.user.target_langs = JSON.parse(target_langs);
+            }
 
 
         });
