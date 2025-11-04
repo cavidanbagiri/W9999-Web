@@ -5,8 +5,8 @@ import axios from 'axios';
 
 // export const API_URL = 'http://10.0.2.2:8000/api';
 // export const API_URL = 'http://192.168.1.100:8000/api';
-export const API_URL = 'http://localhost:8000/api';
-// export const API_URL = 'https://duolingopocketserver.onrender.com/api';
+// export const API_URL = 'http://localhost:8000/api';
+export const API_URL = 'https://duolingopocketserver.onrender.com/api';
 
 
 const $api = axios.create({
