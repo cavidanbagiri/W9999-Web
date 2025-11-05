@@ -18,12 +18,24 @@ export default function LearnedScreen() {
 
   const [filter, setFilter] = useState('all');
 
+  const [totalLearned, setTotalLearned] = useState(0);
+
+  console.log('learned screen statistics is ', statistics);
+
   // Fetch statistics on component mount
   useEffect(() => {
-    if (is_auth && statistics?.length === 0) {
+    if (is_auth) {
       dispatch(WordService.getStatisticsForDashboard());
+    }   
+  }, [is_auth, dispatch]);
+
+  useEffect(() => {
+    if (statistics?.length > 0) {
+      // Find selected language and get total learned words
+      const selectedLang = statistics.find(stat => stat.language_code === selectedLanguage);
+      setTotalLearned(selectedLang?.learned_words);
     }
-  }, [is_auth, statistics?.length, dispatch]);
+  }, [statistics, selectedLanguage]);
 
   // Fetch learned words when selected language changes
   useEffect(() => {
@@ -65,7 +77,8 @@ export default function LearnedScreen() {
             {selectedLanguage && words?.length > 0 && (
               <div className="flex items-center gap-6">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-blue-600">{learnedStats.totalWords}</div>
+                  {/* <div className="text-2xl font-bold text-blue-600">{learnedStats.totalWords}</div> */}
+                  <div className="text-2xl font-bold text-blue-600">{totalLearned}</div>
                   <div className="text-sm text-gray-600">Words Learned</div>
                 </div>
                 <div className="text-center">

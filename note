@@ -6,17 +6,13 @@ Problems
 
 3 - Ai, Must be learning about the context
 
-4 - After registration, can redirect to main page
+4 - In phone, after refresh, return back again to login page
 
-5 - In phone, after refresh, return back again to login page
+5 - after logout, need to clear entire data
 
-6 - in profile page,  statistics doesnt work
+6 - after entering the website from google, need to create a new page for choosing the nativelang
 
-7 - fix total learned words in learned screen
-
-8 - set google sign in for registration
-
-9 - after logout, token doesnt clear from database
+7 - Need to look at the refresh page in phones
 
 Solving
 

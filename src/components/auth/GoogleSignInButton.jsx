@@ -11,7 +11,6 @@ const GoogleSignInButton = () => {
 
     const handleGoogleLogin = useGoogleLogin({
         onSuccess: (response) => {
-            console.log('Google auth response:', response);
             dispatch(AuthService.googleLogin(response.code));
         },
         onError: (error) => {
@@ -52,10 +51,6 @@ const GoogleSignInButton = () => {
                     </>
                 )}
             </button>
-            
-            {/* <div className="divider">
-                <span>or</span>
-            </div> */}
         </div>
     );
 };

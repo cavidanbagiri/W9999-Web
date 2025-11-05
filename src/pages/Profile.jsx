@@ -26,7 +26,7 @@ export default function ProfileScreen() {
       setLoading(true);
       setError(null);
       
-      const token = localStorage.getItem('access_token');
+      const token = localStorage.getItem('token');
       if (token) {
         const result = await dispatch(WordService.profile_fetch_statistics());
         
