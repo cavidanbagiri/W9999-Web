@@ -16,6 +16,7 @@ import Translate from "../pages/Translate";
 import Favorites from "../pages/Favorites";
 import CategoryWordsScreen from "../pages/CategoryWords";
 import SearchScreen from "../pages/SearchScreen";
+import Privacy from "../pages/Privacy";
 
 
 const router = createBrowserRouter([
@@ -70,6 +71,10 @@ const router = createBrowserRouter([
             {
                 path: "/profile",
                 element: <Profile/>
+            },
+            {
+                path: "/privacy",
+                element: <Privacy/>
             }
         ]
     },

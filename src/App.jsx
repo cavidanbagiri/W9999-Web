@@ -40,13 +40,13 @@ function App() {
 
   return (
     // <RouterProvider router={router} />
-    <div style={{ 
-      height: '100vh', 
-      overflow: 'auto',
-      WebkitOverflowScrolling: 'touch'
-    }}>
+    // <div style={{ 
+    //   height: '100vh', 
+    //   overflow: 'auto',
+    //   WebkitOverflowScrolling: 'touch'
+    // }}>
       <RouterProvider router={router} />
-    </div>
+    // </div>
   )
 }
 

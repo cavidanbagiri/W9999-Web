@@ -10,12 +10,29 @@ Problems
 
 5 - In phone, after refresh, return back again to login page
 
-6*** - Need to chech logout again, in production, internal server error happened 
+6 - in profile page,  statistics doesnt work
+
+7 - fix total learned words in learned screen
+
+8 - set google sign in for registration
+
+9 - after logout, token doesnt clear from database
 
 Solving
-6
+
 
 
 
 Deep Seek
 
+
+l set 
+'Authorized JavaScript origins' -> 'https://www.w9999.tech'
+'Authorized redirect URIs' -> 'https://duolingopocketserver.onrender.com'. 
+
+There is Audience and the under audience, there is the publishing status, l set as 'In Production'
+User type is 'External'
+
+After setting the publish status, l see this message 'Your app requires verification. When you have finished configuring your information, please submit your app for review.'. 
+
+what will l do? l need to learn all of this if this is important
