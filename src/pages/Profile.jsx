@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import AuthService from '../services/AuthService';
 import WordService from '../services/WordService';
+import { clearAfterLogout } from '../store/word_store';
 
 export default function ProfileScreen() {
   const navigate = useNavigate();
@@ -13,10 +14,10 @@ export default function ProfileScreen() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const logoutHandler = () => {
+  const logoutHandler = async () => {
     if (confirm("Are you sure you want to logout?")) {
-      dispatch(AuthService.userLogout());
-      // localStorage.clear();
+      await dispatch(AuthService.userLogout()).unwrap();
+      dispatch(clearAfterLogout());
       navigate('/login-register');
     }
   };

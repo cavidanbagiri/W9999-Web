@@ -2,29 +2,18 @@ Problems
 
 1 - Ai, Must be learning about the context
 
-2 - after logout, need to clear entire data
+2 - Need to look at the refresh page in phones
 
-3 - after entering the website from google, need to create a new page for choosing the nativelang
+3 - Set yandex cloud, notifications for sign in with email
 
-4 - Need to look at the refresh page in phones
+4 - Change all of  the words with google translate api
 
-5 - Need to design the page for google privacy policy
+
+
 
 Solving
 
 
 
-
 Deep Seek
 
-
-l set 
-'Authorized JavaScript origins' -> 'https://www.w9999.tech'
-'Authorized redirect URIs' -> 'https://duolingopocketserver.onrender.com'. 
-
-There is Audience and the under audience, there is the publishing status, l set as 'In Production'
-User type is 'External'
-
-After setting the publish status, l see this message 'Your app requires verification. When you have finished configuring your information, please submit your app for review.'. 
-
-what will l do? l need to learn all of this if this is important

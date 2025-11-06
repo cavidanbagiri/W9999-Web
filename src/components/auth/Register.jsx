@@ -138,6 +138,7 @@ export default function RegisterComponent({ setMode, onRegister }) {
       <LanguageModalComponent
         selectedLanguage={nativeLanguage}
         setSelectedLanguage={setNativeLanguage}
+        page = 'Register'
       />
 
       {/* Username Input with Icon */}

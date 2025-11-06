@@ -43,6 +43,16 @@ export const wordSlice = createSlice({
         clearDetail: (state) => {
             state.detail = null;
         },
+
+        clearAfterLogout: (state) => {
+            state.words = [];
+            state.wordsData = [];
+            state.selectedLanguage = null;
+            state.available_lang_toggle = true;
+            state.statistics = null;
+            state.pos_statistics = null;
+            state.searchResults = null;
+        },
         
         setDetail: (state, action) => {
             const { actionType, value } = action.payload;
@@ -150,6 +160,6 @@ export const wordSlice = createSlice({
     },
 })
 
-export const { setWordsPendingFalse, clearDetail, setDetail, setSelectedLanguage, setAvailableLangToggle  } = wordSlice.actions;
+export const { setWordsPendingFalse, clearDetail, setDetail, setSelectedLanguage, setAvailableLangToggle, clearAfterLogout  } = wordSlice.actions;
 
 export default wordSlice.reducer;
