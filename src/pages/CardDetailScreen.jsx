@@ -5,6 +5,8 @@ import { clearDetail, setDetail } from '../store/word_store';
 import WordService from '../services/WordService';
 import { setCurrentWord } from '../store/ai_store';
 import VoiceButtonComponent from '../layouts/VoiceButtonComponent';
+import { IoSparkles } from "react-icons/io5";
+
 
 import { IoCheckmark } from "react-icons/io5";
 import { IoCheckmarkDoneOutline } from "react-icons/io5";
@@ -138,7 +140,9 @@ export default function CardDetailScreen() {
               className="flex flex-col items-center justify-center p-3 rounded-xl hover:bg-gray-50 transition-colors cursor-pointer "
             >
               <div className="w-10 h-10 rounded-full flex items-center justify-center bg-gradient-to-r from-blue-500 to-purple-500">
-                <span className="text-white text-lg">✨</span>
+                <span className="text-white text-lg">
+                  <IoSparkles className='text-xl' />
+                </span>
               </div>
               <span
                 className="mt-2 text-xs font-medium text-gray-600 font-sans"

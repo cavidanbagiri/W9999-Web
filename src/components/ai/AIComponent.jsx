@@ -9,13 +9,17 @@ import { clearAIResponse, setAIResponse, clearConversation } from '../../store/a
 import TRANSLATE_LANGUAGES_LIST from '../../constants/TranslateLanguagesList';
 
 import { IoChatbox } from "react-icons/io5";
+import { IoChatboxOutline } from "react-icons/io5";
+import { IoChatbubbleOutline } from "react-icons/io5";
+import { IoChatbubble } from "react-icons/io5";
 
 
 
-export default function AIComponent() {
+
+export default function AIComponent({ onOpenDirectChat }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  
+
   const { currentWord, aiResponse, isLoading, error, cache } = useSelector((state) => state.aiSlice);
   const [nativeLang, setNativeLang] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
@@ -28,23 +32,23 @@ export default function AIComponent() {
     if (!currentWord || !nativeLang) {
       return null;
     }
-    
+
     let target_language = LANGUAGES.find(lang => lang.code === currentWord.language_code)?.name;
-    
+
     if (!target_language) {
       target_language = TRANSLATE_LANGUAGES_LIST[currentWord.language_code];
     }
-    
+
     if (!target_language) {
       return null;
     }
-    
+
     const payload = {
       text: currentWord.text,
       language: target_language,
       native: nativeLang,
     };
-    
+
     dispatch(AIService.generateAIWord(payload));
     return payload;
   }, [currentWord, nativeLang, dispatch]);
@@ -231,7 +235,7 @@ export default function AIComponent() {
         <span className="text-red-500 text-4xl mb-4">⚠️</span>
         <h3 className="text-lg font-semibold text-gray-900 mb-2 font-sans">Failed to generate AI content</h3>
         <p className="text-gray-600 text-center mb-4 font-sans">{error}</p>
-        <button 
+        <button
           onClick={generatePayload}
           className="bg-indigo-500 text-white px-6 py-2 rounded-lg hover:bg-indigo-600 transition-colors font-sans"
         >
@@ -241,13 +245,73 @@ export default function AIComponent() {
     );
   }
 
+  // if (!aiResponse) {
+  //   return (
+  //     <div className="min-h-screen flex flex-col items-center justify-center p-5">
+  //       <p className="text-gray-600 font-sans">Select a word to get started</p>
+  //     </div>
+  //   );
+  // }
+
   if (!aiResponse) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center p-5">
-        <p className="text-gray-600 font-sans">Select a word to get started</p>
+      <div className="min-h-screen flex flex-col items-center justify-center p-5 bg-gray-50">
+        <div className="text-center max-w-md">
+          <div className="w-20 h-20 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <span className="text-3xl">🤖</span>
+          </div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-3 font-sans">
+            AI Language Assistant
+          </h2>
+          <p className="text-gray-600 mb-6 font-sans">
+            Get personalized language help from our AI tutor
+          </p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+            <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                <span className="text-xl">📚</span>
+              </div>
+              <h3 className="font-semibold text-gray-900 mb-2 font-sans">Word Analysis</h3>
+              <p className="text-gray-600 text-sm mb-3 font-sans">
+                Select a word for detailed grammar, examples, and usage
+              </p>
+              <button
+                onClick={() => navigate('/words')}
+                className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition-colors text-sm font-sans"
+              >
+                Choose Word
+              </button>
+            </div>
+
+            <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                <span className="text-xl">
+                  <IoChatbubble className='text-2xl' />
+                </span>
+              </div>
+              <h3 className="font-semibold text-gray-900 mb-2 font-sans">Direct Chat</h3>
+              <p className="text-gray-600 text-sm mb-3 font-sans">
+                Free conversation practice and language questions
+              </p>
+              <button
+                onClick={onOpenDirectChat}
+                className="w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition-colors text-sm font-sans"
+              >
+                Start Chatting
+              </button>
+            </div>
+          </div>
+
+          <p className="text-gray-500 text-sm font-sans">
+            Both options provide personalized AI-powered language help
+          </p>
+        </div>
       </div>
     );
   }
+
+
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -261,13 +325,32 @@ export default function AIComponent() {
                 {aiResponse.target_language} → {aiResponse.native_language}
               </p>
             </div>
-            <button 
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={onOpenDirectChat}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors flex items-center space-x-1"
+                title="Open General AI Chat"
+              >
+                <span className="text-green-500 text-xl">
+                  <IoChatbubble className='text-2xl' />
+                </span>
+                <span className="text-sm text-gray-600 font-sans hidden sm:block">AI Chat</span>
+              </button>
+              <button
+                onClick={shareContent}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                title="Share"
+              >
+                <span className="text-indigo-500 text-xl">📤</span>
+              </button>
+            </div>
+            {/* <button
               onClick={shareContent}
               className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
               title="Share"
             >
               <span className="text-indigo-500 text-xl">📤</span>
-            </button>
+            </button> */}
           </div>
 
           {/* Tab Navigation */}
@@ -276,16 +359,17 @@ export default function AIComponent() {
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`flex-1 py-4 text-center font-sans transition-colors ${
-                  activeTab === tab 
-                    ? 'text-indigo-600 font-semibold border-b-2 border-indigo-600' 
-                    : 'text-gray-500 hover:text-gray-700'
-                }`}
+                className={`flex-1 py-4 text-center font-sans transition-colors ${activeTab === tab
+                  ? 'text-indigo-600 font-semibold border-b-2 border-indigo-600'
+                  : 'text-gray-500 hover:text-gray-700'
+                  }`}
               >
                 {tab.charAt(0).toUpperCase() + tab.slice(1)}
               </button>
             ))}
+
           </div>
+
 
           {/* Content */}
           <div className="flex-1 overflow-y-auto">
@@ -295,14 +379,14 @@ export default function AIComponent() {
       ) : (
         <AIScreenChat currentWord={currentWord} nativeLang={nativeLang} onClose={() => setIsChatOpen(false)} />
       )}
-      
+
       {!isChatOpen && (
         <button
           onClick={() => setIsChatOpen(true)}
           className="fixed bottom-24 lg:bottom-6 right-6 w-16 h-16 bg-indigo-500 rounded-full flex items-center justify-center shadow-lg hover:bg-indigo-600 transition-colors text-white text-xl cursor-pointer"
           title="Open AI Chat"
         >
-          <IoChatbox className='text-2xl'/>
+          <IoChatbubble className='text-2xl' />
         </button>
       )}
     </div>

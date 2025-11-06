@@ -20,7 +20,6 @@ export default function LanguageSelected({ screen }) {
   const dispatch = useDispatch();
   const { selectedLanguage, statistics } = useSelector((state) => state.wordSlice);
 
-  console.log('here work')
   const handleLanguagePress = (langCode) => {
     dispatch(setSelectedLanguage(langCode));
     const filter = screen === 'LearnedScreen' ? 'learned' : 'all';
