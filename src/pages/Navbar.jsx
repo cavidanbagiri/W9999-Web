@@ -56,7 +56,7 @@ function Navbar() {
       </div>
 
       {/* MAIN CONTENT */}
-      <main className="flex-1 pt-0 md:pt-4">
+      <main className="flex flex-col pt-0 md:pt-4">
         {/* 72px = approx height of desktop navbar */}
         <Outlet />
       </main>

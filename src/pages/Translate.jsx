@@ -147,7 +147,7 @@ export default function TranslateComponent({ onClose }) {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-gray-50">
+    <div className="flex flex-col h-screen bg-gray-50 pb-20">
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 bg-white border-b border-gray-200">
         <h1 className="text-lg font-semibold text-gray-900 font-sans">Translate</h1>
