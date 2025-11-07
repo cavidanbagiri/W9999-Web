@@ -2,9 +2,9 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { IoClose, IoSend, IoChatbubbleEllipses } from "react-icons/io5";
 import AIService from '../../services/AIService';
+import { API_URL } from '../../http/api';
 
-// We'll create this service later for backend integration
-// import AIService from '../../services/AIService';
+
 
 export default function AIDirectChatComponent({ onClose }) {
   const dispatch = useDispatch();
@@ -12,7 +12,8 @@ export default function AIDirectChatComponent({ onClose }) {
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
-  
+  const [abortController, setAbortController] = useState(null);
+
   const { currentWord } = useSelector((state) => state.aiSlice);
   const [nativeLang, setNativeLang] = useState(null);
 
@@ -36,9 +37,16 @@ export default function AIDirectChatComponent({ onClose }) {
     // Get native language
     const native = localStorage.getItem('native');
     setNativeLang(native);
-    
+
     // Set initial messages
     setMessages(initialMessages);
+
+    // Cleanup function to abort any ongoing requests
+    return () => {
+      if (abortController) {
+        abortController.abort();
+      }
+    };
   }, []);
 
   useEffect(() => {
@@ -49,128 +57,169 @@ export default function AIDirectChatComponent({ onClose }) {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  // const handleSendMessage = async () => {
-  //   if (!inputMessage.trim() || isLoading) return;
-
-  //   const userMessage = {
-  //     id: Date.now(),
-  //     text: inputMessage,
-  //     isUser: true,
-  //     timestamp: new Date()
-  //   };
-
-  //   setMessages(prev => [...prev, userMessage]);
-  //   setInputMessage('');
-  //   setIsLoading(true);
-
-  //   try {
-  //     // TODO: Replace with actual AI service call
-  //     const response = await dispatch(AIService.sendChatMessageThunk({
-  //       message: inputMessage,
-  //       native_language: nativeLang,
-  //       // context: currentWord ? { word: currentWord.text, language: currentWord.language_code } : null
-  //     })).unwrap();
-
-  //     // Simulate AI response (remove this when backend is ready)
-  //     setTimeout(() => {
-  //       const aiResponse = {
-  //         id: Date.now() + 1,
-  //         text: getSimulatedResponse(inputMessage),
-  //         isUser: false,
-  //         timestamp: new Date()
-  //       };
-  //       setMessages(prev => [...prev, aiResponse]);
-  //       setIsLoading(false);
-  //     }, 1500);
-
-  //   } catch (error) {
-  //     console.error('Failed to send message:', error);
-  //     const errorMessage = {
-  //       id: Date.now() + 1,
-  //       text: "Sorry, I'm having trouble responding right now. Please try again later.",
-  //       isUser: false,
-  //       timestamp: new Date()
-  //     };
-  //     setMessages(prev => [...prev, errorMessage]);
-  //     setIsLoading(false);
-  //   }
-  // };
-
-
-
   const handleSendMessage = async () => {
-  if (!inputMessage.trim() || isLoading) return;
+    if (!inputMessage.trim() || isLoading) return;
 
-  const userMessage = {
-    id: Date.now(),
-    text: inputMessage,
-    isUser: true,
-    timestamp: new Date()
+    const userMessage = {
+      id: Date.now(),
+      text: inputMessage,
+      isUser: true,
+      timestamp: new Date()
+    };
+
+    setMessages(prev => [...prev, userMessage]);
+    setInputMessage('');
+    setIsLoading(true);
+
+    // Create abort controller for this request
+    const controller = new AbortController();
+    setAbortController(controller);
+
+    // Create AI message with empty text (will be filled via streaming)
+    const aiMessageId = Date.now() + 1;
+    const aiMessage = {
+      id: aiMessageId,
+      text: '', // Start with empty text
+      isUser: false,
+      timestamp: new Date(),
+      isStreaming: true // Mark as streaming
+    };
+
+    setMessages(prev => [...prev, aiMessage]);
+
+    try {
+      // Get token from localStorage
+      const token = localStorage.getItem('token');
+
+      // Call streaming endpoint with abort signal
+      // const response = await fetch(`http://localhost:8000/api/words/ai_direct_chat_stream`, {
+      const response = await fetch(`${API_URL}/words/ai_direct_chat_stream`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}` // ADD THIS LINE
+        },
+        body: JSON.stringify({
+          message: inputMessage,
+          native_language: nativeLang,
+        }),
+        signal: controller.signal
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      if (!response.body) {
+        throw new Error('ReadableStream not supported in this browser.');
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let fullResponse = '';
+
+      try {
+        while (true) {
+          const { done, value } = await reader.read();
+
+          if (done) break;
+
+          const chunk = decoder.decode(value, { stream: true });
+          const lines = chunk.split('\n');
+
+          for (const line of lines) {
+            if (line.startsWith('data: ')) {
+              const dataStr = line.slice(6); // Remove 'data: ' prefix
+
+              if (dataStr.trim() === '') continue;
+              if (dataStr === '[DONE]') break;
+
+              try {
+                const data = JSON.parse(dataStr);
+
+                if (data.error) {
+                  // Don't throw error, just update the message and stop streaming
+                  console.error('Stream error from backend:', data.error);
+                  setMessages(prev => prev.map(msg =>
+                    msg.id === aiMessageId
+                      ? {
+                        ...msg,
+                        text: `Error: ${data.error}`,
+                        isStreaming: false
+                      }
+                      : msg
+                  ));
+                  break; // Exit the loop
+                }
+
+                if (data.content) {
+                  // Append new content
+                  fullResponse += data.content;
+                  setMessages(prev => prev.map(msg =>
+                    msg.id === aiMessageId
+                      ? { ...msg, text: fullResponse }
+                      : msg
+                  ));
+                }
+
+                if (data.done) {
+                  // Mark streaming as complete
+                  setMessages(prev => prev.map(msg =>
+                    msg.id === aiMessageId
+                      ? { ...msg, isStreaming: false }
+                      : msg
+                  ));
+                  break;
+                }
+              } catch (e) {
+                console.error('Error parsing stream data:', e, 'Data:', dataStr);
+                // Continue processing other lines even if one fails
+              }
+
+
+            }
+          }
+        }
+      } finally {
+        reader.releaseLock();
+      }
+
+      // Mark streaming as complete
+      setMessages(prev => prev.map(msg =>
+        msg.id === aiMessageId
+          ? { ...msg, isStreaming: false }
+          : msg
+      ));
+
+    } catch (error) {
+      console.error('Failed to send message:', error);
+
+      if (error.name === 'AbortError') {
+        console.log('Request was aborted');
+        return;
+      }
+
+      // Update the streaming message with error
+      setMessages(prev => prev.map(msg =>
+        msg.id === aiMessageId
+          ? {
+            ...msg,
+            text: error.message || "Sorry, I'm having trouble responding right now. Please try again later.",
+            isStreaming: false
+          }
+          : msg
+      ));
+    } finally {
+      setIsLoading(false);
+      setAbortController(null);
+    }
   };
 
-  setMessages(prev => [...prev, userMessage]);
-  setInputMessage('');
-  setIsLoading(true);
-
-  try {
-    // Actual AI service call
-    const response = await dispatch(AIService.sendChatMessageThunk({
-      message: inputMessage,
-      native_language: nativeLang,
-    })).unwrap();
-
-    // Use the actual AI response
-    const aiResponse = {
-      id: Date.now() + 1,
-      text: response.response, // The actual AI response from DeepSeek
-      isUser: false,
-      timestamp: new Date()
-    };
-    
-    setMessages(prev => [...prev, aiResponse]);
-    setIsLoading(false);
-
-  } catch (error) {
-    // console.error('Failed to send message:', error);
-    
-    let errorText = "Sorry, I'm having trouble responding right now. Please try again later.";
-    
-    // More specific error messages based on status code
-    if (error.status === 503) {
-      errorText = "AI service is temporarily unavailable. Please try again in a few moments.";
-    } else if (error.status === 504) {
-      errorText = "The request took too long. Please try again with a shorter message.";
-    }
-    
-    const errorMessage = {
-      id: Date.now() + 1,
-      text: errorText,
-      isUser: false,
-      timestamp: new Date()
-    };
-    setMessages(prev => [...prev, errorMessage]);
-    setIsLoading(false);
-  }
-};
-
-
-
-
-  const getSimulatedResponse = (userMessage) => {
-    const message = userMessage.toLowerCase();
-    
-    if (message.includes('hello') || message.includes('hi')) {
-      return "Hello! 👋 I'm excited to help you with your language learning journey. What would you like to practice today?";
-    } else if (message.includes('grammar')) {
-      return "I'd love to help with grammar! Could you tell me which specific grammar topic you're struggling with? For example: verb tenses, prepositions, sentence structure, etc.";
-    } else if (message.includes('practice') || message.includes('conversation')) {
-      return "Great! Let's practice conversation. I'll start: 'What did you do today?' Try responding in your target language!";
-    } else if (message.includes('difference between')) {
-      return "I can help explain differences between words or concepts. Could you specify which words or concepts you'd like me to compare?";
-    } else if (message.includes('thank')) {
-      return "You're welcome! 😊 I'm here whenever you need help with your language learning. Is there anything else you'd like to know?";
-    } else {
-      return "That's an interesting question! While I'm currently in simulation mode, I'll be able to provide detailed, personalized language help once fully connected. What other language topics are you curious about?";
+  const cancelStream = () => {
+    if (abortController) {
+      abortController.abort();
+      setIsLoading(false);
+      setAbortController(null);
     }
   };
 
@@ -182,7 +231,13 @@ export default function AIDirectChatComponent({ onClose }) {
   };
 
   const clearChat = () => {
+    // Cancel any ongoing stream when clearing chat
+    if (abortController) {
+      abortController.abort();
+    }
     setMessages(initialMessages);
+    setIsLoading(false);
+    setAbortController(null);
   };
 
   return (
@@ -199,6 +254,15 @@ export default function AIDirectChatComponent({ onClose }) {
           </div>
         </div>
         <div className="flex items-center space-x-2">
+          {isLoading && (
+            <button
+              onClick={cancelStream}
+              className="p-2 hover:bg-white/10 rounded-lg transition-colors text-sm font-sans"
+              title="Stop generating"
+            >
+              Stop
+            </button>
+          )}
           <button
             onClick={clearChat}
             className="p-2 hover:bg-white/10 rounded-lg transition-colors text-sm font-sans"
@@ -220,44 +284,29 @@ export default function AIDirectChatComponent({ onClose }) {
       <div className="flex-1 overflow-y-auto bg-gray-50 p-4">
         <div className="max-w-3xl mx-auto space-y-4">
           {messages.map((message) => (
-            <div
-              key={message.id}
-              className={`flex ${message.isUser ? 'justify-end' : 'justify-start'}`}
-            >
-              <div
-                className={`max-w-[80%] rounded-2xl p-4 ${
-                  message.isUser
-                    ? 'bg-indigo-500 text-white rounded-br-none'
-                    : 'bg-white text-gray-800 shadow-sm rounded-bl-none border border-gray-100'
-                }`}
-              >
-                <div className="whitespace-pre-wrap font-sans">{message.text}</div>
-                <div
-                  className={`text-xs mt-2 ${
-                    message.isUser ? 'text-indigo-200' : 'text-gray-500'
-                  }`}
-                >
-                  {message.timestamp.toLocaleTimeString([], { 
-                    hour: '2-digit', 
-                    minute: '2-digit' 
-                  })}
+            <div key={message.id} className={`flex ${message.isUser ? 'justify-end' : 'justify-start'}`}>
+              <div className={`max-w-[80%] rounded-2xl p-4 ${message.isUser
+                ? 'bg-indigo-500 text-white rounded-br-none'
+                : 'bg-white text-gray-800 shadow-sm rounded-bl-none border border-gray-100'
+                } ${message.isStreaming ? 'streaming-cursor' : ''}`}>
+                <div className="whitespace-pre-wrap font-sans">
+                  {message.text}
+                  {message.isStreaming && message.text === '' && (
+                    <div className="flex space-x-1">
+                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                    </div>
+                  )}
+                </div>
+                <div className={`text-xs mt-2 ${message.isUser ? 'text-indigo-200' : 'text-gray-500'}`}>
+                  {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  {message.isStreaming && ' • Typing...'}
                 </div>
               </div>
             </div>
           ))}
-          
-          {isLoading && (
-            <div className="flex justify-start">
-              <div className="bg-white text-gray-800 shadow-sm rounded-2xl rounded-bl-none p-4 max-w-[80%] border border-gray-100">
-                <div className="flex space-x-2">
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                </div>
-              </div>
-            </div>
-          )}
-          
+
           <div ref={messagesEndRef} />
         </div>
       </div>
@@ -291,7 +340,7 @@ export default function AIDirectChatComponent({ onClose }) {
               )}
             </button>
           </div>
-          
+
           {/* Quick Suggestions */}
           <div className="flex flex-wrap gap-2 mt-3">
             {[
@@ -315,3 +364,12 @@ export default function AIDirectChatComponent({ onClose }) {
     </div>
   );
 }
+
+
+
+
+
+
+
+
+
