@@ -51,11 +51,33 @@ class AIService {
             }
         });
 
+    static sendChatMessageThunk = createAsyncThunk(
+        '/words/ai_direct_chat',
+        async (data, thunkAPI) => {
+            try {
+                const response = await $api.post('/words/ai_direct_chat', data);
+                return response.data;
+            } catch (error) {
+                // Extract error details
+                const errorData = error.response?.data || { message: error.message };
+                const statusCode = error.response?.status || 500;
+                // Pass custom error payload
+                return thunkAPI.rejectWithValue({
+                    payload: errorData,
+                    status: statusCode,
+                });
+            }
+        });
+
     static generateAIWord = (data) => {
         return this.generateAIWordThunk(data);
     };
     static generateAITextWithQuestion = (data) => {
         return this.generateAITextWithQuestionThunk(data);
+    };
+
+    static aiDirectChat = (data) => {
+        return this.sendChatMessageThunk(data);
     };
 
 }

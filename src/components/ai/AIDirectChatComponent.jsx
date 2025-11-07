@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { IoClose, IoSend, IoChatbubbleEllipses } from "react-icons/io5";
+import AIService from '../../services/AIService';
 
 // We'll create this service later for backend integration
 // import AIService from '../../services/AIService';
@@ -48,52 +49,112 @@ export default function AIDirectChatComponent({ onClose }) {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const handleSendMessage = async () => {
-    if (!inputMessage.trim() || isLoading) return;
+  // const handleSendMessage = async () => {
+  //   if (!inputMessage.trim() || isLoading) return;
 
-    const userMessage = {
-      id: Date.now(),
-      text: inputMessage,
-      isUser: true,
+  //   const userMessage = {
+  //     id: Date.now(),
+  //     text: inputMessage,
+  //     isUser: true,
+  //     timestamp: new Date()
+  //   };
+
+  //   setMessages(prev => [...prev, userMessage]);
+  //   setInputMessage('');
+  //   setIsLoading(true);
+
+  //   try {
+  //     // TODO: Replace with actual AI service call
+  //     const response = await dispatch(AIService.sendChatMessageThunk({
+  //       message: inputMessage,
+  //       native_language: nativeLang,
+  //       // context: currentWord ? { word: currentWord.text, language: currentWord.language_code } : null
+  //     })).unwrap();
+
+  //     // Simulate AI response (remove this when backend is ready)
+  //     setTimeout(() => {
+  //       const aiResponse = {
+  //         id: Date.now() + 1,
+  //         text: getSimulatedResponse(inputMessage),
+  //         isUser: false,
+  //         timestamp: new Date()
+  //       };
+  //       setMessages(prev => [...prev, aiResponse]);
+  //       setIsLoading(false);
+  //     }, 1500);
+
+  //   } catch (error) {
+  //     console.error('Failed to send message:', error);
+  //     const errorMessage = {
+  //       id: Date.now() + 1,
+  //       text: "Sorry, I'm having trouble responding right now. Please try again later.",
+  //       isUser: false,
+  //       timestamp: new Date()
+  //     };
+  //     setMessages(prev => [...prev, errorMessage]);
+  //     setIsLoading(false);
+  //   }
+  // };
+
+
+
+  const handleSendMessage = async () => {
+  if (!inputMessage.trim() || isLoading) return;
+
+  const userMessage = {
+    id: Date.now(),
+    text: inputMessage,
+    isUser: true,
+    timestamp: new Date()
+  };
+
+  setMessages(prev => [...prev, userMessage]);
+  setInputMessage('');
+  setIsLoading(true);
+
+  try {
+    // Actual AI service call
+    const response = await dispatch(AIService.sendChatMessageThunk({
+      message: inputMessage,
+      native_language: nativeLang,
+    })).unwrap();
+
+    // Use the actual AI response
+    const aiResponse = {
+      id: Date.now() + 1,
+      text: response.response, // The actual AI response from DeepSeek
+      isUser: false,
       timestamp: new Date()
     };
+    
+    setMessages(prev => [...prev, aiResponse]);
+    setIsLoading(false);
 
-    setMessages(prev => [...prev, userMessage]);
-    setInputMessage('');
-    setIsLoading(true);
-
-    try {
-      // TODO: Replace with actual AI service call
-      // const response = await dispatch(AIService.sendChatMessage({
-      //   message: inputMessage,
-      //   native_language: nativeLang,
-      //   context: currentWord ? { word: currentWord.text, language: currentWord.language_code } : null
-      // })).unwrap();
-
-      // Simulate AI response (remove this when backend is ready)
-      setTimeout(() => {
-        const aiResponse = {
-          id: Date.now() + 1,
-          text: getSimulatedResponse(inputMessage),
-          isUser: false,
-          timestamp: new Date()
-        };
-        setMessages(prev => [...prev, aiResponse]);
-        setIsLoading(false);
-      }, 1500);
-
-    } catch (error) {
-      console.error('Failed to send message:', error);
-      const errorMessage = {
-        id: Date.now() + 1,
-        text: "Sorry, I'm having trouble responding right now. Please try again later.",
-        isUser: false,
-        timestamp: new Date()
-      };
-      setMessages(prev => [...prev, errorMessage]);
-      setIsLoading(false);
+  } catch (error) {
+    // console.error('Failed to send message:', error);
+    
+    let errorText = "Sorry, I'm having trouble responding right now. Please try again later.";
+    
+    // More specific error messages based on status code
+    if (error.status === 503) {
+      errorText = "AI service is temporarily unavailable. Please try again in a few moments.";
+    } else if (error.status === 504) {
+      errorText = "The request took too long. Please try again with a shorter message.";
     }
-  };
+    
+    const errorMessage = {
+      id: Date.now() + 1,
+      text: errorText,
+      isUser: false,
+      timestamp: new Date()
+    };
+    setMessages(prev => [...prev, errorMessage]);
+    setIsLoading(false);
+  }
+};
+
+
+
 
   const getSimulatedResponse = (userMessage) => {
     const message = userMessage.toLowerCase();
