@@ -55,7 +55,7 @@ export default function LearnedScreen() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50/30">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50/30 pb-20">
       {/* Desktop Header */}
       <div className="hidden lg:block bg-white border-b border-gray-200">
         <div className="max-w-8xl mx-auto px-6 py-4">

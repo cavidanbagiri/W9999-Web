@@ -87,7 +87,7 @@ export default function LoginComponent({ onLogin, setMode }) {
   }, [is_auth, navigate]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br  flex items-center justify-center p-1">
+    <div className="min-h-screen bg-gradient-to-br  flex items-center justify-center px-1 pb-20">
       <div className="max-w-md w-full">
         {/* Login Card */}
         <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-10">

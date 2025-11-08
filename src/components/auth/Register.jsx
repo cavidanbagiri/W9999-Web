@@ -113,7 +113,7 @@ export default function RegisterComponent({ setMode, onRegister }) {
   }, [is_auth, navigate]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br flex items-center justify-center ">
+    <div className="min-h-screen bg-gradient-to-br flex items-center justify-center pb-20">
       <div className="max-w-md w-full">
         {/* Register Card */}
         <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-10">

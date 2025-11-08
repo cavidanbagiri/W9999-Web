@@ -6,7 +6,7 @@ export default function AIScreen({ route }) {
   const [showDirectChat, setShowDirectChat] = useState(false);
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div className="min-h-screen bg-white flex flex-col pb-20">
       {showDirectChat ? (
         <AIDirectChatComponent onClose={() => setShowDirectChat(false)} />
       ) : (

@@ -49,7 +49,7 @@ const HomePage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 pb-20">
       {/* Navigation */}
       <nav className="bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -102,7 +102,7 @@ const HomePage = () => {
               <IoChevronForward className="text-lg" />
             </Link>
             <Link 
-              to="/ai-tutor" 
+              to="/ai-screen" 
               className="border-2 border-gray-300 text-gray-700 px-8 py-4 rounded-2xl hover:border-purple-300 hover:bg-purple-50 transition-all font-semibold text-lg flex items-center space-x-2 font-sans"
             >
               <IoSparkles className="text-purple-600" />
@@ -224,7 +224,7 @@ const HomePage = () => {
               Create Free Account
             </Link>
             <Link 
-              to="/ai-tutor" 
+              to="/ai-chat" 
               className="border-2 border-white text-white px-8 py-4 rounded-2xl hover:bg-white hover:text-purple-600 transition-all font-semibold text-lg font-sans"
             >
               Try AI Tutor Demo
