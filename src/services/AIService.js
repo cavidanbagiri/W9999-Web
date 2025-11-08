@@ -160,6 +160,8 @@ class AIService {
     static generateAIWord = (data) => {
         return this.generateAIWordThunk(data);
     };
+
+    
     static generateAITextWithQuestion = (data) => {
         return this.generateAITextWithQuestionThunk(data);
     };
