@@ -92,7 +92,7 @@ export default function ChooseLangComponent({ selectedLanguage, setSelectedLangu
   }
 
   return (
-    <div className="px-2.5">
+    <div className="px-2.5 w-full lg:w-1/3">
       {/* Main Container */}
       <div className="bg-white rounded-2xl mx-2 mt-6 overflow-hidden shadow-lg">
         

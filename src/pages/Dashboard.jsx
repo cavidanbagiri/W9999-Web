@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-// import { getFromStorage } from '../../utils/storage';
+import HomePage from './HomePage';
 
 import MsgBox from '../layouts/MsgBox';
 import { setNewTargetLanguageCondFalse } from '../store/auth_store';
@@ -61,8 +61,11 @@ export default function HomeScreen() {
         type="success" 
       />
       
-      {/* {is_auth ? ( */}
+      {is_auth ? (
         <div className="w-full">
+
+          {/* <HomePage /> */}
+
           <HeaderComponent username={username} />
 
           {/* Main content container */}
@@ -80,9 +83,9 @@ export default function HomeScreen() {
             </div>
           </div>
         </div>
-      {/* // ) : (
-      //   <InitialPageComponent />
-      // )} */}
+      ) : (
+         <HomePage />
+      )}
     </div>
   );
 }

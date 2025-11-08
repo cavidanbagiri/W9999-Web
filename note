@@ -1,16 +1,12 @@
 Problems
 
-1 - Ai, Must be learning about the context
+1 - Need to look at the refresh page in phones
 
-2 - Need to look at the refresh page in phones
+2 - Set yandex cloud, notifications for sign in with email
 
-3 - Set yandex cloud, notifications for sign in with email
+3 - Change all of  the words with google translate api
 
-4 - Change all of  the words with google translate api
-
-5 - Word ai also must be as stream
-
-6 - l see this error in render: 'Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.'
+4 - l see this error in render: 'Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.'
 
 
 Solving
@@ -19,3 +15,13 @@ Solving
 
 Deep Seek
 
+you are just super. can you write me a component for home page in responsive design please?
+you can add or change somehing in below for beutiful design :)
+
+Context
+1 - The application about the learning languages
+2 - There are popular languages as english, spanish, russian
+3 - Each language has a top 9000+ list of words
+4 - You can use AI tutor or generate text about each words
+5 - Also you can use translate feature
+6 - In translate feature you can create a word category after translate.

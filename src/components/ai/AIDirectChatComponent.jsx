@@ -90,6 +90,10 @@ export default function AIDirectChatComponent({ onClose }) {
     try {
       // Get token from localStorage
       const token = localStorage.getItem('token');
+      console.log('first....', JSON.stringify({
+          message: inputMessage,
+          native_language: nativeLang,
+        }))
 
       // Call streaming endpoint with abort signal
       // const response = await fetch(`http://localhost:8000/api/words/ai_direct_chat_stream`, {
@@ -101,7 +105,7 @@ export default function AIDirectChatComponent({ onClose }) {
         },
         body: JSON.stringify({
           message: inputMessage,
-          native_language: nativeLang,
+          native_language: nativeLang || 'English',
         }),
         signal: controller.signal
       });

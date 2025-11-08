@@ -16,6 +16,7 @@ import { PiBookOpenTextThin } from "react-icons/pi";
 
 
 import NavIcon from '../components/navbar/NavIcon';
+import HomePage from '../pages/HomePage';
 import Auth from '../pages/Auth';
 import InitialPageComponent from '../components/home/InitialPageComponent';
 import LoginRegisterScreen from './Login_Register';
@@ -30,7 +31,7 @@ function Navbar() {
     setKey(prev => prev + 1);
   }, [is_auth]);
 
-  // if (!is_auth) return <LoginRegisterScreen />;
+  // if (!is_auth) return <HomePage />;
 
   return (
     <div className="relative min-h-screen flex flex-col">
