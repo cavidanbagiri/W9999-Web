@@ -53,18 +53,18 @@ export default function WordScreen() {
 
     return (
         <div className="min-h-screen bg-white flex flex-col">
-            {selectedLanguage && (
+            {/* {selectedLanguage && ( */}
                 <FilterComponent
                     filter={filter}
                     setFilter={setFilter}
                     screen={'WordScreen'}
                 />
-            )}
+            {/* )} */}
 
             {/* Language Selector */}
-            {available_lang_toggle && (
+            {/* {available_lang_toggle && (
                 <LanguageSelected screen={'WordScreen'} />
-            )}
+            )} */}
 
             {/* Check if starred is empty */}
             {filter === 'starred' && words?.length === 0 && (
@@ -94,7 +94,7 @@ export default function WordScreen() {
 
                     {/* Tip */}
                     <p className="text-sm text-gray-500 text-center mt-6 font-sans">
-                        Tap the language for words.
+                        Tap the upper dropdown for words.
                     </p>
                 </div>
             )}

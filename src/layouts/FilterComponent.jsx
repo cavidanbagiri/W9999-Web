@@ -4,11 +4,10 @@ import { useNavigate } from 'react-router-dom';
 import { setAvailableLangToggle } from '../store/word_store';
 import WordService from '../services/WordService';
 
+import LanguageSelected from './LanguageSelected';
+
 import { CiStar } from "react-icons/ci";
 import { FaStar } from "react-icons/fa";
-
-import { IoCheckmark } from "react-icons/io5";
-import { IoCheckmarkDoneOutline } from "react-icons/io5";
 
 import { SlRefresh } from "react-icons/sl";
 
@@ -63,7 +62,7 @@ const FilterComponent = ({ filter, setFilter, screen }) => {
         title="Opens search screen to find vocabulary"
       >
         <span className="text-gray-500 text-lg">🔍</span>
-        
+
         <span className="ml-3 text-gray-500 text-base font-sans flex-1 text-left">
           Search words...
         </span>
@@ -81,46 +80,34 @@ const FilterComponent = ({ filter, setFilter, screen }) => {
             className="flex items-center space-x-2 bg-gray-100 px-4 py-2.5 rounded-full hover:bg-gray-200 active:bg-gray-300 transition-colors cursor-pointer"
           >
             <span className={`text-xl ${filter === 'starred' ? 'text-yellow-500' : 'text-gray-500'}`}>
-              {filter === 'starred' ? <FaStar className='text-yellow-500'/> : <CiStar/>}
+              {filter === 'starred' ? <FaStar className='text-yellow-500' /> : <CiStar />}
             </span>
             <span
-              className={`font-semibold font-sans ${
-                filter === 'starred' ? 'text-amber-700' : 'text-gray-700'
-              }`}
+              className={`font-semibold font-sans ${filter === 'starred' ? 'text-amber-700' : 'text-gray-700'
+                }`}
             >
               {filter === 'starred' ? 'Starred' : 'All Words'}
             </span>
           </button>
         )}
+        {/* If Screen is Learned flex will be around */}
+        <div className={`flex p-1 ${screen === 'LearnedScreen' ? 'w-full justify-between ':''} `}>
 
-        {/* Toggle Language Button */}
-        <button
-          onClick={() => {
-            dispatch(setAvailableLangToggle(!available_lang_toggle));
-          }}
-          className="flex items-center space-x-2 bg-gray-100 px-4 py-2.5 rounded-full hover:bg-gray-200 active:bg-gray-300 transition-colors cursor-pointer"
-        >
-          <span className={`text-xl ${available_lang_toggle ? 'text-yellow-500' : 'text-gray-500'}`}>
-            {available_lang_toggle ? <IoCheckmarkDoneOutline className='text-green-500' /> : <IoCheckmark/>}
-          </span>
-          <span
-            className={`font-semibold font-sans ${
-              available_lang_toggle ? 'text-amber-700' : 'text-gray-700'
-            }`}
+          {available_lang_toggle && (
+            <LanguageSelected screen={'WordScreen'} />
+          )}
+
+          {/* Refresh Button */}
+          <button
+            onClick={handleRefresh}
+            className="ml-1 w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 active:bg-gray-400 transition-colors cursor-pointer"
           >
-            {available_lang_toggle ? 'Show Langs' : 'Hide'}
-          </span>
-        </button>
+            <span className="text-gray-600 text-lg">
+              <SlRefresh />
+            </span>
 
-        {/* Refresh Button */}
-        <button
-          onClick={handleRefresh}
-          className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center hover:bg-gray-300 active:bg-gray-400 transition-colors cursor-pointer"
-        >
-          <span className="text-gray-600 text-lg">
-            <SlRefresh/>
-          </span>
-        </button>
+          </button>
+        </div>
       </div>
     </div>
   );

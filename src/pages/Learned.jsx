@@ -174,7 +174,7 @@ export default function LearnedScreen() {
           {/* Main Content */}
           <div className="flex-1">
             {/* Filter Component */}
-            {selectedLanguage && (
+            {/* {selectedLanguage && ( */}
               <div className="mb-4">
                 <FilterComponent
                   filter={filter}
@@ -182,14 +182,14 @@ export default function LearnedScreen() {
                   screen={'LearnedScreen'}
                 />
               </div>
-            )}
+            {/* )} */}
 
             {/* Language Selector */}
-            {available_lang_toggle && (
+            {/* {available_lang_toggle && (
               <div className="mb-4">
                 <LanguageSelected screen={'LearnedScreen'} />
               </div>
-            )}
+            )} */}
 
             {/* Content States */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-200 min-h-[400px]">
