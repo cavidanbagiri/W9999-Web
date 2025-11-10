@@ -40,9 +40,9 @@ const HomePage = () => {
   ];
 
   const popularLanguages = [
-    { name: "English", learners: "2.1M", color: "bg-blue-100 text-blue-600" },
-    { name: "Spanish", learners: "1.8M", color: "bg-red-100 text-red-600" },
-    { name: "Russian", learners: "980K", color: "bg-yellow-100 text-yellow-600" },
+    { name: "English", learners: "46K", color: "bg-blue-100 text-blue-600" },
+    { name: "Spanish", learners: "23K", color: "bg-red-100 text-red-600" },
+    { name: "Russian", learners: "31K", color: "bg-yellow-100 text-yellow-600" },
     // { name: "French", learners: "1.2M", color: "bg-purple-100 text-purple-600" },
     // { name: "German", learners: "850K", color: "bg-gray-100 text-gray-600" },
     // { name: "Japanese", learners: "720K", color: "bg-pink-100 text-pink-600" }
@@ -55,9 +55,9 @@ const HomePage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-2">
-              <div className="w-10 h-10 bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl flex items-center justify-center">
+              {/* <div className="w-10 h-10 bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl flex items-center justify-center">
                 <IoLanguage className="text-white text-xl" />
-              </div>
+              </div> */}
               <span className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent font-sans">
                 W9999
               </span>
@@ -102,7 +102,7 @@ const HomePage = () => {
               <IoChevronForward className="text-lg" />
             </Link>
             <Link 
-              to="/ai-screen" 
+              to="/ai-chat" 
               className="border-2 border-gray-300 text-gray-700 px-8 py-4 rounded-2xl hover:border-purple-300 hover:bg-purple-50 transition-all font-semibold text-lg flex items-center space-x-2 font-sans"
             >
               <IoSparkles className="text-purple-600" />
@@ -238,9 +238,9 @@ const HomePage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <div className="flex items-center justify-center space-x-2 mb-6">
-              <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg flex items-center justify-center">
+              {/* <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg flex items-center justify-center">
                 <IoLanguage className="text-white text-sm" />
-              </div>
+              </div> */}
               <span className="text-xl font-bold font-sans">W9999</span>
             </div>
             <p className="text-gray-400 mb-8 max-w-md mx-auto font-sans">

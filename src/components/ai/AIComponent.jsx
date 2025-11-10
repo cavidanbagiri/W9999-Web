@@ -278,7 +278,7 @@ export default function AIComponent({ onOpenDirectChat }) {
               </p>
               <button
                 onClick={() => navigate('/words')}
-                className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition-colors text-sm font-sans"
+                className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition-colors text-sm font-sans cursor-pointer"
               >
                 Choose Word
               </button>
@@ -296,7 +296,7 @@ export default function AIComponent({ onOpenDirectChat }) {
               </p>
               <button
                 onClick={onOpenDirectChat}
-                className="w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition-colors text-sm font-sans"
+                className="w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition-colors text-sm font-sans cursor-pointer"
               >
                 Start Chatting
               </button>
