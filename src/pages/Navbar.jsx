@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { Outlet, useLocation } from 'react-router-dom';
+import '../App.css'
 import { 
   IoHome, 
   IoHomeOutline,
@@ -149,11 +150,16 @@ function Navbar() {
       </nav>
 
       {/* Add padding to main content for mobile navbar */}
-      <style jsx>{`
+      {/* <style jsx>{`
         main {
           padding-bottom: ${window.innerWidth < 768 ? '80px' : '0'};
         }
-      `}</style>
+      `}</style> */}
+
+        <main className='main-content'>
+
+        </main> 
+
     </div>
   );
 }
