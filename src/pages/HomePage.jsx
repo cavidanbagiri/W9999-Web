@@ -182,7 +182,7 @@ const HomePage = () => {
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 mb-12">
             {popularLanguages.map((language, index) => (
               <div
-                // key={index}
+                key={index}
                 // to={`/language/${language.name.toLowerCase()}`}
                 className="cursor-pointergroup bg-white rounded-2xl p-6 text-center border border-gray-200 hover:border-purple-300 hover:shadow-xl transition-all duration-300"
               >

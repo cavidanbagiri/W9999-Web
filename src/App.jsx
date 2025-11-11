@@ -49,8 +49,7 @@ function App() {
         }
         
         const sub = localStorage.getItem('sub');
-        
-        if ((!native || native === 'null') && sub) {
+        if ((!native || native === 'null' || native === 'undefined' || native === null || native === undefined) && sub) {
           setNativeLangCond(false); // Show language selection
         } else {
           setNativeLangCond(true); // Hide language selection
