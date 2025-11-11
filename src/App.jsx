@@ -155,7 +155,7 @@ function App() {
           </div>
 
           {/* Features Preview */}
-          <div className="w-full max-w-md bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
+          <div className="w-full max-w-md bg-white/10 rounded-xl p-6 border border-white/20">
             <h3 className="text-white font-semibold mb-4 text-center font-sans">
               What you'll get:
             </h3>

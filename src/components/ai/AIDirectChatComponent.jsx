@@ -143,7 +143,7 @@ export default function AIDirectChatComponent({ onClose }) {
 
                 if (data.error) {
                   // Don't throw error, just update the message and stop streaming
-                  console.error('Stream error from backend:', data.error);
+                  // console.error('Stream error from backend:', data.error);
                   setMessages(prev => prev.map(msg =>
                     msg.id === aiMessageId
                       ? {
@@ -258,7 +258,7 @@ export default function AIDirectChatComponent({ onClose }) {
           </div>
         </div>
         <div className="flex items-center space-x-2">
-          {isLoading && (
+          {/* {isLoading && (
             <button
               onClick={cancelStream}
               className="p-2 hover:bg-white/10 rounded-lg transition-colors text-sm font-sans"
@@ -266,7 +266,7 @@ export default function AIDirectChatComponent({ onClose }) {
             >
               Stop
             </button>
-          )}
+          )} */}
           <button
             onClick={clearChat}
             className="p-2 hover:bg-white/10 rounded-lg transition-colors text-sm font-sans"

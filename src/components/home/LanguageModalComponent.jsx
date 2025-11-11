@@ -45,12 +45,12 @@ const LanguageModalComponent = ({ selectedLanguage, setSelectedLanguage, page })
   }, [modalVisible]);
 
   return (
-    <div className="my-4 w-full">
+    <div className="my-4 w-full ">
       {/* <label className="font-sans text-sm text-gray-700 mb-2 block px-1 font-medium">
         Native Language
       </label> */}
       <button
-        className="w-full border border-gray-300 rounded-xl bg-white p-4 hover:border-gray-400 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        className="w-full border border-gray-300 cursor-pointer rounded-xl bg-white p-4 hover:border-gray-400 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         onClick={() => setModalVisible(true)}
         type="button"
       >
@@ -101,7 +101,7 @@ const LanguageModalComponent = ({ selectedLanguage, setSelectedLanguage, page })
               {languages.map((item) => (
                 <button
                   key={item.code}
-                  className={`w-full flex items-center px-6 py-4 border-b border-gray-100 last:border-b-0 transition-all duration-200 focus:outline-none focus:bg-blue-50 ${
+                  className={`w-full flex cursor-pointer items-center px-6 py-4 border-b border-gray-100 last:border-b-0 transition-all duration-200 focus:outline-none focus:bg-blue-50 ${
                     selectedLanguage === item.code 
                       ? 'bg-blue-50 border-blue-200' 
                       : 'hover:bg-gray-50'

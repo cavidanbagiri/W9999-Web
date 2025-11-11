@@ -20,8 +20,6 @@ export default function LearnedScreen() {
 
   const [totalLearned, setTotalLearned] = useState(0);
 
-  console.log('learned screen statistics is ', statistics);
-
   // Fetch statistics on component mount
   useEffect(() => {
     if (is_auth) {
