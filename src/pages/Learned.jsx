@@ -26,7 +26,7 @@ export default function LearnedScreen() {
       dispatch(WordService.getStatisticsForDashboard());
     }   
   }, [is_auth, dispatch]);
-
+  
   useEffect(() => {
     if (statistics?.length > 0) {
       // Find selected language and get total learned words
@@ -216,7 +216,10 @@ export default function LearnedScreen() {
                         <p className="text-sm text-gray-600">Keep up the great work!</p>
                       </div>
                       <div className="text-2xl font-bold text-blue-600">
-                        {words.length}
+                        {/* {words.length} {selectedLanguage} */}
+                        {
+                          statistics?.find(stat => stat.language_code === selectedLanguage)?.learned_words || 0
+                        }
                       </div>
                     </div>
                   </div>

@@ -15,7 +15,7 @@ const BulkOperationsModal = ({ visible, onClose, selectedWord, categories, categ
   if (!visible || !selectedWord) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 p-4">
+    <div className="fixed inset-0 flex items-center justify-center bg-black/50  z-50 p-4">
       <div className="bg-white rounded-2xl p-6 w-full max-w-md">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-gray-900">
@@ -130,7 +130,8 @@ export default function CategoryWordsScreen() {
   const WordActionMenu = ({ word, onClose }) => (
     <div className="bg-white rounded-lg shadow-lg border border-gray-200 absolute top-full right-0 mt-1 z-50">
       <button
-        onClick={() => {
+        onClick={(e) => {
+          e.stopPropagation();
           generateAIWord(word);
           onClose();
         }}
@@ -142,7 +143,8 @@ export default function CategoryWordsScreen() {
       </button>
 
       <button
-        onClick={() => {
+        onClick={(e) => {
+          e.stopPropagation();
           selectedWordRef.current = word;
           setShowBulkModal(true);
           onClose();
@@ -155,7 +157,8 @@ export default function CategoryWordsScreen() {
       </button>
 
       <button
-        onClick={() => {
+        onClick={(e) => {
+          e.stopPropagation();
           handleDeleteWord(word);
           onClose();
         }}
@@ -187,6 +190,7 @@ export default function CategoryWordsScreen() {
         key={item.id}
         onClick={() => {
           TranslateWord(item);
+          // console.log(' l am clicked')
         }}
         className="bg-white p-4 rounded-lg mb-2 shadow-sm border border-gray-100 relative cursor-pointer hover:bg-gray-50 transition-colors"
         style={{ zIndex: isMenuOpen ? 100 : 1 }}
@@ -310,7 +314,7 @@ export default function CategoryWordsScreen() {
       native: native_language,
     };
     dispatch(setCurrentWord(payload));
-    navigate('/ai-screen', { 
+    navigate('/ai-chat', { 
       state: { initialQuery: item.translated_text }
     });
   };
@@ -335,7 +339,7 @@ export default function CategoryWordsScreen() {
     };
     dispatch(setPayload(payload));
     dispatch(TranslateService.translateText(payload));
-    navigate('/ai-screen', {
+    navigate('/ai-chat', {
       state: { initialQuery: item.translated_text }
     });
   };
