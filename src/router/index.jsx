@@ -17,6 +17,7 @@ import Favorites from "../pages/Favorites";
 import CategoryWordsScreen from "../pages/CategoryWords";
 import SearchScreen from "../pages/SearchScreen";
 import Privacy from "../pages/Privacy";
+import ForgotPasswordScreen from "../pages/ForgetPasswordScreen";
 
 
 const router = createBrowserRouter([
@@ -75,6 +76,10 @@ const router = createBrowserRouter([
             {
                 path: "/privacy",
                 element: <Privacy/>
+            },
+            {
+                path: "/forget_password",
+                element: <ForgotPasswordScreen/>
             }
         ]
     },

@@ -143,12 +143,12 @@ export default function LoginComponent({ onLogin, setMode }) {
                 <label className="block text-sm font-medium text-gray-700 font-sans">
                   Password
                 </label>
-                <Link 
-                  to="/forgot-password" 
-                  className="text-sm text-purple-600 hover:text-purple-700 font-medium font-sans transition-colors"
+                <div 
+                  onClick={() => navigate('/forget_password')}
+                  className="text-sm text-purple-600 hover:text-purple-700 font-medium font-sans transition-colors cursor-pointer"
                 >
                   Forgot password?
-                </Link>
+                </div>
               </div>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
