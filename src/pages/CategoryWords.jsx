@@ -136,7 +136,7 @@ export default function CategoryWordsScreen() {
           onClose();
         }}
         disabled={moveLoading}
-        className="flex items-center w-full px-4 py-3 border-b border-gray-100 hover:bg-gray-50 transition-colors"
+        className="flex items-center w-full px-4 py-3 border-b border-gray-100 hover:bg-gray-50 transition-colors cursor-pointer"
       >
         <span className="text-gray-600 text-lg">✨</span>
         <span className="ml-3 text-gray-700">Generate AI</span>
@@ -150,7 +150,7 @@ export default function CategoryWordsScreen() {
           onClose();
         }}
         disabled={moveLoading}
-        className="flex items-center w-full px-4 py-3 border-b border-gray-100 hover:bg-gray-50 transition-colors"
+        className="flex items-center w-full px-4 py-3 border-b border-gray-100 hover:bg-gray-50 transition-colors cursor-pointer"
       >
         <span className="text-gray-600 text-lg">📂</span>
         <span className="ml-3 text-gray-700">Move to other category</span>
@@ -163,7 +163,7 @@ export default function CategoryWordsScreen() {
           onClose();
         }}
         disabled={deleteLoading}
-        className="flex items-center w-full px-4 py-3 hover:bg-gray-50 transition-colors"
+        className="flex items-center w-full px-4 py-3 hover:bg-gray-50 transition-colors  cursor-pointer"
       >
         {deleteLoading ? (
           <div className="w-4 h-4 border-2 border-red-500 border-t-transparent rounded-full animate-spin"></div>
@@ -219,7 +219,7 @@ export default function CategoryWordsScreen() {
               className="p-1 z-10 hover:bg-gray-100 rounded transition-colors"
               disabled={deleteLoading}
             >
-              <span className="text-gray-400 text-lg">⋯</span>
+              <span className="text-gray-400 text-lg  cursor-pointer">⋯</span>
             </button>
           </div>
         </div>
@@ -333,13 +333,14 @@ export default function CategoryWordsScreen() {
     }
     
     const payload = {
-      text: item.original_text,
+      text: item.original_text.trim(),
       from_lang: native_language,
       to_lang: to_language,
     };
     dispatch(setPayload(payload));
+    // dispatch(setCurrentWord(payload));
     dispatch(TranslateService.translateText(payload));
-    navigate('/ai-chat', {
+    navigate('/translate', {
       state: { initialQuery: item.translated_text }
     });
   };
@@ -364,13 +365,13 @@ export default function CategoryWordsScreen() {
         <div className="flex items-center justify-between mb-3">
           <button 
             onClick={() => navigate(-1)} 
-            className="mr-3 p-1 hover:bg-gray-100 rounded transition-colors"
+            className="mr-3 p-1 hover:bg-gray-100 rounded transition-colors cursor-pointer"
           >
             <span className="text-gray-600 text-xl">←</span>
           </button>
           <div className="flex-1">
             <h1 className="text-lg font-semibold text-gray-900 truncate">
-              {categoryName}
+              {categoryName} 
             </h1>
             <p className="text-gray-500 text-sm">
               {displayedWords.length} of {words.length} words
@@ -379,7 +380,7 @@ export default function CategoryWordsScreen() {
           </div>
           <button 
             onClick={() => setShowCategoryMenu(!showCategoryMenu)}
-            className="p-1 hover:bg-gray-100 rounded transition-colors"
+            className="p-1 hover:bg-gray-100 rounded transition-colors cursor-pointer"
           >
             <span className="text-gray-600 text-xl">⋯</span>
           </button>
@@ -401,7 +402,7 @@ export default function CategoryWordsScreen() {
           {searchQuery.length > 0 && !searchLoading && (
             <button 
               onClick={() => setSearchQuery('')} 
-              className="ml-2 p-1 hover:bg-gray-200 rounded transition-colors"
+              className="ml-2 p-1 hover:bg-gray-200 rounded transition-colors cursor-pointer"
             >
               <span className="text-gray-500 text-lg">×</span>
             </button>
@@ -461,10 +462,10 @@ export default function CategoryWordsScreen() {
 
       {/* FAB */}
       <button
-        className="fixed bottom-6 right-6 w-14 h-14 bg-indigo-600 rounded-full flex items-center justify-center shadow-lg z-50 hover:bg-indigo-700 transition-colors"
+        className="fixed bottom-6 right-6 w-14 h-14 bg-indigo-600 rounded-full  cursor-pointer flex items-center justify-center shadow-lg z-50 hover:bg-indigo-700 transition-colors"
         onClick={() => navigate('/translate')}
       >
-        <span className="text-white text-xl">+</span>
+        <span className="text-white text-2xl">+</span>
       </button>
     </div>
   );
