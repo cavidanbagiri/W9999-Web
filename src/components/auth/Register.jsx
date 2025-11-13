@@ -65,6 +65,7 @@ export default function RegisterComponent({ setMode, onRegister }) {
     }
 
     try {
+      // console.log('sselected lang is ', nativeLanguage)
       dispatch(AuthService.register({ email, password, username, native: nativeLanguage }));
     } catch (error) {
       console.error('Registration failed:', error);
