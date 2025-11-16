@@ -156,7 +156,7 @@ export const authSlice = createSlice({
             localStorage.setItem('token', action.payload?.payload?.access_token);
             localStorage.setItem('sub', action?.payload?.payload?.user?.sub);
             localStorage.setItem('username', action?.payload?.payload?.user?.username);
-            localStorage.setItem('native', action?.payload?.payload?.user?.native);
+            // localStorage.setItem('native', action?.payload?.payload?.user?.native);
 
             // Get the target languages from the local storage and set them to the user object
             const target_langs = localStorage.getItem('target_langs');

@@ -147,6 +147,26 @@ class AuthService {
             }
         });
 
+
+    static checkNativeLanguage = createAsyncThunk(
+        '/auth/getnative',
+        async (_, thunkAPI) => {
+            try {
+                const response = await $api.get('/auth/getnative');
+                return {
+                    payload: response.data,
+                    status: response.status,
+                };
+            } catch (error) {
+                const errorData = error.response?.data || { message: error.message };
+                const statusCode = error.response?.status || 500;
+                return thunkAPI.rejectWithValue({
+                    payload: errorData,
+                    status: statusCode,
+                });
+            }
+        });
+
     // Set Native Language
     static setTargetLanguage = createAsyncThunk(
         '/auth/choose_lang',
