@@ -166,7 +166,7 @@ export default function TranslateComponent({ onClose }) {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-gray-50 pb-24">
+    <div className="flex flex-col  bg-gray-50 p-1 h-[calc(100vh-100px)]">
 
       {/* Copied Message */}
       {
@@ -358,6 +358,7 @@ export default function TranslateComponent({ onClose }) {
               <p className="text-gray-400 font-sans">Translation will appear here...</p>
             )}
           </div>
+          
         </div>
       </div>
 
