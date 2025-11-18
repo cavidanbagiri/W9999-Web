@@ -269,14 +269,14 @@ export default function AIDirectChatComponent({ onClose }) {
           )} */}
           <button
             onClick={clearChat}
-            className="p-2 hover:bg-white/10 rounded-lg transition-colors text-sm font-sans"
+            className="p-2 hover:bg-white/10 rounded-lg transition-colors text-sm font-sans cursor-pointer"
             title="Clear Chat"
           >
             Clear
           </button>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+            className="p-2 hover:bg-white/10 rounded-lg transition-colors cursor-pointer"
             title="Close Chat"
           >
             <IoClose className="text-xl" />
@@ -334,7 +334,7 @@ export default function AIDirectChatComponent({ onClose }) {
             <button
               onClick={handleSendMessage}
               disabled={!inputMessage.trim() || isLoading}
-              className="bg-indigo-500 text-white rounded-2xl px-4 py-3 hover:bg-indigo-600 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors flex items-center justify-center min-w-[56px]"
+              className="bg-indigo-500 text-white rounded-2xl  cursor-pointer px-4 py-3 hover:bg-indigo-600 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors flex items-center justify-center min-w-[56px]"
               title="Send message"
             >
               {isLoading ? (
@@ -357,7 +357,7 @@ export default function AIDirectChatComponent({ onClose }) {
                 key={suggestion}
                 onClick={() => setInputMessage(suggestion)}
                 disabled={isLoading}
-                className="text-xs bg-gray-100 text-gray-700 px-3 py-1.5 rounded-full hover:bg-gray-200 transition-colors font-sans disabled:opacity-50"
+                className="text-xs bg-gray-100  cursor-pointer text-gray-700 px-3 py-1.5 rounded-full hover:bg-gray-200 transition-colors font-sans disabled:opacity-50"
               >
                 {suggestion}
               </button>
