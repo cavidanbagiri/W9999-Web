@@ -17,9 +17,27 @@ import { FaRegHeart } from "react-icons/fa";
 import { FaRegClipboard } from "react-icons/fa";
 import { CiMedicalClipboard } from "react-icons/ci";
 import { IoSparklesOutline } from "react-icons/io5";
+import { PiCopyThin } from "react-icons/pi";
+import { PiCopySimpleLight } from "react-icons/pi";
 
 
+// After clicking the copy icon, need to show message which will show clicked
+function CopiedMessage({visible, setVisible}) {
 
+  useEffect(() => {
+    if (visible) {
+      setTimeout(() => {
+        setVisible(false);
+      }, 1000);
+    }
+  }, [visible]);
+
+  return (
+    <div className="absolute top-10 w-1/3 right-1/3 p-2 bg-slate-800 rounded-xl z-50">
+      <span className="flex items-center justify-center text-white text-lg"> Copied!</span>
+    </div>
+  );
+}
 
 
 export default function TranslateComponent({ onClose }) {
@@ -37,6 +55,7 @@ export default function TranslateComponent({ onClose }) {
   const [inputText, setInputText] = useState('');
   const [isFavorite, setIsFavorite] = useState(false);
   const [showLangModal, setShowLangModal] = useState(null);
+  const [visible, setVisible] = useState(false)
 
   const handleSwapLanguages = () => {
     const currentFromLang = fromLang;
@@ -147,11 +166,19 @@ export default function TranslateComponent({ onClose }) {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-gray-50 pb-20">
+    <div className="flex flex-col h-screen bg-gray-50 pb-24">
+
+      {/* Copied Message */}
+      {
+        visible && <CopiedMessage visible={visible} setVisible={setVisible} />
+      }
+
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 bg-white border-b border-gray-200">
         <h1 className="text-lg font-semibold text-gray-900 font-sans">Translate</h1>
-        <button
+        <div className='flex items-center'>
+          {/* <span className='text-sm'>Favorites</span> */}
+          <button
           onClick={() => {
             if (is_auth) {
               // dispatch(
@@ -166,21 +193,23 @@ export default function TranslateComponent({ onClose }) {
             }
             // navigate('/favorites')}
           }}
-          className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+          className="p-2 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
           title="View Favorites"
         >
-          <span className="text-gray-600 text-xl">
+          <span className="flex items-center text-gray-600 text-xl">
+            <span className='text-sm mr-1'>Favorites</span>
             {/* <FaRegHeart className='text-red-500 text-xl' /> */}
             <FaHeart className='text-red-500' />
           </span>
         </button>
+        </div>
       </div>
 
       {/* Language Selectors */}
       <div className="flex items-center justify-between px-6 py-4 bg-white border-b border-gray-100">
         <button
           onClick={() => setShowLangModal('from')}
-          className="flex-1 max-w-[45%] px-5 py-3 bg-gray-100 rounded-full flex items-center justify-center space-x-2 hover:bg-gray-200 transition-colors"
+          className="flex-1 max-w-[45%] px-5 py-3 bg-gray-100 cursor-pointer rounded-full flex items-center justify-center space-x-2 hover:bg-gray-200 transition-colors"
           title={`Translate from ${TRANSLATE_LANGUAGES_LIST[fromLang]}`}
         >
           <span className="font-semibold text-gray-800 truncate font-sans">
@@ -200,7 +229,7 @@ export default function TranslateComponent({ onClose }) {
         {/* Swap Button */}
         <button
           onClick={handleSwapLanguages}
-          className="p-3 bg-indigo-100 rounded-full mx-1 hover:bg-indigo-200 transition-colors"
+          className="p-3 bg-indigo-100 rounded-full mx-1 cursor-pointer hover:bg-indigo-200 transition-colors"
           title="Swap languages"
         >
           <span className="text-indigo-600 text-xl">
@@ -219,7 +248,7 @@ export default function TranslateComponent({ onClose }) {
 
         <button
           onClick={() => setShowLangModal('to')}
-          className="flex-1 max-w-[45%] px-5 py-3 bg-indigo-100 rounded-full flex items-center justify-center space-x-2 hover:bg-indigo-200 transition-colors"
+          className="flex-1 max-w-[45%] px-5 py-3 bg-indigo-100 cursor-pointer rounded-full flex items-center justify-center space-x-2 hover:bg-indigo-200 transition-colors"
           title={`Translate to ${TRANSLATE_LANGUAGES_LIST[toLang]}`}
         >
           <span className="font-semibold text-indigo-800 truncate font-sans">
@@ -237,7 +266,7 @@ export default function TranslateComponent({ onClose }) {
                 dispatch(clearTranslatedText());
                 setInputText('');
               }}
-              className="p-1 hover:bg-gray-100 rounded transition-colors"
+              className="p-1 hover:bg-gray-100 rounded transition-colors cursor-pointer"
               title="Clear"
             >
               <span className="text-gray-400 text-xl">×</span>
@@ -262,18 +291,21 @@ export default function TranslateComponent({ onClose }) {
               <span className="text-xs text-gray-500 font-sans">{inputText.length}/500</span>
               <div className="flex items-center">
                 <button
-                  onClick={() => copyToClipboard(inputText)}
-                  className="p-1 hover:bg-gray-100 rounded transition-colors mr-2"
+                  onClick={() => {
+                    copyToClipboard(inputText)
+                    setVisible(true)
+                  }}
+                  className="p-1 hover:bg-gray-100 rounded transition-colors mr-2 cursor-pointer"
                   title="Copy text"
                 >
                   <span className="text-gray-600 text-lg">
-                    <CiMedicalClipboard className='text-indigo-500 text-xl' />
+                    <PiCopySimpleLight  className='text-indigo-500 text-xl' />
                   </span>
                 </button>
                 <VoiceButtonComponent text={inputText} language={fromLang} />
                 <button
                   onClick={() => handleAIChat(inputText, fromLang)}
-                  className="p-1 hover:bg-gray-100 rounded transition-colors ml-2"
+                  className="p-1 hover:bg-gray-100 rounded transition-colors ml-2 cursor-pointer"
                   title="Ask AI about this text"
                 >
                   <span className="text-gray-600 text-lg">
@@ -282,7 +314,7 @@ export default function TranslateComponent({ onClose }) {
                 </button>
                 <button
                   onClick={handleSaveToFavorites}
-                  className={`p-1 rounded transition-colors ml-4 ${isFavorite ? 'text-red-500' : 'text-gray-600'
+                  className={`p-1 rounded transition-colors hover:bg-gray-100 cursor-pointer ml-4 ${isFavorite ? 'text-red-500' : 'text-gray-600'
                     }`}
                   title={isFavorite ? "Remove from favorites" : "Add to favorites"}
                 >
@@ -299,8 +331,12 @@ export default function TranslateComponent({ onClose }) {
                 <p className="text-lg text-gray-900 font-sans">{translatedText.translation}</p>
                 <div className="flex items-center justify-between mt-3">
                   <button
-                    onClick={() => copyToClipboard(translatedText.translation)}
-                    className="text-sm text-blue-600 hover:text-blue-700 font-sans"
+                    onClick={() => {
+                      copyToClipboard(translatedText.translation)
+                      setVisible(true)
+                    }}
+                    className="text-sm text-blue-600 hover:text-blue-700 font-sans cursor-pointer hover:bg-gray-100 rounded-full p-1"
+
                   >
                     Copy
                   </button>
@@ -308,7 +344,7 @@ export default function TranslateComponent({ onClose }) {
                     <VoiceButtonComponent text={translatedText.translation} language={toLang} />
                     <button
                       onClick={() => handleAIChat(translatedText.translation, toLang)}
-                      className="p-1 hover:bg-gray-100 rounded transition-colors ml-2"
+                      className="p-1 hover:bg-gray-100 rounded cursor-pointer transition-colors ml-2"
                       title="Ask AI about this translation"
                     >
                       <span className="text-gray-600 text-lg">
@@ -329,7 +365,7 @@ export default function TranslateComponent({ onClose }) {
       <div className="flex items-center px-5 py-4 bg-white border-t border-gray-200">
         <button
           onClick={handleSaveToFavorites}
-          className={`p-3 rounded-full mr-4 transition-colors ${isFavorite ? 'bg-red-100 hover:bg-red-200' : 'bg-gray-100 hover:bg-gray-200'
+          className={`p-3 rounded-full mr-4 cursor-pointer transition-colors ${isFavorite ? 'bg-red-100 hover:bg-red-200' : 'bg-gray-100 hover:bg-gray-200'
             }`}
           title={isFavorite ? "Remove from favorites" : "Add to favorites"}
         >
@@ -345,7 +381,7 @@ export default function TranslateComponent({ onClose }) {
             })).unwrap();
           }}
           disabled={inputText.length === 0}
-          className={`flex-1 py-4 rounded-full text-center font-semibold font-sans transition-colors ${inputText.length === 0
+          className={`flex-1 py-4 rounded-full cursor-pointer text-center font-semibold font-sans transition-colors ${inputText.length === 0
               ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
               : 'bg-indigo-600 text-white hover:bg-indigo-700'
             }`}

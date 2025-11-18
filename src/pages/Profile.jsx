@@ -274,7 +274,7 @@ export default function ProfileScreen() {
         {/* Logout Button */}
         <button
           onClick={logoutHandler}
-          className="w-full bg-white rounded-3xl shadow-lg p-6 mb-8 border border-gray-100 hover:bg-red-50 hover:border-red-200 transition-all duration-300 group"
+          className="w-full bg-white rounded-3xl shadow-lg p-6 mb-8 border cursor-pointer border-gray-100 hover:bg-red-50 hover:border-red-200 transition-all duration-300 group"
         >
           <div className="flex items-center justify-center space-x-3">
             <div className="w-12 h-12 bg-red-100 rounded-2xl flex items-center justify-center group-hover:bg-red-200 transition-colors">

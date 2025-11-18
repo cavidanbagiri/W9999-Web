@@ -68,12 +68,12 @@ export default function LanguageSelected({ screen }) {
         >
           <div className="flex items-center space-x-3">
             {/* Current Flag */}
-            <div className="w-8 h-8 rounded-md overflow-hidden ">
+            <div className="w-8 h-8 rounded-md overflow-hidden cursor-pointer">
               {currentFlag ? (
                 <img 
                   src={currentFlag} 
                   alt={`${currentLanguage?.language_name} flag`}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover cursor-pointer"
                 />
               ) : (
                 <div className="flex items-center justify-center w-full h-full ">
@@ -128,7 +128,7 @@ export default function LanguageSelected({ screen }) {
                   key={index}
                   onClick={() => handleLanguagePress(lang.language_code)}
                   className={`
-                    w-full p-1 flex items-center space-x-3 border-b border-gray-100 last:border-b-0
+                    w-full p-1 flex items-center space-x-3 border-b border-gray-100 last:border-b-0 cursor-pointer
                     transition-all duration-150 hover:bg-gray-50
                     ${isSelected ? 'bg-blue-50' : 'bg-white'}
                   `}

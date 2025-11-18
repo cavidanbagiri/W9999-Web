@@ -359,7 +359,7 @@ export default function AIComponent({ onOpenDirectChat }) {
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`flex-1 py-4 text-center font-sans transition-colors ${activeTab === tab
+                className={`flex-1 py-4 text-center cursor-pointer font-sans transition-colors ${activeTab === tab
                   ? 'text-indigo-600 font-semibold border-b-2 border-indigo-600'
                   : 'text-gray-500 hover:text-gray-700'
                   }`}

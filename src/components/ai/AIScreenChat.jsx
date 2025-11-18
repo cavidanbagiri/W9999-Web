@@ -236,7 +236,7 @@ export default function AIScreenChat({ currentWord, nativeLang, onClose }) {
           )} */}
           <button
             onClick={onClose}
-            className="w-10 h-10 bg-white rounded-full flex items-center justify-center hover:bg-gray-100 transition-colors shadow-sm border border-gray-200"
+            className="w-10 h-10 bg-white cursor-pointer rounded-full flex items-center justify-center hover:bg-gray-100 transition-colors shadow-sm border border-gray-200"
             title="Close chat"
           >
             <span className="text-gray-600 text-xl">

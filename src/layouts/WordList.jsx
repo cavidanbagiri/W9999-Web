@@ -77,7 +77,7 @@ export function WordList({ screen }) {
                 <button
                     onClick={handleRefresh}
                     disabled={loading}
-                    className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-gray-400 transition-colors"
+                    className="px-4 py-2 bg-blue-500 cursor-pointer text-white rounded-lg hover:bg-blue-600 disabled:bg-gray-400 transition-colors"
                 >
                     {loading ? 'Refreshing...' : 'Refresh Words'}
                 </button>

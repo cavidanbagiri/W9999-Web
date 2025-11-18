@@ -18,6 +18,7 @@ export default function VocabCard({ word, language }) {
   const handleToggle = async (actionType, e) => {
     e.stopPropagation();
     try {
+
       const res = await dispatch(WordService.setStatus({
         word_id: word.id,
         action: actionType,
@@ -114,7 +115,7 @@ export default function VocabCard({ word, language }) {
           {/* Star Button */}
           <button
             onClick={(e) => handleToggle('star', e)}
-            className={`p-3 rounded-2xl transition-all duration-200 ${
+            className={`p-3 rounded-2xl transition-all duration-200  cursor-pointer ${
               isStarred 
                 ? 'bg-yellow-100 text-yellow-600 hover:bg-yellow-200 shadow-sm' 
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-yellow-500'
@@ -132,7 +133,7 @@ export default function VocabCard({ word, language }) {
           {/* Learned Button */}
           <button
             onClick={(e) => handleToggle('learned', e)}
-            className={`p-3 rounded-2xl transition-all duration-200 ${
+            className={`p-3 rounded-2xl transition-all duration-200 cursor-pointer ${
               isLearned 
                 ? 'bg-green-100 text-green-600 hover:bg-green-200 shadow-sm' 
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-green-500'

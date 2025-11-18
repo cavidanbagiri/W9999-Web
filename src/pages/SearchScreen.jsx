@@ -134,7 +134,7 @@ export default function SearchScreen() {
                     {/* Cancel Button */}
                     <button
                         onClick={() => navigate(-1)}
-                        className="px-4 py-2 text-blue-600 font-medium hover:bg-blue-50 rounded-lg transition-colors whitespace-nowrap"
+                        className="px-4 py-2 text-blue-600 font-medium cursor-pointer hover:bg-blue-50 rounded-lg transition-colors whitespace-nowrap"
                     >
                         Cancel
                     </button>
@@ -148,7 +148,7 @@ export default function SearchScreen() {
                         <button
                             onClick={() => handleLanguageFilter('all')}
                             className={`
-                                flex items-center gap-2 px-4 py-2 rounded-full border transition-all duration-200 whitespace-nowrap
+                                flex items-center cursor-pointer gap-2 px-4 py-2 rounded-full border transition-all duration-200 whitespace-nowrap
                                 ${targetLanguage === 'all' 
                                     ? 'bg-blue-600 border-blue-600 text-white shadow-sm' 
                                     : 'bg-white border-gray-300 text-gray-700 hover:border-gray-400'
@@ -164,7 +164,7 @@ export default function SearchScreen() {
                                 key={language.code}
                                 onClick={() => handleLanguageFilter(language.code)}
                                 className={`
-                                    flex items-center gap-2 px-6 py-2 rounded-full border transition-all duration-200 whitespace-nowrap
+                                    flex items-center gap-2 px-6 py-2 rounded-full border cursor-pointer transition-all duration-200 whitespace-nowrap
                                     ${targetLanguage === language.code 
                                         ? 'bg-blue-600 border-blue-600 text-white shadow-sm' 
                                         : 'bg-white border-gray-300 text-gray-700 hover:border-gray-400'

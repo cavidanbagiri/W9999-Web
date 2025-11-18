@@ -142,7 +142,7 @@ export default function LanguagePickerModal({
   if (!visible) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
       {/* Backdrop */}
       <div className="absolute inset-0" onClick={onClose} />
       
@@ -153,7 +153,7 @@ export default function LanguagePickerModal({
           <h2 className="text-lg font-semibold text-gray-900 font-sans">{title}</h2>
           <button
             onClick={onClose}
-            className="p-1 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-1 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
           >
             <span className="text-indigo-600 text-xl">×</span>
           </button>
@@ -190,7 +190,7 @@ export default function LanguagePickerModal({
               <button
                 key={item.code}
                 onClick={() => handleSelect(item.code)}
-                className={`w-full flex justify-between items-center px-4 py-3 rounded-lg transition-colors ${
+                className={`w-full flex justify-between items-center px-4 py-3 rounded-lg transition-colors cursor-pointer ${
                   isSelected
                     ? 'bg-indigo-50 border border-indigo-200'
                     : 'hover:bg-gray-50'
