@@ -191,6 +191,39 @@ class AuthService {
         });
 
 
+
+    // services/AuthService.js
+    static resetPassword = createAsyncThunk(
+        'auth/resetPassword',
+        async (data, thunkAPI) => {
+            try {
+                const response = await $api.post('/auth/reset-password', data);
+                return response.data;
+            } catch (error) {
+                return thunkAPI.rejectWithValue({
+                    message: error.response?.data?.detail || error.message,
+                    status: error.response?.status || 500,
+                });
+            }
+        }
+    );
+
+    static resetPasswordConfirm = createAsyncThunk(
+        'auth/resetPasswordConfirm',
+        async (data, thunkAPI) => {
+            try {
+                const response = await $api.post('/auth/reset-password-confirm', data);
+                return response.data;
+            } catch (error) {
+                return thunkAPI.rejectWithValue({
+                    message: error.response?.data?.detail || error.message,
+                    status: error.response?.status || 500,
+                });
+            }
+        }
+    );
+
+
 }
 
 export default AuthService;

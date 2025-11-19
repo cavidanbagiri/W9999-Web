@@ -18,6 +18,7 @@ import CategoryWordsScreen from "../pages/CategoryWords";
 import SearchScreen from "../pages/SearchScreen";
 import Privacy from "../pages/Privacy";
 import ForgotPasswordScreen from "../pages/ForgetPasswordScreen";
+import ResetPasswordConfirmScreen from "../pages/ResetPasswordConfirmScreen";
 
 
 const router = createBrowserRouter([
@@ -80,6 +81,10 @@ const router = createBrowserRouter([
             {
                 path: "/forget_password",
                 element: <ForgotPasswordScreen/>
+            },
+            {
+                path: "/reset-password-confirm",
+                element: <ResetPasswordConfirmScreen/>
             }
         ]
     },

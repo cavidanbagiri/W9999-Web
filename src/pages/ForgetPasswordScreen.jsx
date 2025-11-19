@@ -1,26 +1,50 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { IoMail, IoArrowBack, IoCheckmarkCircle, IoLockClosed } from 'react-icons/io5';
+import { useDispatch } from 'react-redux';
+import { IoMail, IoArrowBack, IoCheckmarkCircle, IoLockClosed, IoWarning } from 'react-icons/io5';
+import AuthService from '../services/AuthService';
 
 export default function ForgotPasswordScreen() {
+  const dispatch = useDispatch();
   const [email, setEmail] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
     setIsLoading(true);
     
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      // Call your backend API
+      await dispatch(AuthService.resetPassword({ email })).unwrap();
       setIsSubmitted(true);
-    }, 1500);
+    } catch (error) {
+      setError(error.payload?.message || 'Failed to send reset email. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleReset = () => {
     setEmail('');
     setIsSubmitted(false);
+    setError('');
+  };
+
+  const handleResendEmail = async () => {
+    setError('');
+    setIsLoading(true);
+    
+    try {
+      await dispatch(AuthService.resetPassword({ email })).unwrap();
+      // Show success message or notification for resend
+    } catch (error) {
+      setError(error.payload?.message || 'Failed to resend email. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   if (isSubmitted) {
@@ -54,10 +78,22 @@ export default function ForgotPasswordScreen() {
             {/* Action Buttons */}
             <div className="space-y-4">
               <button
-                onClick={handleReset}
-                className="w-full bg-gradient-to-r from-green-500 to-emerald-500 text-white py-4 rounded-2xl font-semibold hover:shadow-lg transition-all hover:scale-105"
+                onClick={handleResendEmail}
+                disabled={isLoading}
+                className={`w-full py-4 rounded-2xl font-semibold transition-all flex items-center justify-center ${
+                  isLoading
+                    ? 'bg-gray-400 cursor-not-allowed'
+                    : 'bg-gradient-to-r from-green-500 to-emerald-500 hover:shadow-lg hover:scale-105 cursor-pointer'
+                }`}
               >
-                Resend Email
+                {isLoading ? (
+                  <>
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                    <span className="text-white">Sending...</span>
+                  </>
+                ) : (
+                  <span className="text-white">Resend Email</span>
+                )}
               </button>
               
               <Link
@@ -116,6 +152,16 @@ export default function ForgotPasswordScreen() {
 
           {/* Form Section */}
           <div className="p-8">
+            {/* Error Display */}
+            {error && (
+              <div className="bg-red-50 border border-red-200 rounded-2xl p-4 mb-6">
+                <div className="flex items-center space-x-3">
+                  <IoWarning className="text-red-500 text-xl" />
+                  <span className="text-red-700 font-medium font-sans">{error}</span>
+                </div>
+              </div>
+            )}
+
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Instruction Text */}
               <p className="text-gray-600 text-center leading-relaxed font-sans">
