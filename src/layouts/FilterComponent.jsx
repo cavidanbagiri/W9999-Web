@@ -5,19 +5,25 @@ import { setAvailableLangToggle } from '../store/word_store';
 import WordService from '../services/WordService';
 
 import LanguageSelected from './LanguageSelected';
+import Categories from './Categories';
 
 import { CiStar } from "react-icons/ci";
 import { FaStar } from "react-icons/fa";
+import { BiCategoryAlt } from "react-icons/bi";
+
 
 import { SlRefresh } from "react-icons/sl";
 
 
 const FilterComponent = ({ filter, setFilter, screen }) => {
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const [searchQuery, setSearchQuery] = useState('');
   const { selectedLanguage, available_lang_toggle } = useSelector((state) => state.wordSlice);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const toggleFilter = () => {
     console.log('toggle filter is working ', filter);
@@ -90,8 +96,35 @@ const FilterComponent = ({ filter, setFilter, screen }) => {
             </span>
           </button>
         )}
+
         {/* If Screen is Learned flex will be around */}
         <div className={`flex p-1 ${screen === 'LearnedScreen' ? 'w-full justify-between ':''} `}>
+
+          {/* Category will open in modal form */}
+          {
+            isModalOpen && (
+              <Categories 
+                isVisible={isModalOpen} 
+                onClose={() => setIsModalOpen(false)} 
+              />
+            )
+          }
+
+          {/* Category Button */}
+          {
+            selectedLanguage && available_lang_toggle && (
+              <button
+                onClick={() => {
+                  setIsModalOpen(!isModalOpen)
+                }}
+                className="mr-1 w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 active:bg-gray-400 transition-colors cursor-pointer"
+              >
+                <span className="text-gray-600 text-lg">
+                  <BiCategoryAlt />
+                </span>
+              </button>
+            )
+          }
 
           {available_lang_toggle && (
             <LanguageSelected screen={'WordScreen'} />
@@ -105,7 +138,6 @@ const FilterComponent = ({ filter, setFilter, screen }) => {
             <span className="text-gray-600 text-lg">
               <SlRefresh />
             </span>
-
           </button>
         </div>
       </div>

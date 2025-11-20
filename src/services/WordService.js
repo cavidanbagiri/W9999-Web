@@ -5,6 +5,36 @@ import $api from '../http/api';
 
 class WordService {
 
+    static getWordsByCategoryId = createAsyncThunk(
+        'word/main/fetch_words_by_categories',
+        async ({ categoryId, langCode, only_starred = false, only_learned = false, skip = 0, limit = 50 }, thunkAPI) => {
+            try {
+                const response = await $api.get(`/words/main/fetch_words_by_categories/`, {
+                    params: {
+                        category_id: categoryId,
+                        lang_code: langCode,
+                        only_starred: only_starred,
+                        only_learned: only_learned,
+                        skip: skip,
+                        limit: limit
+                    }
+                });
+                return {
+                    payload: response.data,
+                    status: response.status,
+                };
+            } catch (error) {
+                const errorData = error.response?.data || { message: error.message };
+                const statusCode = error.response?.status || 500;
+                return thunkAPI.rejectWithValue({
+                    payload: errorData,
+                    status: statusCode,
+                });
+            }
+        }
+    )
+
+
     static handleLanguageSelect = createAsyncThunk(
         '/words/:langCode',
         async ({ langCode, filter = 'all' }, thunkAPI) => {
@@ -62,7 +92,6 @@ class WordService {
     )
 
 
-
     static getDetailWord = createAsyncThunk(
         '/words/get_detail_word',
         async (word_id, thunkAPI) => {
@@ -82,6 +111,7 @@ class WordService {
         }
     )
 
+
     static getStatisticsForDashboard = createAsyncThunk(
         '/words/get_statistics',
         async (data, thunkAPI) => {
@@ -100,6 +130,7 @@ class WordService {
             }
         }
     )
+
 
     static getPosStatistics = createAsyncThunk(
         '/words/get_pos_statistics',
@@ -196,6 +227,27 @@ class WordService {
                 const errorData = error.response?.data || { message: error.message };
                 const statusCode = error.response?.status || 500;
                 // Pass custom error payload
+                return thunkAPI.rejectWithValue({
+                    payload: errorData,
+                    status: statusCode,
+                });
+            }
+        }
+    )
+
+
+    static getCategories = createAsyncThunk(
+        'word/main/words_categories',
+        async (languageCode, thunkAPI) => {
+            try {
+                const response = await $api.get(`/words/main/words_categories/?lang_code=${languageCode}`);
+                return {
+                    payload: response.data,
+                    status: response.status,
+                };
+            } catch (error) {
+                const errorData = error.response?.data || { message: error.message };
+                const statusCode = error.response?.status || 500;
                 return thunkAPI.rejectWithValue({
                     payload: errorData,
                     status: statusCode,

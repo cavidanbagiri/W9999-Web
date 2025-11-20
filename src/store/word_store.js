@@ -26,7 +26,13 @@ const initialState = {
 
     searchResults: null,
     isLoading: false,
-    error: null
+    error: null,
+
+
+    categories: [],
+    categories_pending: false,
+    currentCategory: null, // NEW: to track which category is selected
+    currentCategoryName: null, // NEW: to display category name in UI
 
 
 };
@@ -154,6 +160,38 @@ export const wordSlice = createSlice({
         builder.addCase(WordService.getSearchResults.rejected, (state, action) => {
             state.isLoading = false;
             state.error = action.payload;
+        });
+
+
+        // In your wordSlice or wherever you have your builder
+        builder
+        // WordService getCategories (for category list)
+        .addCase(WordService.getCategories.pending, (state, action) => {
+            state.categories_pending = true;
+        })
+        .addCase(WordService.getCategories.fulfilled, (state, action) => {
+            state.categories_pending = false;
+            state.categories = action.payload;
+        })
+        .addCase(WordService.getCategories.rejected, (state, action) => {
+            state.categories_pending = false;
+        })
+        // NEW: WordService getWordsByCategory (for words in category)
+        .addCase(WordService.getWordsByCategoryId.pending, (state, action) => {
+            state.words_pending = true;
+            state.loading = true;
+        })
+        .addCase(WordService.getWordsByCategoryId.fulfilled, (state, action) => {
+            state.words_pending = false;
+            state.loading = false;
+            if (action.payload?.payload?.length === 0) {
+                state.words = [] // No words found
+                return state;
+            }
+            state.words = action?.payload?.payload; // This will contain the words from the category
+        })
+        .addCase(WordService.getWordsByCategoryId.rejected, (state, action) => {
+            state.words_pending = false;
         });
 
 
