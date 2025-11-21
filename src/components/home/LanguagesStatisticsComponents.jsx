@@ -70,9 +70,9 @@ export default function LanguagesStatisticsComponents() {
           <h2 className="text-2xl font-bold text-gray-900">Your Progress</h2>
           <p className="text-gray-600 mt-1">Track your language learning journey</p>
         </div>
-        <div className="text-sm text-gray-500">
+        {/* <div className="text-sm text-gray-500">
           {statistics.length} language{statistics.length !== 1 ? 's' : ''}
-        </div>
+        </div> */}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">

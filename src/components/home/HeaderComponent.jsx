@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import WordService from '../../services/WordService';
+import AuthService from '../../services/AuthService';
 import { IoSettings, IoBook, IoGlobe, IoTime } from "react-icons/io5";
 import { IoMdRefresh } from "react-icons/io";
 
@@ -23,10 +24,14 @@ const COLORS = {
 
 export default function HeaderComponent({ username }) {
   const dispatch = useDispatch();
+
+  const { is_auth } = useSelector((state) => state.authSlice);
+
   const [nativeLangCode, setNativeLangCode] = useState(null);
   const [dailyStreak, setDailyStreak] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [totalLearnedWords, setTotalLearnedWords] = useState(0);
 
   const getGreeting = () => {
     const hour = new Date().getHours();
@@ -81,6 +86,22 @@ export default function HeaderComponent({ username }) {
     if (wordsToday < 15) return "You're on fire! Amazing progress 🔥";
     return "Language master! Incredible work today 🏆";
   };
+
+
+  // use effect for getting total learned words
+  useEffect(() => {
+    const getTotalLearnedWords = async () => {
+      try {
+        console.log('the dispatch function working and the result will be below')
+        const result = await dispatch(AuthService.getTotalLearnedWords());
+        setTotalLearnedWords(result.payload?.total_learned_words);
+      } catch (error) { 
+        console.error('Failed to get total learned words:', error);
+      }
+    };
+    getTotalLearnedWords();
+  },[is_auth, dispatch]);
+
 
   return (
     <div className="bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100">
@@ -153,7 +174,8 @@ export default function HeaderComponent({ username }) {
           { 
             icon: <IoBook className="text-blue-600 text-xl"/>, 
             label: 'Total Learned', 
-            value: dailyStreak?.total_learned_words || '0',
+            // value: dailyStreak?.total_learned_words || '0',
+            value: totalLearnedWords,
             color: 'text-blue-600'
           },
           { 

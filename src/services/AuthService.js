@@ -224,6 +224,22 @@ class AuthService {
     );
 
 
+    static getTotalLearnedWords = createAsyncThunk(
+        'auth/total_learned_words',
+        async (data, thunkAPI) => {
+            try {
+                const response = await $api.get(`/auth/total-learned-words`);
+                return response.data;
+            } catch (error) {
+                return thunkAPI.rejectWithValue({
+                    message: error.response?.data?.detail || error.message,
+                    status: error.response?.status || 500,
+                });
+            }
+        }
+    )
+
+
 }
 
 export default AuthService;

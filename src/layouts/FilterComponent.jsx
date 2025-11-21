@@ -10,6 +10,8 @@ import Categories from './Categories';
 import { CiStar } from "react-icons/ci";
 import { FaStar } from "react-icons/fa";
 import { BiCategoryAlt } from "react-icons/bi";
+import { TbCategoryPlus } from "react-icons/tb";
+
 
 
 import { SlRefresh } from "react-icons/sl";
@@ -83,7 +85,7 @@ const FilterComponent = ({ filter, setFilter, screen }) => {
         {screen === 'WordScreen' && (
           <button
             onClick={toggleFilter}
-            className="flex items-center space-x-2 bg-gray-100 px-4 py-2.5 rounded-full hover:bg-gray-200 active:bg-gray-300 transition-colors cursor-pointer"
+            className="flex items-center space-x-2 bg-gray50 px-4 py-2.5 rounded-full hover:bg-gray-200 active:bg-gray-300 transition-colors cursor-pointer"
           >
             <span className={`text-xl ${filter === 'starred' ? 'text-yellow-500' : 'text-gray-500'}`}>
               {filter === 'starred' ? <FaStar className='text-yellow-500' /> : <CiStar />}
@@ -117,10 +119,10 @@ const FilterComponent = ({ filter, setFilter, screen }) => {
                 onClick={() => {
                   setIsModalOpen(!isModalOpen)
                 }}
-                className="mr-1 w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 active:bg-gray-400 transition-colors cursor-pointer"
+                className="mr-1 w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center hover:bg-gray-200 active:bg-gray-400 transition-colors cursor-pointer"
               >
-                <span className="text-gray-600 text-lg">
-                  <BiCategoryAlt />
+                <span className="text-gray-600 text-xl">
+                  <TbCategoryPlus />
                 </span>
               </button>
             )
@@ -133,7 +135,7 @@ const FilterComponent = ({ filter, setFilter, screen }) => {
           {/* Refresh Button */}
           <button
             onClick={handleRefresh}
-            className="ml-1 w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 active:bg-gray-400 transition-colors cursor-pointer"
+            className="ml-1 w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center hover:bg-gray-200 active:bg-gray-400 transition-colors cursor-pointer"
           >
             <span className="text-gray-600 text-lg">
               <SlRefresh />
