@@ -127,7 +127,7 @@ const HomePage = () => {
           </h1>
 
           {/* Subtitle */}
-          <p
+          <div
             style={fadeUpStyle(400)}
             className="text-xl md:text-2xl text-gray-600 mb-12 max-w-3xl mx-auto leading-relaxed font-sans h-14"
           >
@@ -150,7 +150,7 @@ const HomePage = () => {
             />
             {/* Discover the smart way to learn languages with AI tutors, 9000+ word collections, 
             and intelligent translation tools all in one platform. */}
-          </p>
+          </div>
 
           {/* CTA Buttons */}
           <div
@@ -322,13 +322,13 @@ const HomePage = () => {
       </footer>
 
       {/* Add this CSS to your App.css */}
-      <style jsx>{`
+      {/* <style jsx>{`
         @keyframes float {
           0% { transform: translateY(0px) scale(1); }
           50% { transform: translateY(-20px) scale(1.05); }
           100% { transform: translateY(0px) scale(1); }
         }
-      `}</style>
+      `}</style> */}
     </div>
   );
 };

@@ -80,67 +80,84 @@ const FilterComponent = ({ filter, setFilter, screen }) => {
       </button>
 
       {/* Filter & Actions Row */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between bg-white">
         {/* Filter Toggle: Starred vs All */}
         {screen === 'WordScreen' && (
-          <button
+          <div className='flex w-full'>
+            <button
             onClick={toggleFilter}
-            className="flex items-center space-x-2 bg-gray50 px-4 py-2.5 rounded-full hover:bg-gray-200 active:bg-gray-300 transition-colors cursor-pointer"
+            className="flex items-center space-x-2   px-4 py-2.5 rounded-full  outline-none "
           >
-            <span className={`text-xl ${filter === 'starred' ? 'text-yellow-500' : 'text-gray-500'}`}>
+            <span className={`text-xl cursor-pointer ${filter === 'starred' ? 'text-yellow-500' : 'text-gray-500'}`}>
               {filter === 'starred' ? <FaStar className='text-yellow-500' /> : <CiStar />}
             </span>
             <span
-              className={`font-semibold font-sans ${filter === 'starred' ? 'text-amber-700' : 'text-gray-700'
+            
+              className={`text-md font-semibold cursor-pointer font-sans ${filter === 'starred' ? 'text-amber-700' : 'text-gray-700'
                 }`}
             >
               {filter === 'starred' ? 'Starred' : 'All Words'}
             </span>
           </button>
+          </div>
         )}
 
         {/* If Screen is Learned flex will be around */}
-        <div className={`flex p-1 ${screen === 'LearnedScreen' ? 'w-full justify-between ':''} `}>
+        <div className={`flex  w-full justify-end p-1 ${screen === 'LearnedScreen' ? 'w-full justify-between ' : ''} `}>
 
           {/* Category will open in modal form */}
           {
             isModalOpen && (
-              <Categories 
-                isVisible={isModalOpen} 
-                onClose={() => setIsModalOpen(false)} 
-              />
-            )
-          }
-
-          {/* Category Button */}
-          {
-            selectedLanguage && available_lang_toggle && (
-              <button
-                onClick={() => {
-                  setIsModalOpen(!isModalOpen)
-                }}
-                className="mr-1 w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center hover:bg-gray-200 active:bg-gray-400 transition-colors cursor-pointer"
-              >
-                <span className="text-gray-600 text-xl">
-                  <TbCategoryPlus />
-                </span>
-              </button>
+                <Categories
+                  isVisible={isModalOpen}
+                  onClose={() => setIsModalOpen(false)}
+                />
             )
           }
 
           {available_lang_toggle && (
+          <div className="flex items-center mr-1">
+            <span className="hidden md:inline text-md font-medium text-gray-700 mr-2">
+              Select language
+            </span>
             <LanguageSelected screen={'WordScreen'} />
+          </div>
           )}
 
+          {/* Category Button */}
+          {
+            selectedLanguage && available_lang_toggle && (
+              <div className='flex items-center mx-2 lg:mx-8'>
+                <span className="hidden md:inline text-md font-medium ml-2 text-gray-700 mr-2">
+                    Category
+                  </span>
+                <button
+                  onClick={() => {
+                    setIsModalOpen(!isModalOpen)
+                  }}
+                  className="mr-1 w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center hover:bg-gray-200 active:bg-gray-400 transition-colors cursor-pointer"
+                >
+                  <TbCategoryPlus className='text-xl' />
+                </button>
+              </div>
+            )
+          }
+
           {/* Refresh Button */}
-          <button
-            onClick={handleRefresh}
-            className="ml-1 w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center hover:bg-gray-200 active:bg-gray-400 transition-colors cursor-pointer"
-          >
-            <span className="text-gray-600 text-lg">
-              <SlRefresh />
+          <div className='flex items-center '>
+            <span className="hidden md:inline text-md font-medium ml-2 text-gray-700 mr-1">
+              Refresh
             </span>
-          </button>
+            <button
+            onClick={handleRefresh}
+              className=" w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center hover:bg-gray-200 active:bg-gray-400 transition-colors cursor-pointer"
+            >
+              <span className="text-gray-600 text-lg">
+                <SlRefresh />
+              </span>
+            </button>
+
+          </div>
         </div>
       </div>
     </div>

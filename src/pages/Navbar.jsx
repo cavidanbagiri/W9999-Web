@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { Outlet, useLocation } from 'react-router-dom';
+import { Outlet, useLocation, Link } from 'react-router-dom';
 import '../App.css'
 import { 
   IoHome, 
@@ -19,6 +19,7 @@ import {
   IoBook,
   IoBookOutline
 } from 'react-icons/io5';
+
 
 import NavIcon from '../components/navbar/NavIcon';
 
@@ -88,12 +89,12 @@ function Navbar() {
               {/* <div className="w-10 h-10 bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl flex items-center justify-center">
                 <IoLanguage className="text-white text-xl" />
               </div> */}
-              <div>
+              <Link to="/">
                 <h1 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent font-sans">
                   W9999
                 </h1>
                 <p className="text-xs text-gray-500 font-sans">Language Learning</p>
-              </div>
+              </Link>
             </div>
 
             {/* Navigation Icons */}
