@@ -1,34 +1,18 @@
 
-
-
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import WordService from '../services/WordService';
 import '../App.css';
 
-// Icon imports (using react-icons)
+// Icon imports
 import { 
-  FaHashtag, 
-  FaPalette, 
-  FaPaw, 
-  FaUtensils, 
-  FaHome, 
-  FaTree, 
-  FaCar, 
-  FaHeart,
-  FaBook,
-  FaMusic,
-  FaPlane,
-  FaShoppingBag,
-  FaFutbol,
-  FaUserFriends,
-  FaBriefcase,
-  FaFlask
+  FaHashtag, FaPalette, FaPaw, FaUtensils, FaHome, FaTree, 
+  FaCar, FaHeart, FaBook, FaMusic, FaPlane, FaShoppingBag, 
+  FaFutbol, FaUserFriends, FaBriefcase, FaFlask, FaStar,
+  FaChartLine, FaCheckCircle, FaLock, FaCrown
 } from 'react-icons/fa';
-
 import { GiClothes } from "react-icons/gi";
-
 
 const Categories = ({ isVisible, onClose }) => {
     const dispatch = useDispatch();
@@ -36,80 +20,158 @@ const Categories = ({ isVisible, onClose }) => {
     const { selectedLanguage } = useSelector((state) => state.wordSlice);
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
 
-    // Category icon and color mapping
-    const getCategoryStyle = (categoryName) => {
+    // Enhanced category styling with gradients
+    const getCategoryStyle = (categoryName, progress = 0) => {
+        const isCompleted = progress === 100;
+        const isInProgress = progress > 0 && progress < 100;
+        
         const styleMap = {
-            // Numbers
-            'Numbers': { icon: <FaHashtag />, color: 'bg-purple-100 text-purple-600' },
-            'Цифры': { icon: <FaHashtag />, color: 'bg-purple-100 text-purple-600' },
-            
-            // Colors
-            'Colors': { icon: <FaPalette />, color: 'bg-pink-100 text-pink-600' },
-            'Цвета': { icon: <FaPalette />, color: 'bg-pink-100 text-pink-600' },
-            
-            // Animals
-            'Animals': { icon: <FaPaw />, color: 'bg-orange-100 text-orange-600' },
-            'Животные': { icon: <FaPaw />, color: 'bg-orange-100 text-orange-600' },
-            
-            // Food
-            'Food & Drinks': { icon: <FaUtensils />, color: 'bg-red-100 text-red-600' },
-            'Еда': { icon: <FaUtensils />, color: 'bg-red-100 text-red-600' },
-            
-            // Home
-            'House & Rooms': { icon: <FaHome />, color: 'bg-blue-100 text-blue-600' },
-            'Дом': { icon: <FaHome />, color: 'bg-blue-100 text-blue-600' },
-            
-            // Nature
-            'Months & Seasons': { icon: <FaTree />, color: 'bg-green-100 text-green-600' },
-            'Природа': { icon: <FaTree />, color: 'bg-green-100 text-green-600' },
-            
-            // Transportation
-            // 'Transportation': { icon: <FaCar />, color: 'bg-yellow-100 text-yellow-600' },
-            'Clothing': { icon: <GiClothes />, color: 'bg-yellow-100 text-yellow-600' },
-            'Транспорт': { icon: <FaCar />, color: 'bg-yellow-100 text-yellow-600' },
-            
-            // Feelings
-            'Emotions & Feelings': { icon: <FaHeart />, color: 'bg-rose-100 text-rose-600' },
-            'Чувства': { icon: <FaHeart />, color: 'bg-rose-100 text-rose-600' },
-            
-            // Education
-            'Education': { icon: <FaBook />, color: 'bg-indigo-100 text-indigo-600' },
-            'Образование': { icon: <FaBook />, color: 'bg-indigo-100 text-indigo-600' },
-            
-            // Music
-            'Music': { icon: <FaMusic />, color: 'bg-teal-100 text-teal-600' },
-            'Музыка': { icon: <FaMusic />, color: 'bg-teal-100 text-teal-600' },
-            
-            // Travel
-            'Travel': { icon: <FaPlane />, color: 'bg-cyan-100 text-cyan-600' },
-            'Путешествия': { icon: <FaPlane />, color: 'bg-cyan-100 text-cyan-600' },
-            
-            // Shopping
-            'Shopping': { icon: <FaShoppingBag />, color: 'bg-amber-100 text-amber-600' },
-            'Покупки': { icon: <FaShoppingBag />, color: 'bg-amber-100 text-amber-600' },
-            
-            // Sports
-            'Sports': { icon: <FaFutbol />, color: 'bg-lime-100 text-lime-600' },
-            'Спорт': { icon: <FaFutbol />, color: 'bg-lime-100 text-lime-600' },
-            
-            // People
-            'People': { icon: <FaUserFriends />, color: 'bg-violet-100 text-violet-600' },
-            'Люди': { icon: <FaUserFriends />, color: 'bg-violet-100 text-violet-600' },
-            
-            // Work
-            'Work': { icon: <FaBriefcase />, color: 'bg-gray-100 text-gray-600' },
-            'Работа': { icon: <FaBriefcase />, color: 'bg-gray-100 text-gray-600' },
-            
-            // Science
-            'Science': { icon: <FaFlask />, color: 'bg-emerald-100 text-emerald-600' },
-            'Наука': { icon: <FaFlask />, color: 'bg-emerald-100 text-emerald-600' },
-            
-            // Default fallback
-            'default': { icon: <FaHashtag />, color: 'bg-gray-100 text-gray-600' }
+            'Numbers': { 
+                icon: <FaHashtag />, 
+                gradient: 'from-purple-500 to-indigo-600',
+                bgGradient: 'from-purple-50 to-indigo-50',
+                textColor: 'text-purple-700'
+            },
+            'Цифры': { 
+                icon: <FaHashtag />, 
+                gradient: 'from-purple-500 to-indigo-600',
+                bgGradient: 'from-purple-50 to-indigo-50',
+                textColor: 'text-purple-700'
+            },
+            'Colors': { 
+                icon: <FaPalette />, 
+                gradient: 'from-pink-500 to-rose-600',
+                bgGradient: 'from-pink-50 to-rose-50',
+                textColor: 'text-pink-700'
+            },
+            'Цвета': { 
+                icon: <FaPalette />, 
+                gradient: 'from-pink-500 to-rose-600',
+                bgGradient: 'from-pink-50 to-rose-50',
+                textColor: 'text-pink-700'
+            },
+            'Animals': { 
+                icon: <FaPaw />, 
+                gradient: 'from-orange-500 to-amber-600',
+                bgGradient: 'from-orange-50 to-amber-50',
+                textColor: 'text-orange-700'
+            },
+            'Животные': { 
+                icon: <FaPaw />, 
+                gradient: 'from-orange-500 to-amber-600',
+                bgGradient: 'from-orange-50 to-amber-50',
+                textColor: 'text-orange-700'
+            },
+            'Food & Drinks': { 
+                icon: <FaUtensils />, 
+                gradient: 'from-red-500 to-orange-600',
+                bgGradient: 'from-red-50 to-orange-50',
+                textColor: 'text-red-700'
+            },
+            'Еда': { 
+                icon: <FaUtensils />, 
+                gradient: 'from-red-500 to-orange-600',
+                bgGradient: 'from-red-50 to-orange-50',
+                textColor: 'text-red-700'
+            },
+            'House & Rooms': { 
+                icon: <FaHome />, 
+                gradient: 'from-blue-500 to-cyan-600',
+                bgGradient: 'from-blue-50 to-cyan-50',
+                textColor: 'text-blue-700'
+            },
+            'Дом': { 
+                icon: <FaHome />, 
+                gradient: 'from-blue-500 to-cyan-600',
+                bgGradient: 'from-blue-50 to-cyan-50',
+                textColor: 'text-blue-700'
+            },
+            'Months & Seasons': { 
+                icon: <FaTree />, 
+                gradient: 'from-green-500 to-emerald-600',
+                bgGradient: 'from-green-50 to-emerald-50',
+                textColor: 'text-green-700'
+            },
+            'Clothing': { 
+                icon: <GiClothes />, 
+                gradient: 'from-yellow-500 to-amber-600',
+                bgGradient: 'from-yellow-50 to-amber-50',
+                textColor: 'text-yellow-700'
+            },
+            'Emotions & Feelings': { 
+                icon: <FaHeart />, 
+                gradient: 'from-rose-500 to-pink-600',
+                bgGradient: 'from-rose-50 to-pink-50',
+                textColor: 'text-rose-700'
+            },
+            'Education': { 
+                icon: <FaBook />, 
+                gradient: 'from-indigo-500 to-purple-600',
+                bgGradient: 'from-indigo-50 to-purple-50',
+                textColor: 'text-indigo-700'
+            },
+            'Music': { 
+                icon: <FaMusic />, 
+                gradient: 'from-teal-500 to-cyan-600',
+                bgGradient: 'from-teal-50 to-cyan-50',
+                textColor: 'text-teal-700'
+            },
+            'Travel': { 
+                icon: <FaPlane />, 
+                gradient: 'from-cyan-500 to-blue-600',
+                bgGradient: 'from-cyan-50 to-blue-50',
+                textColor: 'text-cyan-700'
+            },
+            'Shopping': { 
+                icon: <FaShoppingBag />, 
+                gradient: 'from-amber-500 to-orange-600',
+                bgGradient: 'from-amber-50 to-orange-50',
+                textColor: 'text-amber-700'
+            },
+            'Sports': { 
+                icon: <FaFutbol />, 
+                gradient: 'from-lime-500 to-green-600',
+                bgGradient: 'from-lime-50 to-green-50',
+                textColor: 'text-lime-700'
+            },
+            'People': { 
+                icon: <FaUserFriends />, 
+                gradient: 'from-violet-500 to-purple-600',
+                bgGradient: 'from-violet-50 to-purple-50',
+                textColor: 'text-violet-700'
+            },
+            'Work': { 
+                icon: <FaBriefcase />, 
+                gradient: 'from-gray-500 to-slate-600',
+                bgGradient: 'from-gray-50 to-slate-50',
+                textColor: 'text-gray-700'
+            },
+            'Science': { 
+                icon: <FaFlask />, 
+                gradient: 'from-emerald-500 to-teal-600',
+                bgGradient: 'from-emerald-50 to-teal-50',
+                textColor: 'text-emerald-700'
+            },
+            'default': { 
+                icon: <FaHashtag />, 
+                gradient: 'from-gray-500 to-slate-600',
+                bgGradient: 'from-gray-50 to-slate-50',
+                textColor: 'text-gray-700'
+            }
         };
 
-        return styleMap[categoryName] || styleMap['default'];
+        const style = styleMap[categoryName] || styleMap['default'];
+        
+        return {
+            ...style,
+            isCompleted,
+            isInProgress,
+            badgeColor: isCompleted ? 'bg-gradient-to-r from-green-500 to-emerald-600' : 
+                         isInProgress ? 'bg-gradient-to-r from-blue-500 to-cyan-600' : 
+                         'bg-gradient-to-r from-gray-400 to-slate-500'
+        };
     };
 
     useEffect(() => {
@@ -122,6 +184,7 @@ const Categories = ({ isVisible, onClose }) => {
         setLoading(true);
         try {
             const response = await dispatch(WordService.getCategories(selectedLanguage));
+            // Assuming backend now returns: total_words, learned_words, progress_percentage
             setCategories(response?.payload?.payload || []);
         } catch (error) {
             console.error('Error loading categories:', error);
@@ -156,77 +219,226 @@ const Categories = ({ isVisible, onClose }) => {
         }
     };
 
+    // Filter categories based on search
+    const filteredCategories = categories.filter(category =>
+        category.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    // Stats for header
+    const totalWords = categories.reduce((sum, cat) => sum + (cat.total_words || cat.word_count || 0), 0);
+    const learnedWords = categories.reduce((sum, cat) => sum + (cat.learned_words || 0), 0);
+    const completedCategories = categories.filter(cat => cat.progress_percentage === 100).length;
+
     if (!isVisible) return null;
 
     return (
         <div
-            className="fixed inset-0 bg-black/50 z-50 flex items-end justify-center"
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-end justify-center"
             onClick={handleBackdropClick}
         >
-            <div className="bg-white w-full max-w-2xl rounded-t-2xl max-h-[80vh] overflow-hidden animate-slide-up">
-                {/* Header */}
-                <div className="flex justify-between items-center p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
-                    <div>
-                        <h2 className="text-2xl font-bold text-gray-800">Categories</h2>
-                        <p className="text-sm text-gray-600 mt-1">Choose a category to explore words</p>
+            <div className="bg-white w-full max-w-4xl rounded-t-3xl max-h-[85vh] overflow-hidden animate-slide-up shadow-2xl">
+                {/* Enhanced Header */}
+                <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-700 text-white p-8 relative overflow-hidden">
+                    {/* Background Pattern */}
+                    <div className="absolute inset-0 opacity-10">
+                        {/* <div className="absolute top-4 right-4 w-20 h-20 bg-white rounded-full"></div>
+                        <div className="absolute bottom-4 left-4 w-16 h-16 bg-white rounded-full"></div> */}
                     </div>
-                    <button
-                        onClick={onClose}
-                        className="text-gray-500 hover:text-gray-700 text-xl p-2 cursor-pointer transition-colors"
-                    >
-                        ✕
-                    </button>
+                    
+                    <div className="relative z-10">
+                        <div className="flex flex-row justify-between items-center mb-6 ">
+                            <div>
+                                <h2 className="text-2xl font-bold mb-2">Word Categories</h2>
+                                <p className="text-purple-200 text-lg">Master vocabulary by topics</p>
+                            </div>
+                            <div className='flex items-center justify-center rounded-full text-white bg-white/10 p-5 w-16 h-16 '>
+                                <button
+                                onClick={onClose}
+                                className="flex items-center between-center text-white/80 hover:text-white text-2xl cursor-pointer transition-all  rounded-xl"
+                            >
+                                ✕
+                            </button>
+                            </div>
+                        </div>
+
+                        {/* Stats Overview */}
+                        <div className="grid grid-cols-3 gap-4 mb-6">
+                            <div className="text-center p-4 bg-white/10 rounded-2xl backdrop-blur-sm">
+                                <div className="text-xl font-bold">{categories.length}</div>
+                                <div className="text-sm text-purple-200">Categories</div>
+                            </div>
+                            <div className="text-center p-4 bg-white/10 rounded-2xl backdrop-blur-sm">
+                                <div className="text-xl font-bold">{learnedWords}</div>
+                                <div className="text-sm text-purple-200">Words Learned</div>
+                            </div>
+                            <div className="text-center p-4 bg-white/10 rounded-2xl backdrop-blur-sm">
+                                <div className="text-xl font-bold">{completedCategories}</div>
+                                <div className="text-sm text-purple-200">Completed</div>
+                            </div>
+                        </div>
+
+                        {/* Search Bar */}
+                        <div className="relative">
+                            <input
+                                type="text"
+                                placeholder="Search categories..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                className="w-full bg-white/10 border border-white/20 rounded-2xl px-6 py-4 text-white placeholder-purple-200 focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-transparent backdrop-blur-sm"
+                            />
+                            <div className="absolute right-4 top-1/2 transform -translate-y-1/2 text-purple-200">
+                                🔍
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                {/* Content */}
-                <div className="overflow-y-auto max-h-[60vh] p-4">
+                {/* Enhanced Content */}
+                <div className="overflow-y-auto max-h-[38vh] p-6 bg-gradient-to-br from-slate-50 to-purple-50">
                     {loading ? (
-                        <div className="flex justify-center items-center py-12">
-                            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-500"></div>
-                            <span className="ml-3 text-gray-500 text-lg">Loading categories...</span>
+                        <div className="flex flex-col items-center justify-center py-16">
+                            <div className="animate-spin rounded-full h-16 w-16 border-4 border-purple-500 border-t-transparent mb-4"></div>
+                            <span className="text-gray-600 text-lg font-medium">Loading your categories...</span>
                         </div>
                     ) : (
-                        <div className="grid grid-cols-1 gap-3">
-                            {categories.map((category) => {
-                                const { icon, color } = getCategoryStyle(category.name);
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {filteredCategories.map((category) => {
+                                const progress = category.progress_percentage || 0;
+                                const { icon, gradient, bgGradient, textColor, isCompleted, isInProgress, badgeColor } = getCategoryStyle(category.name, progress);
+                                const totalWords = category.total_words || category.word_count || 0;
+                                const learnedWords = category.learned_words || 0;
+
                                 return (
                                     <div
                                         key={category.id}
                                         onClick={() => handleCategorySelect(category.id, category.name)}
-                                        className="flex items-center p-4 rounded-xl border border-gray-100 hover:border-blue-200 hover:shadow-md cursor-pointer transition-all duration-200 bg-white hover:scale-[1.02]"
+                                        className={`group relative bg-white rounded-3xl p-6 cursor-pointer transition-all duration-500 hover:scale-105 hover:shadow-2xl border-2 ${
+                                            isCompleted 
+                                                ? 'border-green-200 hover:border-green-300' 
+                                                : 'border-white hover:border-purple-200'
+                                        } shadow-lg`}
                                     >
-                                        {/* Icon */}
-                                        <div className={`flex items-center justify-center w-12 h-12 rounded-xl ${color} mr-4`}>
-                                            <span className="text-xl">{icon}</span>
+                                        {/* Completion Badge */}
+                                        {isCompleted && (
+                                            <div className="absolute -top-2 -right-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white p-2 rounded-full shadow-lg">
+                                                <FaCheckCircle className="text-sm" />
+                                            </div>
+                                        )}
+
+                                        {/* Progress Ring */}
+                                        <div className="absolute top-4 right-4">
+                                            <div className="relative w-12 h-12">
+                                                <svg className="w-12 h-12 transform -rotate-90" viewBox="0 0 36 36">
+                                                    <path
+                                                        d="M18 2.0845
+                                                          a 15.9155 15.9155 0 0 1 0 31.831
+                                                          a 15.9155 15.9155 0 0 1 0 -31.831"
+                                                        fill="none"
+                                                        stroke="#E2E8F0"
+                                                        strokeWidth="3"
+                                                    />
+                                                    <path
+                                                        d="M18 2.0845
+                                                          a 15.9155 15.9155 0 0 1 0 31.831
+                                                          a 15.9155 15.9155 0 0 1 0 -31.831"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        strokeWidth="3"
+                                                        strokeDasharray={`${progress}, 100`}
+                                                        className={isCompleted ? 'text-green-500' : 'text-purple-500'}
+                                                    />
+                                                </svg>
+                                                <div className="absolute inset-0 flex items-center justify-center">
+                                                    <span className={`text-xs font-bold ${isCompleted ? 'text-green-600' : 'text-purple-600'}`}>
+                                                        {progress}%
+                                                    </span>
+                                                </div>
+                                            </div>
                                         </div>
-                                        
-                                        {/* Category Info */}
-                                        <div className="flex-1">
-                                            <h3 className="text-lg font-semibold text-gray-800">{category.name}</h3>
-                                            <p className="text-sm text-gray-500 mt-1">
-                                                {category.word_count} words
-                                            </p>
+
+                                        <div className="flex items-start space-x-4">
+                                            {/* Icon */}
+                                            <div className={`flex-shrink-0 w-16 h-16 bg-gradient-to-r ${gradient} rounded-2xl flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                                                <span className="text-2xl">{icon}</span>
+                                            </div>
+                                            
+                                            {/* Content */}
+                                            <div className="flex-1 min-w-0">
+                                                <h3 className={`text-xl font-bold ${textColor} mb-2 truncate h-10  w-[75%]`}>
+                                                    {category.name}
+                                                </h3>
+                                                
+                                                {/* Progress Bar */}
+                                                <div className="mb-3">
+                                                    <div className="flex justify-between text-sm text-gray-600 mb-1">
+                                                        <span>{learnedWords} learned</span>
+                                                        <span>{totalWords} total</span>
+                                                    </div>
+                                                    <div className="w-full bg-gray-200 rounded-full h-2">
+                                                        <div 
+                                                            className={`h-2 rounded-full transition-all duration-1000 ease-out ${
+                                                                isCompleted 
+                                                                    ? 'bg-gradient-to-r from-green-500 to-emerald-600' 
+                                                                    : `bg-gradient-to-r ${gradient}`
+                                                            }`}
+                                                            style={{ width: `${progress}%` }}
+                                                        ></div>
+                                                    </div>
+                                                </div>
+
+                                                {/* Status */}
+                                                <div className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
+                                                    isCompleted 
+                                                        ? 'bg-green-100 text-green-800' 
+                                                        : isInProgress 
+                                                        ? 'bg-blue-100 text-blue-800'
+                                                        : 'bg-gray-100 text-gray-800'
+                                                }`}>
+                                                    {isCompleted ? (
+                                                        <>
+                                                            <FaCheckCircle className="mr-1" />
+                                                            Mastered
+                                                        </>
+                                                    ) : isInProgress ? (
+                                                        <>
+                                                            <FaChartLine className="mr-1" />
+                                                            In Progress
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <FaLock className="mr-1" />
+                                                            Start Learning
+                                                        </>
+                                                    )}
+                                                </div>
+                                            </div>
                                         </div>
-                                        
-                                        {/* Word Count Badge */}
-                                        <div className="bg-gray-100 px-3 py-1 rounded-full">
-                                            <span className="text-gray-700 font-medium text-sm">
-                                                {category.word_count}
-                                            </span>
-                                        </div>
+
+                                        {/* Hover Effect */}
+                                        <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-white to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                                     </div>
                                 );
                             })}
                             
-                            {categories.length === 0 && !loading && (
-                                <div className="text-center py-12">
-                                    <div className="text-6xl mb-4">📚</div>
-                                    <p className="text-gray-500 text-lg">No categories found</p>
-                                    <p className="text-gray-400 text-sm mt-2">Try selecting a different language</p>
+                            {filteredCategories.length === 0 && !loading && (
+                                <div className="col-span-2 text-center py-16">
+                                    <div className="text-8xl mb-6 opacity-20">📚</div>
+                                    <h3 className="text-2xl font-bold text-gray-600 mb-3">No categories found</h3>
+                                    <p className="text-gray-500 max-w-md mx-auto">
+                                        {searchTerm ? `No categories matching "${searchTerm}"` : 'Try selecting a different language to see available categories'}
+                                    </p>
                                 </div>
                             )}
                         </div>
                     )}
+                </div>
+
+                {/* Footer */}
+                <div className="bg-white border-t border-gray-200 p-4 text-center">
+                    <p className="text-gray-600 text-sm">
+                        <span className="font-semibold text-purple-600">{learnedWords}</span> words mastered across{' '}
+                        <span className="font-semibold text-purple-600">{categories.length}</span> categories
+                    </p>
                 </div>
             </div>
         </div>
@@ -247,12 +459,34 @@ export default Categories;
 
 
 
-
 // import React, { useEffect, useState } from 'react';
 // import { useDispatch, useSelector } from 'react-redux';
 // import { useNavigate } from 'react-router-dom';
 // import WordService from '../services/WordService';
 // import '../App.css';
+
+// // Icon imports (using react-icons)
+// import { 
+//   FaHashtag, 
+//   FaPalette, 
+//   FaPaw, 
+//   FaUtensils, 
+//   FaHome, 
+//   FaTree, 
+//   FaCar, 
+//   FaHeart,
+//   FaBook,
+//   FaMusic,
+//   FaPlane,
+//   FaShoppingBag,
+//   FaFutbol,
+//   FaUserFriends,
+//   FaBriefcase,
+//   FaFlask
+// } from 'react-icons/fa';
+
+// import { GiClothes } from "react-icons/gi";
+
 
 // const Categories = ({ isVisible, onClose }) => {
 //     const dispatch = useDispatch();
@@ -260,6 +494,81 @@ export default Categories;
 //     const { selectedLanguage } = useSelector((state) => state.wordSlice);
 //     const [categories, setCategories] = useState([]);
 //     const [loading, setLoading] = useState(false);
+
+//     // Category icon and color mapping
+//     const getCategoryStyle = (categoryName) => {
+//         const styleMap = {
+//             // Numbers
+//             'Numbers': { icon: <FaHashtag />, color: 'bg-purple-100 text-purple-600' },
+//             'Цифры': { icon: <FaHashtag />, color: 'bg-purple-100 text-purple-600' },
+            
+//             // Colors
+//             'Colors': { icon: <FaPalette />, color: 'bg-pink-100 text-pink-600' },
+//             'Цвета': { icon: <FaPalette />, color: 'bg-pink-100 text-pink-600' },
+            
+//             // Animals
+//             'Animals': { icon: <FaPaw />, color: 'bg-orange-100 text-orange-600' },
+//             'Животные': { icon: <FaPaw />, color: 'bg-orange-100 text-orange-600' },
+            
+//             // Food
+//             'Food & Drinks': { icon: <FaUtensils />, color: 'bg-red-100 text-red-600' },
+//             'Еда': { icon: <FaUtensils />, color: 'bg-red-100 text-red-600' },
+            
+//             // Home
+//             'House & Rooms': { icon: <FaHome />, color: 'bg-blue-100 text-blue-600' },
+//             'Дом': { icon: <FaHome />, color: 'bg-blue-100 text-blue-600' },
+            
+//             // Nature
+//             'Months & Seasons': { icon: <FaTree />, color: 'bg-green-100 text-green-600' },
+//             'Природа': { icon: <FaTree />, color: 'bg-green-100 text-green-600' },
+            
+//             // Transportation
+//             // 'Transportation': { icon: <FaCar />, color: 'bg-yellow-100 text-yellow-600' },
+//             'Clothing': { icon: <GiClothes />, color: 'bg-yellow-100 text-yellow-600' },
+//             'Транспорт': { icon: <FaCar />, color: 'bg-yellow-100 text-yellow-600' },
+            
+//             // Feelings
+//             'Emotions & Feelings': { icon: <FaHeart />, color: 'bg-rose-100 text-rose-600' },
+//             'Чувства': { icon: <FaHeart />, color: 'bg-rose-100 text-rose-600' },
+            
+//             // Education
+//             'Education': { icon: <FaBook />, color: 'bg-indigo-100 text-indigo-600' },
+//             'Образование': { icon: <FaBook />, color: 'bg-indigo-100 text-indigo-600' },
+            
+//             // Music
+//             'Music': { icon: <FaMusic />, color: 'bg-teal-100 text-teal-600' },
+//             'Музыка': { icon: <FaMusic />, color: 'bg-teal-100 text-teal-600' },
+            
+//             // Travel
+//             'Travel': { icon: <FaPlane />, color: 'bg-cyan-100 text-cyan-600' },
+//             'Путешествия': { icon: <FaPlane />, color: 'bg-cyan-100 text-cyan-600' },
+            
+//             // Shopping
+//             'Shopping': { icon: <FaShoppingBag />, color: 'bg-amber-100 text-amber-600' },
+//             'Покупки': { icon: <FaShoppingBag />, color: 'bg-amber-100 text-amber-600' },
+            
+//             // Sports
+//             'Sports': { icon: <FaFutbol />, color: 'bg-lime-100 text-lime-600' },
+//             'Спорт': { icon: <FaFutbol />, color: 'bg-lime-100 text-lime-600' },
+            
+//             // People
+//             'People': { icon: <FaUserFriends />, color: 'bg-violet-100 text-violet-600' },
+//             'Люди': { icon: <FaUserFriends />, color: 'bg-violet-100 text-violet-600' },
+            
+//             // Work
+//             'Work': { icon: <FaBriefcase />, color: 'bg-gray-100 text-gray-600' },
+//             'Работа': { icon: <FaBriefcase />, color: 'bg-gray-100 text-gray-600' },
+            
+//             // Science
+//             'Science': { icon: <FaFlask />, color: 'bg-emerald-100 text-emerald-600' },
+//             'Наука': { icon: <FaFlask />, color: 'bg-emerald-100 text-emerald-600' },
+            
+//             // Default fallback
+//             'default': { icon: <FaHashtag />, color: 'bg-gray-100 text-gray-600' }
+//         };
+
+//         return styleMap[categoryName] || styleMap['default'];
+//     };
 
 //     useEffect(() => {
 //         if (isVisible && selectedLanguage) {
@@ -279,32 +588,26 @@ export default Categories;
 //         }
 //     };
 
-
-
 //     const handleCategorySelect = (categoryId, categoryName) => {
 //         onClose();
-
-//         // Dispatch to fetch words by category
 //         dispatch(WordService.getWordsByCategoryId({
 //             categoryId: categoryId,
-//             langCode: selectedLanguage, // Use the currently selected language
-//             only_starred: false, // You can make these dynamic based on your filters
+//             langCode: selectedLanguage,
+//             only_starred: false,
 //             only_learned: false,
 //             skip: 0,
 //             limit: 50
 //         }));
 
-//         // Navigate to words screen (optional - if you want to change route)
 //         navigate('/words', {
 //             state: {
 //                 categoryId: categoryId,
 //                 categoryName: categoryName,
-//                 isCategoryView: true // Flag to indicate we're in category view
+//                 isCategoryView: true
 //             }
 //         });
 //     };
 
-//     // Close modal when clicking outside
 //     const handleBackdropClick = (e) => {
 //         if (e.target === e.currentTarget) {
 //             onClose();
@@ -320,42 +623,64 @@ export default Categories;
 //         >
 //             <div className="bg-white w-full max-w-2xl rounded-t-2xl max-h-[80vh] overflow-hidden animate-slide-up">
 //                 {/* Header */}
-//                 <div className="flex justify-between items-center p-4 border-b border-gray-200">
-//                     <h2 className="text-xl font-bold text-gray-800">Categories</h2>
+//                 <div className="flex justify-between items-center p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
+//                     <div>
+//                         <h2 className="text-2xl font-bold text-gray-800">Categories</h2>
+//                         <p className="text-sm text-gray-600 mt-1">Choose a category to explore words</p>
+//                     </div>
 //                     <button
 //                         onClick={onClose}
-//                         className="text-gray-500 hover:text-gray-700 text-lg p-2 cursor-pointer"
+//                         className="text-gray-500 hover:text-gray-700 text-xl p-2 cursor-pointer transition-colors"
 //                     >
 //                         ✕
 //                     </button>
 //                 </div>
 
 //                 {/* Content */}
-//                 <div className="overflow-y-auto max-h-[60vh]">
+//                 <div className="overflow-y-auto max-h-[60vh] p-4">
 //                     {loading ? (
-//                         <div className="flex justify-center items-center py-8">
-//                             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-//                             <span className="ml-2 text-gray-500">Loading categories...</span>
+//                         <div className="flex justify-center items-center py-12">
+//                             <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-500"></div>
+//                             <span className="ml-3 text-gray-500 text-lg">Loading categories...</span>
 //                         </div>
 //                     ) : (
-//                         <div className="divide-y divide-gray-200">
-//                             {categories.map((category) => (
-//                                 <div
-//                                     key={category.id}
-//                                     onClick={() => handleCategorySelect(category.id, category.name)}
-//                                     className="flex justify-between items-center p-4 hover:bg-gray-50 cursor-pointer transition-colors"
-//                                 >
-//                                     <div className="flex-1">
-//                                         <h3 className="text-lg font-semibold text-gray-800">{category.name}</h3>
+//                         <div className="grid grid-cols-1 gap-3">
+//                             {categories.map((category) => {
+//                                 const { icon, color } = getCategoryStyle(category.name);
+//                                 return (
+//                                     <div
+//                                         key={category.id}
+//                                         onClick={() => handleCategorySelect(category.id, category.name)}
+//                                         className="flex items-center p-4 rounded-xl border border-gray-100 hover:border-blue-200 hover:shadow-md cursor-pointer transition-all duration-200 bg-white hover:scale-[1.02]"
+//                                     >
+//                                         {/* Icon */}
+//                                         <div className={`flex items-center justify-center w-12 h-12 rounded-xl ${color} mr-4`}>
+//                                             <span className="text-xl">{icon}</span>
+//                                         </div>
+                                        
+//                                         {/* Category Info */}
+//                                         <div className="flex-1">
+//                                             <h3 className="text-lg font-semibold text-gray-800">{category.name}</h3>
+//                                             <p className="text-sm text-gray-500 mt-1">
+//                                                 {category.word_count} words
+//                                             </p>
+//                                         </div>
+                                        
+//                                         {/* Word Count Badge */}
+//                                         <div className="bg-gray-100 px-3 py-1 rounded-full">
+//                                             <span className="text-gray-700 font-medium text-sm">
+//                                                 {category.word_count}
+//                                             </span>
+//                                         </div>
 //                                     </div>
-//                                     <div className="bg-blue-100 px-3 py-1 rounded-full">
-//                                         <span className="text-blue-600 font-medium">{category.word_count}</span>
-//                                     </div>
-//                                 </div>
-//                             ))}
+//                                 );
+//                             })}
+                            
 //                             {categories.length === 0 && !loading && (
-//                                 <div className="text-center py-8">
+//                                 <div className="text-center py-12">
+//                                     <div className="text-6xl mb-4">📚</div>
 //                                     <p className="text-gray-500 text-lg">No categories found</p>
+//                                     <p className="text-gray-400 text-sm mt-2">Try selecting a different language</p>
 //                                 </div>
 //                             )}
 //                         </div>
