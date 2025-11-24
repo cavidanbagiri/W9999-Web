@@ -298,6 +298,7 @@ const Categories = ({ isVisible, onClose }) => {
                     {loading ? (
                         <div className="flex flex-col items-center justify-center py-16">
                             <div className="animate-spin rounded-full h-16 w-16 border-4 border-purple-500 border-t-transparent mb-4"></div>
+
                             <span className="text-gray-600 text-lg font-medium">Loading your categories...</span>
                         </div>
                     ) : (

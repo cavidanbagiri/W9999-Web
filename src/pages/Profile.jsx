@@ -5,6 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import AuthService from '../services/AuthService';
 import WordService from '../services/WordService';
 import { clearAfterLogout } from '../store/word_store';
+
+import { PropagateLoader } from "react-spinners";
 import { 
   IoPerson, 
   IoLogOut, 
@@ -88,12 +90,26 @@ export default function ProfileScreen() {
     }
   };
 
+  const override = {
+    display: "block",
+    margin: "0 auto",
+    borderColor: "red",
+};
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex flex-col items-center justify-center p-4">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600 font-medium">Loading your profile...</p>
+          {/* <PropagateLoader
+                            color={'#6366f1'}
+                            loading={loading}
+                            cssOverride={override}
+                            size={10}
+                            aria-label="Loading Spinner"
+                            data-testid="loader"
+                        /> */}
+          <p className="text-gray-600 font-medium mt-5">Loading your profile...</p>
         </div>
       </div>
     );
