@@ -248,7 +248,7 @@ export default function AIScreenChat({ currentWord, nativeLang, onClose }) {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-100px)] bg-gray-50 sm:pb-20 md:pb-0">
+    <div className="flex flex-col h-[calc(100vh-100px)] bg-gray-50">
       {/* Header */}
       <div className="flex items-center justify-between p-4 bg-white border-b border-gray-200">
         <div className="flex items-center">
