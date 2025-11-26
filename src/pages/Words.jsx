@@ -10,10 +10,15 @@ import LanguageSelected from '../layouts/LanguageSelected.jsx';
 import WordList from '../layouts/WordList.jsx';
 import EmptyStarredComponent from '../components/home/EmptyStarredComponent.jsx'
 
+import { setCurrentCategory } from '../store/word_store';
+
+import { IoClose } from "react-icons/io5";
+
+
 export default function WordScreen() {
     const dispatch = useDispatch();
 
-    const { words, selectedLanguage, available_lang_toggle, statistics } = useSelector((state) => state.wordSlice);
+    const { words, selectedLanguage, statistics, currentCategory } = useSelector((state) => state.wordSlice);
 
     const [filter, setFilter] = useState('all');
 
@@ -27,7 +32,7 @@ export default function WordScreen() {
 
     // ✅ Fetch words when selectedLanguage OR filter changes
     useEffect(() => {
-        if (is_auth && selectedLanguage) {
+        if (is_auth && selectedLanguage && !currentCategory.id) {
             dispatch(
                 WordService.handleLanguageSelect({
                     filter,
@@ -36,6 +41,20 @@ export default function WordScreen() {
             );
         }
     }, [is_auth, dispatch, selectedLanguage, filter]);
+
+
+    useEffect(() => {
+    if (currentCategory.id && selectedLanguage) {
+      dispatch(WordService.getWordsByCategoryId({
+        categoryId: currentCategory.id,
+        langCode: selectedLanguage,
+        only_starred: false,
+        only_learned: false,
+        skip: 0,
+        limit: 50
+      }));
+    }
+  }, [currentCategory.id, selectedLanguage, dispatch]);
 
     useEffect(() => {
         if (statistics?.length === 1) {
@@ -65,6 +84,30 @@ export default function WordScreen() {
             {filter === 'starred' && words?.length === 0 && (
                 <EmptyStarredComponent selectedLanguage={selectedLanguage} />
             )}
+
+            {
+                currentCategory.id && (
+                    <div style={{fontFamily:'Sour Gummy'}}
+                     className='pr-6 pt-2 flex items-center justify-end'>
+                        <span className='flex items-center font-bold text-md bg-gray-50 px-2 py-2 rounded-full'>Category: {currentCategory.name}
+                            <button 
+                            onClick={() => {
+                                dispatch(setCurrentCategory({
+                                    id: null,
+                                    name: null
+                                }));
+                                dispatch(WordService.handleLanguageSelect({
+                                    filter,
+                                    langCode: selectedLanguage
+                                }));
+                            }}
+                            className='ml-5 cursor-pointer hover:text-gray-500'>
+                                <IoClose className='text-xl' />
+                            </button>
+                        </span>
+                    </div>
+                )
+            }
 
             {/* Words List */}
             {selectedLanguage ? (

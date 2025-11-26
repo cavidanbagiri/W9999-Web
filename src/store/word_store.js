@@ -3,6 +3,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
 import WordService from '../services/WordService.js';
+import { set } from 'lodash';
 
 axios.defaults.withCredentials = true;
 
@@ -31,7 +32,10 @@ const initialState = {
 
     categories: [],
     categories_pending: false,
-    currentCategory: null, // NEW: to track which category is selected
+    currentCategory: {
+        id: null,
+        name: null
+    }, // NEW: to track which category is selected
     currentCategoryName: null, // NEW: to display category name in UI
 
 
@@ -77,7 +81,12 @@ export const wordSlice = createSlice({
         
         setAvailableLangToggle: (state, action) => {
             state.available_lang_toggle = action.payload;
-        }
+        },
+
+        setCurrentCategory: (state, action) => {
+            state.currentCategory.id = action.payload.id;
+            state.currentCategory.name = action.payload.name;
+        },
 
     },
     extraReducers: (builder) => {
@@ -198,6 +207,6 @@ export const wordSlice = createSlice({
     },
 })
 
-export const { setWordsPendingFalse, clearDetail, setDetail, setSelectedLanguage, setAvailableLangToggle, clearAfterLogout  } = wordSlice.actions;
+export const { setWordsPendingFalse, clearDetail, setDetail, setSelectedLanguage, setAvailableLangToggle, clearAfterLogout, setCurrentCategory  } = wordSlice.actions;
 
 export default wordSlice.reducer;

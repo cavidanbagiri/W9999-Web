@@ -23,27 +23,53 @@ const FilterComponent = ({ filter, setFilter, screen }) => {
   const dispatch = useDispatch();
 
   const [searchQuery, setSearchQuery] = useState('');
-  const { selectedLanguage, available_lang_toggle } = useSelector((state) => state.wordSlice);
+  const { selectedLanguage, available_lang_toggle, currentCategory } = useSelector((state) => state.wordSlice);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const toggleFilter = () => {
-    console.log('toggle filter is working ', filter);
     const newFilter = filter === 'all' ? 'starred' : 'all';
     setFilter(newFilter);
   };
 
-  useEffect(() => {
-    if (selectedLanguage) {
-      // Filter logic can be handled here if needed
-    }
-  }, [filter, selectedLanguage]);
+  // useEffect(() => {
+  //   if (selectedLanguage) {
+  //     // Filter logic can be handled here if needed
+  //   }
+  // }, [filter, selectedLanguage]);
 
   const handleSearchClick = () => {
     navigate('/search');
   };
 
   const handleRefresh = () => {
+
+    if (currentCategory.id && screen === 'WordScreen') {
+      dispatch(WordService.getWordsByCategoryId({
+        categoryId: currentCategory.id,
+        langCode: selectedLanguage,
+        only_starred: false,
+        only_learned: false,
+        skip: 0,
+        limit: 50
+      }));
+      return;
+    }
+
+    else if (currentCategory.id && screen === 'LearnedScreen') {
+      dispatch(WordService.getWordsByCategoryId({
+        categoryId: currentCategory.id,
+        langCode: selectedLanguage,
+        only_starred: false,
+        only_learned: true,
+        skip: 0,
+        limit: 50
+      }));
+      return;
+    }
+
+
+
     let new_filter;
     if (screen === 'LearnedScreen') {
       new_filter = 'learned';
@@ -92,7 +118,7 @@ const FilterComponent = ({ filter, setFilter, screen }) => {
               {filter === 'starred' ? <FaStar className='text-yellow-500' /> : <CiStar />}
             </span>
             <span
-            
+              style={{fontFamily: 'Sour Gummy'}}
               className={`text-md font-semibold cursor-pointer font-sans ${filter === 'starred' ? 'text-amber-700' : 'text-gray-700'
                 }`}
             >
@@ -111,13 +137,15 @@ const FilterComponent = ({ filter, setFilter, screen }) => {
                 <Categories
                   isVisible={isModalOpen}
                   onClose={() => setIsModalOpen(false)}
+                  screen={screen}
                 />
             )
           }
 
           {available_lang_toggle && (
           <div className="flex items-center mr-1">
-            <span className="hidden md:inline text-md font-medium text-gray-700 mr-2">
+            <span style={{fontFamily: 'Sour Gummy'}}
+             className="hidden md:inline text-md font-medium text-gray-700 mr-2">
               Select language
             </span>
             <LanguageSelected screen={'WordScreen'} />
@@ -128,7 +156,8 @@ const FilterComponent = ({ filter, setFilter, screen }) => {
           {
             selectedLanguage && available_lang_toggle && (
               <div className='flex items-center mx-2 lg:mx-8'>
-                <span className="hidden md:inline text-md font-medium ml-2 text-gray-700 mr-2">
+                <span style={{fontFamily: 'Sour Gummy'}}
+                className="hidden md:inline text-md font-medium ml-2 text-gray-700 mr-2">
                     Category
                   </span>
                 <button
@@ -145,7 +174,8 @@ const FilterComponent = ({ filter, setFilter, screen }) => {
 
           {/* Refresh Button */}
           <div className='flex items-center '>
-            <span className="hidden md:inline text-md font-medium ml-2 text-gray-700 mr-1">
+            <span style={{fontFamily: 'Sour Gummy'}}
+            className="hidden md:inline text-md font-medium ml-2 text-gray-700 mr-1">
               Refresh
             </span>
             <button

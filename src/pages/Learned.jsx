@@ -8,13 +8,18 @@ import FilterComponent from '../layouts/FilterComponent.jsx';
 import WordList from '../layouts/WordList.jsx';
 import EmptyWordsComponents from '../components/learned/EmptyWordsComponents.jsx';
 
+import { setCurrentCategory } from '../store/word_store';
+
+
+import { IoClose } from "react-icons/io5";
+
 
 export default function LearnedScreen() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const { is_auth } = useSelector((state) => state.authSlice);
-  const { words, words_pending, selectedLanguage, available_lang_toggle, statistics, loading } = useSelector((state) => state.wordSlice);
+  const { words, words_pending, selectedLanguage, statistics, currentCategory } = useSelector((state) => state.wordSlice);
 
   const [filter, setFilter] = useState('all');
 
@@ -24,9 +29,9 @@ export default function LearnedScreen() {
   useEffect(() => {
     if (is_auth) {
       dispatch(WordService.getStatisticsForDashboard());
-    }   
+    }
   }, [is_auth, dispatch]);
-  
+
   useEffect(() => {
     if (statistics?.length > 0) {
       // Find selected language and get total learned words
@@ -37,13 +42,28 @@ export default function LearnedScreen() {
 
   // Fetch learned words when selected language changes
   useEffect(() => {
-    if (is_auth && selectedLanguage) {
+    if (is_auth && selectedLanguage && !currentCategory.id) {
       dispatch(WordService.handleLanguageSelect({
         filter: 'learned',
         langCode: selectedLanguage,
       }));
     }
   }, [is_auth, selectedLanguage, dispatch]);
+
+
+  // If category selected, fetch category words
+  useEffect(() => {
+    if (currentCategory.id && selectedLanguage) {
+      dispatch(WordService.getWordsByCategoryId({
+        categoryId: currentCategory.id,
+        langCode: selectedLanguage,
+        only_starred: false,
+        only_learned: true,
+        skip: 0,
+        limit: 50
+      }));
+    }
+  }, [currentCategory.id, selectedLanguage, dispatch]);
 
   // Header stats for desktop view
   const learnedStats = {
@@ -70,7 +90,31 @@ export default function LearnedScreen() {
                 <p className="text-gray-600">Review and practice words you've learned</p>
               </div>
             </div>
-            
+
+            {/* {
+              currentCategory.id && (
+                <div style={{ fontFamily: 'Sour Gummy' }}
+                  className='pr-6 pt-2 flex items-center justify-end'>
+                  <span className='flex items-center font-bold text-md bg-gray-50 px-2 py-2 rounded-full'>Category: {currentCategory.name}
+                    <button
+                      onClick={() => {
+                        dispatch(setCurrentCategory({
+                          id: null,
+                          name: null
+                        }));
+                        dispatch(WordService.handleLanguageSelect({
+                          filter,
+                          langCode: selectedLanguage
+                        }));
+                      }}
+                      className='ml-5 cursor-pointer hover:text-gray-500'>
+                      <IoClose className='text-xl' />
+                    </button>
+                  </span>
+                </div>
+              )
+            } */}
+
             {/* Desktop Stats */}
             {selectedLanguage && words?.length > 0 && (
               <div className="flex items-center gap-6">
@@ -105,7 +149,8 @@ export default function LearnedScreen() {
                 <p className="text-sm text-gray-600">{words?.length || 0} words</p>
               </div>
             </div>
-            
+
+
             {/* Mobile Stats Badge */}
             {selectedLanguage && words?.length > 0 && (
               <div className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-sm font-medium">
@@ -116,6 +161,30 @@ export default function LearnedScreen() {
         </div>
       </div>
 
+      {
+        currentCategory.id && (
+          <div style={{ fontFamily: 'Sour Gummy' }}
+            className='pr-6 pt-2 flex items-center justify-end'>
+            <span className='flex items-center font-bold text-md bg-gray-50 px-2 py-2 rounded-full'>Category: {currentCategory.name}
+              <button
+                onClick={() => {
+                  dispatch(setCurrentCategory({
+                    id: null,
+                    name: null
+                  }));
+                  dispatch(WordService.handleLanguageSelect({
+                    filter: 'learned',
+                    langCode: selectedLanguage,
+                  }));
+                }}
+                className='ml-5 cursor-pointer hover:text-gray-500'>
+                <IoClose className='text-xl' />
+              </button>
+            </span>
+          </div>
+        )
+      }
+
       <div className="max-w-8xl mx-auto">
         {/* Main Content Area */}
         <div className="flex flex-col lg:flex-row gap-6 p-4 lg:p-6">
@@ -123,7 +192,7 @@ export default function LearnedScreen() {
           <div className="hidden lg:block w-80 flex-shrink-0">
             <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 sticky top-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">Learning Progress</h2>
-              
+
               {/* Language Progress */}
               {statistics?.map((stat) => (
                 <div key={stat.language_code} className="mb-4 last:mb-0">
@@ -136,15 +205,16 @@ export default function LearnedScreen() {
                     </span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div 
+                    <div
                       className="bg-green-500 h-2 rounded-full transition-all duration-300"
-                      style={{ 
-                        width: `${(stat.learned_words / stat.total_words) * 100}%` 
+                      style={{
+                        width: `${(stat.learned_words / stat.total_words) * 100}%`
                       }}
                     />
                   </div>
                 </div>
               ))}
+
 
               {/* Quick Actions */}
               <div className="mt-6 pt-6 border-t border-gray-200">
@@ -173,13 +243,13 @@ export default function LearnedScreen() {
           <div className="flex-1">
             {/* Filter Component */}
             {/* {selectedLanguage && ( */}
-              <div className="mb-4">
-                <FilterComponent
-                  filter={filter}
-                  setFilter={setFilter}
-                  screen={'LearnedScreen'}
-                />
-              </div>
+            <div className="mb-4">
+              <FilterComponent
+                filter={filter}
+                setFilter={setFilter}
+                screen={'LearnedScreen'}
+              />
+            </div>
             {/* )} */}
 
             {/* Language Selector */}
@@ -267,6 +337,7 @@ export default function LearnedScreen() {
           </div>
         </div>
       </div>
+
     </div>
   );
 }

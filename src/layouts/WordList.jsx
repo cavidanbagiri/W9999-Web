@@ -1,6 +1,6 @@
 import React, { useState, useEffect, CSSProperties } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setSelectedLanguage } from '../store/word_store';
+import { setCurrentCategory, setSelectedLanguage } from '../store/word_store';
 import WordService from '../services/WordService.js';
 import VocabCard from '../components/cards/VocabCard.jsx';
 
@@ -15,12 +15,36 @@ const override = {
 
 export function WordList({ screen }) {
     const dispatch = useDispatch();
-    const { words, loading, selectedLanguage, hasMore } = useSelector((state) => state.wordSlice);
+    const { words, loading, selectedLanguage, hasMore, currentCategory } = useSelector((state) => state.wordSlice);
     const [filter, setFilter] = useState('all');
     const [page, setPage] = useState(1);
 
 
     const handleRefresh = () => {
+
+        if (currentCategory.id && screen === 'WordScreen') {
+            dispatch(WordService.getWordsByCategoryId({
+                categoryId: currentCategory.id,
+                langCode: selectedLanguage,
+                only_starred: false,
+                only_learned: false,
+                skip: 0,
+                limit: 50
+            }));
+            return;
+        }
+        if (currentCategory.id && screen === 'LearnedScreen') {
+            dispatch(WordService.getWordsByCategoryId({
+                categoryId: currentCategory.id,
+                langCode: selectedLanguage,
+                only_starred: false,
+                only_learned: true,
+                skip: 0,
+                limit: 50
+            }));
+            return;
+        }
+
         setPage(1);
         if (screen === 'LearnedScreen') {
             dispatch(setSelectedLanguage(selectedLanguage));
@@ -44,9 +68,13 @@ export function WordList({ screen }) {
         }
     };
 
-    useEffect(() => {
-        handleRefresh();
-    }, [selectedLanguage, filter]);
+    // useEffect(() => {
+    //     handleRefresh();
+    // }, [screen]);
+
+    // useEffect(() => {
+    //     handleRefresh();
+    // }, [selectedLanguage, filter]);
 
     return (
         <div className="mt-1 ">
@@ -64,17 +92,8 @@ export function WordList({ screen }) {
                 loading
                     ?
                     <div className="flex flex-col justify-center items-center py-4  h-[50vh]">
-                   
-                        {/* <PropagateLoader
-                            color={'#6366f1'}
-                            loading={loading}
-                            cssOverride={override}
-                            size={10}
-                            aria-label="Loading Spinner"
-                            data-testid="loader"
-                        /> */}
                         <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                        <span className="text-gray-600 text-lg font-medium">Loading your categories...</span>
+                        <span className="text-gray-600 text-lg font-medium">Loading your words...</span>
                     </div>
                     :
 
