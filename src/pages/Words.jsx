@@ -96,16 +96,38 @@ export default function WordScreen() {
     }, [is_auth, selectedLanguage, currentCategory.id, filter, words.length, pagination.pageSize, dispatch, isFetching]);
 
     // ✅ Fetch words when selectedLanguage OR filter changes - FIXED
-    useEffect(() => {
-        if (isInitialMount.current) {
-            isInitialMount.current = false;
-            return;
-        }
+    // useEffect(() => {
+    //     if (isInitialMount.current) {
+    //         isInitialMount.current = false;
+    //         return;
+    //     }
         
-        if (is_auth && selectedLanguage) {
-            fetchWords(true);
-        }
-    }, [selectedLanguage, filter, currentCategory.id]);
+    //     if (is_auth && selectedLanguage) {
+    //         fetchWords(true);
+    //     }
+    // }, [selectedLanguage, filter, currentCategory.id]);
+
+ const [lastScreenContext, setLastScreenContext] = useState('');
+
+// Fetch words when selected language or category changes - FIXED
+useEffect(() => {
+  if (is_auth && selectedLanguage) {
+    const currentContext = `${selectedLanguage}-${currentCategory.id}-learned`;
+    
+    // Only fetch if context actually changed
+    if (currentContext !== lastScreenContext) {
+      setLastScreenContext(currentContext);
+      fetchWords(true);
+    }
+  }
+}, [selectedLanguage, currentCategory.id, is_auth, lastScreenContext, fetchWords]);
+
+
+
+
+
+
+
 
     // Load more function - FIXED
     const loadMoreWords = useCallback(() => {

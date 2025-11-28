@@ -41,7 +41,7 @@ static getWordsByCategoryId = createAsyncThunk(
     'word/main/fetch_words_by_categories',
     async ({ categoryId, langCode, only_starred = false, only_learned = false, skip = 0, limit = 20 }, thunkAPI) => {
         try {
-            const response = await $api.get(`/words/main/fetch_words_by_categories/`, {
+            const response = await $api.get(`/words/main/fetch_words_by_categories`, {
                 params: {
                     category_id: categoryId,
                     lang_code: langCode,
