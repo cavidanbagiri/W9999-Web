@@ -62,6 +62,8 @@ export default function WordScreen() {
         
         const skip = reset ? 0 : words.length;
         const limit = pagination.pageSize;
+
+        const shouldReset = reset || words.some(word => word.is_learned === true);
         
         try {
             if (currentCategory.id) {
@@ -70,14 +72,16 @@ export default function WordScreen() {
                     langCode: selectedLanguage,
                     only_starred: filter === 'starred',
                     only_learned: filter === 'learned',
-                    skip: skip,
+                    // skip: skip,
+                    skip: shouldReset ? 0 : skip,
                     limit: limit
                 })).unwrap();
             } else {
                 await dispatch(WordService.handleLanguageSelect({
                     filter,
                     langCode: selectedLanguage,
-                    skip: skip,
+                    // skip: skip,
+                    skip: shouldReset ? 0 : skip,
                     limit: limit
                 })).unwrap();
             }

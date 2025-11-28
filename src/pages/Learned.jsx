@@ -53,6 +53,8 @@ export default function LearnedScreen() {
     const skip = reset ? 0 : words.length;
     const limit = pagination.pageSize;
     
+    const shouldReset = reset || words.some(word => word.is_learned !== true);
+
     try {
       if (currentCategory.id) {
         await dispatch(WordService.getWordsByCategoryId({
@@ -60,14 +62,16 @@ export default function LearnedScreen() {
           langCode: selectedLanguage,
           only_starred: false,
           only_learned: true,
-          skip: skip,
+          // skip: skip,
+          skip: shouldReset ? 0 : skip,
           limit: limit
         })).unwrap();
       } else {
         await dispatch(WordService.handleLanguageSelect({
           filter: 'learned',
           langCode: selectedLanguage,
-          skip: skip,
+          // skip: skip,
+          skip: shouldReset ? 0 : skip,
           limit: limit
         })).unwrap();
       }
