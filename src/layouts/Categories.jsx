@@ -197,14 +197,16 @@ const Categories = ({ isVisible, onClose, screen }) => {
 
     const handleCategorySelect = (categoryId, categoryName) => {
         onClose();
+        const skip = 0;
+        const limit = 20; // Use the same page size as your pagination
         if (screen === 'WordScreen') {
             dispatch(WordService.getWordsByCategoryId({
                 categoryId: categoryId,
                 langCode: selectedLanguage,
                 only_starred: false,
                 only_learned: false,
-                skip: 0,
-                limit: 50
+                skip: skip,
+                limit: limit
             }));
             dispatch(setCurrentCategory({
                 id: categoryId,
@@ -217,8 +219,8 @@ const Categories = ({ isVisible, onClose, screen }) => {
                 langCode: selectedLanguage,
                 only_starred: false,
                 only_learned: true,
-                skip: 0,
-                limit: 50
+                skip: skip,
+                limit: limit
             }));
             dispatch(setCurrentCategory({
                 id: categoryId,

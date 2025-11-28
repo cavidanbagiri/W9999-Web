@@ -122,7 +122,7 @@ export function WordList({ screen }) {
             )} */}
 
             {/* Refresh Button */}
-            {
+            {/* {
                 !loading &&
                 <div className="flex justify-center py-4 border-t border-gray-100">
                     <button
@@ -133,7 +133,7 @@ export function WordList({ screen }) {
                         {loading ? 'Refreshing...' : 'Refresh Words'}
                     </button>
                 </div>
-            }
+            } */}
         </div>
     );
 }

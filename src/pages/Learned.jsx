@@ -1,29 +1,34 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-
 import WordService from '../services/WordService';
 import LanguageSelected from '../layouts/LanguageSelected.jsx';
 import FilterComponent from '../layouts/FilterComponent.jsx';
 import WordList from '../layouts/WordList.jsx';
 import EmptyWordsComponents from '../components/learned/EmptyWordsComponents.jsx';
-
-import { setCurrentCategory } from '../store/word_store';
-
-
+import { setCurrentCategory, setLoadingMore } from '../store/word_store';
 import { IoClose } from "react-icons/io5";
 
-
 export default function LearnedScreen() {
-  const navigate = useNavigate();
+  
+
+   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const isInitialMount = useRef(true);
 
   const { is_auth } = useSelector((state) => state.authSlice);
-  const { words, words_pending, selectedLanguage, statistics, currentCategory } = useSelector((state) => state.wordSlice);
+  const { 
+    words, 
+    words_pending, 
+    selectedLanguage, 
+    statistics, 
+    currentCategory,
+    pagination 
+  } = useSelector((state) => state.wordSlice);
 
   const [filter, setFilter] = useState('all');
-
   const [totalLearned, setTotalLearned] = useState(0);
+  const [isFetching, setIsFetching] = useState(false);
 
   // Fetch statistics on component mount
   useEffect(() => {
@@ -34,43 +39,135 @@ export default function LearnedScreen() {
 
   useEffect(() => {
     if (statistics?.length > 0) {
-      // Find selected language and get total learned words
       const selectedLang = statistics.find(stat => stat.language_code === selectedLanguage);
       setTotalLearned(selectedLang?.learned_words);
     }
   }, [statistics, selectedLanguage]);
 
-  // Fetch learned words when selected language changes
-  useEffect(() => {
-    if (is_auth && selectedLanguage && !currentCategory.id) {
-      dispatch(WordService.handleLanguageSelect({
-        filter: 'learned',
-        langCode: selectedLanguage,
-      }));
+  // Fetch words function with pagination - FIXED
+  const fetchWords = useCallback(async (reset = true) => {
+    if (isFetching || !is_auth || !selectedLanguage) return;
+    
+    setIsFetching(true);
+    
+    const skip = reset ? 0 : words.length;
+    const limit = pagination.pageSize;
+    
+    try {
+      if (currentCategory.id) {
+        await dispatch(WordService.getWordsByCategoryId({
+          categoryId: currentCategory.id,
+          langCode: selectedLanguage,
+          only_starred: false,
+          only_learned: true,
+          skip: skip,
+          limit: limit
+        })).unwrap();
+      } else {
+        await dispatch(WordService.handleLanguageSelect({
+          filter: 'learned',
+          langCode: selectedLanguage,
+          skip: skip,
+          limit: limit
+        })).unwrap();
+      }
+    } catch (error) {
+      console.error('Error fetching words:', error);
+    } finally {
+      setIsFetching(false);
+      if (!reset) {
+        dispatch(setLoadingMore(false));
+      }
     }
-  }, [is_auth, selectedLanguage, dispatch]);
+  }, [is_auth, selectedLanguage, currentCategory.id, words.length, pagination.pageSize, dispatch, isFetching]);
 
-
-  // If category selected, fetch category words
+  // Fetch words when selected language or category changes - FIXED
   useEffect(() => {
-    if (currentCategory.id && selectedLanguage) {
-      dispatch(WordService.getWordsByCategoryId({
-        categoryId: currentCategory.id,
-        langCode: selectedLanguage,
-        only_starred: false,
-        only_learned: true,
-        skip: 0,
-        limit: 50
-      }));
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
     }
-  }, [currentCategory.id, selectedLanguage, dispatch]);
+    
+    if (is_auth && selectedLanguage) {
+      fetchWords(true);
+    }
+  }, [selectedLanguage, currentCategory.id]);
 
-  // Header stats for desktop view
+  // Load more function - FIXED
+  const loadMoreWords = useCallback(() => {
+    if (!isFetching && pagination.hasMore && !words_pending) {
+      fetchWords(false);
+    }
+  }, [isFetching, pagination.hasMore, words_pending, fetchWords]);
+
+  // Infinite scroll handler - FIXED
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.innerHeight + document.documentElement.scrollTop 
+          >= document.documentElement.offsetHeight - 200 && 
+          !isFetching && 
+          pagination.hasMore && 
+          !words_pending) {
+        loadMoreWords();
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [loadMoreWords, words_pending, isFetching, pagination.hasMore]);
+
+  // Header stats
   const learnedStats = {
-    totalWords: words?.length || 0,
+    totalWords: totalLearned || 0,
     languages: statistics?.length || 0,
     progress: statistics?.find(stat => stat.language_code === selectedLanguage)?.learned_words || 0
   };
+
+  // Pagination component
+  const PaginationControls = () => (
+    <div className="flex flex-col items-center justify-center mt-8 space-y-4">
+      {/* Load More Button */}
+      {pagination.hasMore && (
+        <button
+          onClick={loadMoreWords}
+          disabled={isFetching || words_pending}
+          className="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors font-medium flex items-center space-x-2"
+        >
+          {isFetching ? (
+            <>
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              <span>Loading...</span>
+            </>
+          ) : (
+            <>
+              <span>Load More Words</span>
+              <span className="text-blue-100">({words.length} of {totalLearned})</span>
+            </>
+          )}
+        </button>
+      )}
+      
+      {/* Progress Text */}
+      {words.length > 0 && (
+        <div className="text-center text-gray-600 text-sm">
+          Showing {words.length} of {totalLearned} learned words
+          {pagination.hasMore && ' • Scroll down to load more'}
+        </div>
+      )}
+      
+      {/* Back to Top */}
+      {words.length >= 40 && (
+        <button
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          className="text-blue-500 hover:text-blue-700 text-sm font-medium transition-colors"
+        >
+          ↑ Back to Top
+        </button>
+      )}
+    </div>
+  );
+
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50/30 pb-20">
@@ -91,41 +188,20 @@ export default function LearnedScreen() {
               </div>
             </div>
 
-            {/* {
-              currentCategory.id && (
-                <div style={{ fontFamily: 'Sour Gummy' }}
-                  className='pr-6 pt-2 flex items-center justify-end'>
-                  <span className='flex items-center font-bold text-md bg-gray-50 px-2 py-2 rounded-full'>Category: {currentCategory.name}
-                    <button
-                      onClick={() => {
-                        dispatch(setCurrentCategory({
-                          id: null,
-                          name: null
-                        }));
-                        dispatch(WordService.handleLanguageSelect({
-                          filter,
-                          langCode: selectedLanguage
-                        }));
-                      }}
-                      className='ml-5 cursor-pointer hover:text-gray-500'>
-                      <IoClose className='text-xl' />
-                    </button>
-                  </span>
-                </div>
-              )
-            } */}
-
             {/* Desktop Stats */}
             {selectedLanguage && words?.length > 0 && (
               <div className="flex items-center gap-6">
                 <div className="text-center">
-                  {/* <div className="text-2xl font-bold text-blue-600">{learnedStats.totalWords}</div> */}
                   <div className="text-2xl font-bold text-blue-600">{totalLearned}</div>
-                  <div className="text-sm text-gray-600">Words Learned</div>
+                  <div className="text-sm text-gray-600">Total Learned</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-green-600">{learnedStats.languages}</div>
                   <div className="text-sm text-gray-600">Languages</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-purple-600">{words.length}</div>
+                  <div className="text-sm text-gray-600">Loaded</div>
                 </div>
               </div>
             )}
@@ -146,44 +222,47 @@ export default function LearnedScreen() {
               </button>
               <div>
                 <h1 className="text-xl font-bold text-gray-900">Learned</h1>
-                <p className="text-sm text-gray-600">{words?.length || 0} words</p>
+                <p className="text-sm text-gray-600">
+                  {words.length} of {totalLearned} words
+                </p>
               </div>
             </div>
-
 
             {/* Mobile Stats Badge */}
             {selectedLanguage && words?.length > 0 && (
               <div className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-sm font-medium">
-                {words.length} words
+                {words.length} loaded
               </div>
             )}
           </div>
         </div>
       </div>
 
-      {
-        currentCategory.id && (
-          <div style={{ fontFamily: 'Sour Gummy' }}
-            className='pr-6 pt-2 flex items-center justify-end'>
-            <span className='flex items-center font-bold text-md bg-gray-50 px-2 py-2 rounded-full'>Category: {currentCategory.name}
-              <button
-                onClick={() => {
-                  dispatch(setCurrentCategory({
-                    id: null,
-                    name: null
-                  }));
-                  dispatch(WordService.handleLanguageSelect({
-                    filter: 'learned',
-                    langCode: selectedLanguage,
-                  }));
-                }}
-                className='ml-5 cursor-pointer hover:text-gray-500'>
-                <IoClose className='text-xl' />
-              </button>
-            </span>
-          </div>
-        )
-      }
+      {currentCategory.id && (
+        <div style={{ fontFamily: 'Sour Gummy' }}
+          className='pr-6 pt-2 flex items-center justify-end'>
+          <span className='flex items-center font-bold text-md bg-gray-50 px-2 py-2 rounded-full'>
+            Category: {currentCategory.name}
+            <button
+              onClick={() => {
+                dispatch(setCurrentCategory({
+                  id: null,
+                  name: null
+                }));
+                // Reset pagination when clearing category
+                dispatch(WordService.handleLanguageSelect({
+                  filter: 'learned',
+                  langCode: selectedLanguage,
+                  skip: 0,
+                  limit: pagination.pageSize
+                }));
+              }}
+              className='ml-5 cursor-pointer hover:text-gray-500'>
+              <IoClose className='text-xl' />
+            </button>
+          </span>
+        </div>
+      )}
 
       <div className="max-w-8xl mx-auto">
         {/* Main Content Area */}
@@ -215,7 +294,6 @@ export default function LearnedScreen() {
                 </div>
               ))}
 
-
               {/* Quick Actions */}
               <div className="mt-6 pt-6 border-t border-gray-200">
                 <h3 className="text-sm font-semibold text-gray-900 mb-3">Quick Actions</h3>
@@ -227,13 +305,6 @@ export default function LearnedScreen() {
                     <div className="font-medium text-gray-900">All Words</div>
                     <div className="text-sm text-gray-600">Browse complete vocabulary</div>
                   </button>
-                  {/* <button
-                    onClick={() => navigate('/ai-chat')}
-                    className="w-full text-left p-3 rounded-lg border border-gray-200 hover:border-purple-300 hover:bg-purple-50 transition-colors"
-                  >
-                    <div className="font-medium text-gray-900">AI Practice</div>
-                    <div className="text-sm text-gray-600">Practice with AI tutor</div>
-                  </button> */}
                 </div>
               </div>
             </div>
@@ -242,7 +313,6 @@ export default function LearnedScreen() {
           {/* Main Content */}
           <div className="flex-1">
             {/* Filter Component */}
-            {/* {selectedLanguage && ( */}
             <div className="mb-4">
               <FilterComponent
                 filter={filter}
@@ -250,19 +320,11 @@ export default function LearnedScreen() {
                 screen={'LearnedScreen'}
               />
             </div>
-            {/* )} */}
-
-            {/* Language Selector */}
-            {/* {available_lang_toggle && (
-              <div className="mb-4">
-                <LanguageSelected screen={'LearnedScreen'} />
-              </div>
-            )} */}
 
             {/* Content States */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-200 min-h-[400px]">
               {/* Loading State */}
-              {selectedLanguage && words_pending && (
+              {selectedLanguage && words_pending && words.length === 0 && (
                 <div className="flex flex-col items-center justify-center py-16">
                   <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
                   <div className="text-gray-600 text-lg">Loading learned words...</div>
@@ -276,7 +338,7 @@ export default function LearnedScreen() {
               )}
 
               {/* Words List */}
-              {selectedLanguage && !words_pending && words?.length > 0 && (
+              {selectedLanguage && words?.length > 0 && (
                 <div className="p-4 lg:p-6">
                   {/* Mobile Progress Header */}
                   <div className="lg:hidden mb-6 bg-gradient-to-r from-blue-50 to-green-50 rounded-xl p-4 border border-blue-100">
@@ -286,15 +348,23 @@ export default function LearnedScreen() {
                         <p className="text-sm text-gray-600">Keep up the great work!</p>
                       </div>
                       <div className="text-2xl font-bold text-blue-600">
-                        {/* {words.length} {selectedLanguage} */}
-                        {
-                          statistics?.find(stat => stat.language_code === selectedLanguage)?.learned_words || 0
-                        }
+                        {statistics?.find(stat => stat.language_code === selectedLanguage)?.learned_words || 0}
                       </div>
                     </div>
                   </div>
 
                   <WordList filter={'learned'} screen={'LearnedScreen'} />
+                  
+                  {/* Pagination Controls */}
+                  <PaginationControls />
+                </div>
+              )}
+
+              {/* Loading More Indicator */}
+              {pagination.isLoadingMore && (
+                <div className="flex justify-center items-center py-8">
+                  <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mr-3"></div>
+                  <span className="text-gray-600">Loading more words...</span>
                 </div>
               )}
 
@@ -325,19 +395,13 @@ export default function LearnedScreen() {
                   >
                     <div className="font-medium text-gray-900 text-sm">All Words</div>
                   </button>
-                  {/* <button
-                    onClick={() => navigate('/ai-chat')}
-                    className="p-3 rounded-lg border border-gray-200 hover:border-purple-300 hover:bg-purple-50 transition-colors text-left"
-                  >
-                    <div className="font-medium text-gray-900 text-sm">AI Practice</div>
-                  </button> */}
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-
     </div>
   );
 }
+
