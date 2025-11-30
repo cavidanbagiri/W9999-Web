@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import WordService from '../services/WordService';
 import '../App.css';
 
-import { setCurrentCategory } from '../store/word_store';
+import { setCurrentCategory, setCurrentPosName } from '../store/word_store';
 
 // Icon imports
 import { 
@@ -208,10 +208,6 @@ const Categories = ({ isVisible, onClose, screen }) => {
                 skip: skip,
                 limit: limit
             }));
-            dispatch(setCurrentCategory({
-                id: categoryId,
-                name: categoryName
-            }));
         }
         else if (screen === 'LearnedScreen') {
             dispatch(WordService.getWordsByCategoryId({
@@ -222,11 +218,14 @@ const Categories = ({ isVisible, onClose, screen }) => {
                 skip: skip,
                 limit: limit
             }));
-            dispatch(setCurrentCategory({
+        }
+        dispatch(setCurrentCategory({
                 id: categoryId,
                 name: categoryName
             }));
-        }
+        dispatch(setCurrentPosName({
+            name: null
+        }));
 
     };
 

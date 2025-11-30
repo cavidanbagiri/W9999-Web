@@ -14,6 +14,10 @@ need to add control for this as in size is > 36 and coming words is 0, stop send
 
 6 - If category selected, and user select pos, need to delete category from filter or reverse
 
+7 - In category section also need to check the total learned words maybe doesnt look true as pos
+
+
+
 Solving
 
 

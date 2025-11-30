@@ -80,7 +80,7 @@ export const wordSlice = createSlice({
                 isLoadingMore: false
             };
         },
-        
+
         setDetail: (state, action) => {
             const { actionType, value } = action.payload;
             if (state.detail) {
@@ -95,7 +95,7 @@ export const wordSlice = createSlice({
         setSelectedLanguage: (state, action) => {
             state.selectedLanguage = action.payload;
         },
-        
+
         setAvailableLangToggle: (state, action) => {
             state.available_lang_toggle = action.payload;
         },
@@ -103,10 +103,12 @@ export const wordSlice = createSlice({
         setCurrentCategory: (state, action) => {
             state.currentCategory.id = action.payload.id;
             state.currentCategory.name = action.payload.name;
+            // console.log('current category is ', state.currentCategory.id)
         },
-
+        
         setCurrentPosName: (state, action) => {
             state.currentPosName.name = action.payload.name;
+            // console.log('current pos is ', state.currentPosName.name)
         },
 
         // NEW: Add pagination reducers
@@ -154,7 +156,7 @@ export const wordSlice = createSlice({
         builder.addCase(WordService.handleLanguageSelect.fulfilled, (state, action) => {
             const { skip = 0 } = action.meta.arg || {};
             const responseData = action.payload?.payload || action.payload;
-            
+
             if (skip === 0) {
                 // First page - replace words
                 state.words = Array.isArray(responseData) ? responseData : (responseData.words || []);
@@ -243,7 +245,7 @@ export const wordSlice = createSlice({
         builder.addCase(WordService.getWordsByCategoryId.fulfilled, (state, action) => {
             const { skip = 0 } = action.meta.arg || {};
             const responseData = action.payload?.payload || action.payload;
-            
+
             if (skip === 0) {
                 // First page - replace words
                 state.words = Array.isArray(responseData) ? responseData : (responseData.words || []);
@@ -270,7 +272,7 @@ export const wordSlice = createSlice({
         });
 
 
-        
+
         // WordService getPosStatisticsForDashboard
         builder.addCase(WordService.getPosStatistics.pending, (state, action) => {
             state.loading = true;
@@ -293,49 +295,62 @@ export const wordSlice = createSlice({
                 state.pagination.isLoadingMore = true;
             }
         });
-        builder.addCase(WordService.getWordsByPosName.fulfilled, (state, action) => {
-            const { skip = 0 } = action.meta.arg || {};
-            const responseData = action.payload?.payload || action.payload;
-            
-            if (skip === 0) {
-                // First page - replace words
-                state.words = Array.isArray(responseData) ? responseData : (responseData.words || []);
-                state.words_pending = false;
-                state.loading = false;
-            } else {
-                // Subsequent pages - append words
-                const newWords = Array.isArray(responseData) ? responseData : (responseData.words || []);
-                state.words = [...state.words, ...newWords];
-                state.pagination.isLoadingMore = false;
-            }
+builder.addCase(WordService.getWordsByPosName.fulfilled, (state, action) => {
+    const { skip = 0 } = action.meta.arg || {};
+    const responseData = action.payload?.payload || action.payload;
 
-            // Update pagination state for categories
-            if (responseData && typeof responseData === 'object' && !Array.isArray(responseData)) {
-                state.pagination.totalWords = responseData.total_count || state.words.length;
-                state.pagination.hasMore = responseData.has_more !== undefined ? responseData.has_more : (responseData.words?.length === state.pagination.pageSize);
-                state.pagination.currentPage = skip / state.pagination.pageSize;
-            }
-        });
-        builder.addCase(WordService.getWordsByPosName.rejected, (state, action) => {
-            state.words_pending = false;
-            state.loading = false;
+ 
+
+    if (skip === 0) {
+        // First page - replace words
+        state.words = Array.isArray(responseData) ? responseData : (responseData.words || []);
+        state.words_pending = false;
+        state.loading = false;
+    } else {
+        // Subsequent pages - append words
+        const newWords = Array.isArray(responseData) ? responseData : (responseData.words || []);
+        
+        // If no new words received, stop pagination
+        if (newWords.length === 0) {
+            state.pagination.hasMore = false;
             state.pagination.isLoadingMore = false;
-        });
+            return;
+        }
 
+        state.words = [...state.words, ...newWords];
+        state.pagination.isLoadingMore = false;
+    }
 
+    // Update pagination state
+    if (responseData && typeof responseData === 'object' && !Array.isArray(responseData)) {
+        state.pagination.totalWords = responseData.total_count || state.words.length;
 
+        // Calculate hasMore based on actual data
+        const currentLoaded = state.words.length;
+        const totalCount = responseData.total_count || 0;
+
+        // Use backend's has_more if provided, otherwise calculate
+        if (responseData.has_more !== undefined) {
+            state.pagination.hasMore = responseData.has_more;
+        } else {
+            state.pagination.hasMore = currentLoaded < totalCount;
+        }
+
+        state.pagination.currentPage = skip / state.pagination.pageSize;
+    }
+});
 
     },
 });
 
 // Export actions - remove the duplicate createAction line from here
-export const { 
-    setWordsPendingFalse, 
-    clearDetail, 
-    setDetail, 
-    setSelectedLanguage, 
-    setAvailableLangToggle, 
-    clearAfterLogout, 
+export const {
+    setWordsPendingFalse,
+    clearDetail,
+    setDetail,
+    setSelectedLanguage,
+    setAvailableLangToggle,
+    clearAfterLogout,
     setCurrentCategory,
     setCurrentPosName,
     resetPagination,

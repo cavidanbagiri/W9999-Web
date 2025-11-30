@@ -103,18 +103,6 @@ export default function LearnedScreen() {
 
   const [lastScreenContext, setLastScreenContext] = useState('');
 
-  // Fetch words when selected language or category changes - FIXED
-  // useEffect(() => {
-  //   if (is_auth && selectedLanguage) {
-  //     const currentContext = `${selectedLanguage}-${currentCategory.id}-learned`;
-
-  //     // Only fetch if context actually changed
-  //     if (currentContext !== lastScreenContext) {
-  //       setLastScreenContext(currentContext);
-  //       fetchWords(true);
-  //     }
-  //   }
-  // }, [selectedLanguage, currentCategory.id, is_auth, lastScreenContext, fetchWords]);
   useEffect(() => {
       if (is_auth && selectedLanguage) {
           const currentContext = `${selectedLanguage}-${currentCategory.id}-${currentPosName.name || ''}-${filter}`;

@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import WordService from '../services/WordService';
-import { setCurrentPosName } from '../store/word_store';
+import { setCurrentCategory, setCurrentPosName } from '../store/word_store';
 import '../App.css';
 
 // Icon imports for POS
-import { 
-  FaRunning, FaBook, FaStar, FaChartBar, 
-  FaCheckCircle, FaLock, FaChartLine, FaHashtag,
-  FaPalette, FaPaw, FaUtensils, FaHome, FaTree,
-  FaCar, FaHeart, FaMusic, FaPlane, FaShoppingBag,
-  FaFutbol, FaUserFriends, FaBriefcase, FaFlask
+import {
+    FaRunning, FaBook, FaStar, FaChartBar,
+    FaCheckCircle, FaLock, FaChartLine, FaHashtag,
+    FaPalette, FaPaw, FaUtensils, FaHome, FaTree,
+    FaCar, FaHeart, FaMusic, FaPlane, FaShoppingBag,
+    FaFutbol, FaUserFriends, FaBriefcase, FaFlask
 } from 'react-icons/fa';
 
 const PosStatistics = ({ isVisible, onClose, screen }) => {
@@ -21,62 +21,62 @@ const PosStatistics = ({ isVisible, onClose, screen }) => {
     // POS styling with gradients and icons
     const getPosStyle = (posName) => {
         const styleMap = {
-            'verb': { 
-                icon: <FaRunning />, 
+            'verb': {
+                icon: <FaRunning />,
                 gradient: 'from-red-500 to-orange-600',
                 bgGradient: 'from-red-50 to-orange-50',
                 textColor: 'text-red-700'
             },
-            'noun': { 
-                icon: <FaBook />, 
+            'noun': {
+                icon: <FaBook />,
                 gradient: 'from-blue-500 to-cyan-600',
                 bgGradient: 'from-blue-50 to-cyan-50',
                 textColor: 'text-blue-700'
             },
-            'adjective': { 
-                icon: <FaStar />, 
+            'adjective': {
+                icon: <FaStar />,
                 gradient: 'from-yellow-500 to-amber-600',
                 bgGradient: 'from-yellow-50 to-amber-50',
                 textColor: 'text-yellow-700'
             },
-            'adverb': { 
-                icon: <FaChartBar />, 
+            'adverb': {
+                icon: <FaChartBar />,
                 gradient: 'from-purple-500 to-indigo-600',
                 bgGradient: 'from-purple-50 to-indigo-50',
                 textColor: 'text-purple-700'
             },
-            'pronoun': { 
-                icon: <FaUserFriends />, 
+            'pronoun': {
+                icon: <FaUserFriends />,
                 gradient: 'from-pink-500 to-rose-600',
                 bgGradient: 'from-pink-50 to-rose-50',
                 textColor: 'text-pink-700'
             },
-            'preposition': { 
-                icon: <FaHashtag />, 
+            'preposition': {
+                icon: <FaHashtag />,
                 gradient: 'from-green-500 to-emerald-600',
                 bgGradient: 'from-green-50 to-emerald-50',
                 textColor: 'text-green-700'
             },
-            'conjunction': { 
-                icon: <FaPlane />, 
+            'conjunction': {
+                icon: <FaPlane />,
                 gradient: 'from-teal-500 to-cyan-600',
                 bgGradient: 'from-teal-50 to-cyan-50',
                 textColor: 'text-teal-700'
             },
-            'interjection': { 
-                icon: <FaHeart />, 
+            'interjection': {
+                icon: <FaHeart />,
                 gradient: 'from-rose-500 to-pink-600',
                 bgGradient: 'from-rose-50 to-pink-50',
                 textColor: 'text-rose-700'
             },
-            'determiner': { 
-                icon: <FaBriefcase />, 
+            'determiner': {
+                icon: <FaBriefcase />,
                 gradient: 'from-gray-500 to-slate-600',
                 bgGradient: 'from-gray-50 to-slate-50',
                 textColor: 'text-gray-700'
             },
-            'default': { 
-                icon: <FaBook />, 
+            'default': {
+                icon: <FaBook />,
                 gradient: 'from-gray-500 to-slate-600',
                 bgGradient: 'from-gray-50 to-slate-50',
                 textColor: 'text-gray-700'
@@ -119,8 +119,8 @@ const PosStatistics = ({ isVisible, onClose, screen }) => {
         masteredCategories: Object.values(pos_statistics).filter(stat => stat.learned === stat.total && stat.total > 0).length
     } : { totalWords: 0, learnedWords: 0, totalCategories: 0, masteredCategories: 0 };
 
-    const overallProgress = totalStats.totalWords > 0 
-        ? Math.round((totalStats.learnedWords / totalStats.totalWords) * 100) 
+    const overallProgress = totalStats.totalWords > 0
+        ? Math.round((totalStats.learnedWords / totalStats.totalWords) * 100)
         : 0;
 
     if (!isVisible) return null;
@@ -129,6 +129,7 @@ const PosStatistics = ({ isVisible, onClose, screen }) => {
         onClose();
         const skip = 0;
         const limit = 20; // Use the same page size as your pagination
+
         if (screen === 'WordScreen') {
             dispatch(WordService.getWordsByPosName({
                 posName: posName,
@@ -138,9 +139,7 @@ const PosStatistics = ({ isVisible, onClose, screen }) => {
                 skip: skip,
                 limit: limit
             }));
-            dispatch(setCurrentPosName({
-                name: posName
-            }));
+
         }
         else if (screen === 'LearnedScreen') {
             dispatch(WordService.getWordsByPosName({
@@ -151,10 +150,15 @@ const PosStatistics = ({ isVisible, onClose, screen }) => {
                 skip: skip,
                 limit: limit
             }));
-            dispatch(setCurrentPosName({
-                name: posName
-            }));
         }
+        dispatch(setCurrentPosName({
+            name: posName
+        }));
+
+        dispatch(setCurrentCategory({
+            id: null,
+            name: null
+        }));
 
     };
 
@@ -170,7 +174,7 @@ const PosStatistics = ({ isVisible, onClose, screen }) => {
                     <div className="absolute inset-0 opacity-10">
                         {/* Decorative elements can be added here */}
                     </div>
-                    
+
                     <div className="relative z-10">
                         <div className="flex flex-row justify-between items-center mb-6">
                             <div>
@@ -249,14 +253,13 @@ const PosStatistics = ({ isVisible, onClose, screen }) => {
                                 return (
                                     <div
                                         key={pos}
-                                        onClick={()=>{
+                                        onClick={() => {
                                             handlePosSelect(pos)
                                         }}
-                                        className={`group relative bg-white rounded-3xl p-6 transition-all duration-500 hover:scale-105 hover:shadow-2xl border-2 cursor-pointer ${
-                                            isCompleted 
-                                                ? 'border-green-200 hover:border-green-300' 
+                                        className={`group relative bg-white rounded-3xl p-6 transition-all duration-500 hover:scale-105 hover:shadow-2xl border-2 cursor-pointer ${isCompleted
+                                                ? 'border-green-200 hover:border-green-300'
                                                 : 'border-white hover:border-purple-200'
-                                        } shadow-lg`}
+                                            } shadow-lg`}
                                     >
                                         {/* Completion Badge */}
                                         {isCompleted && (
@@ -301,13 +304,13 @@ const PosStatistics = ({ isVisible, onClose, screen }) => {
                                             <div className={`flex-shrink-0 w-16 h-16 bg-gradient-to-r ${gradient} rounded-2xl flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform duration-300`}>
                                                 <span className="text-2xl">{icon}</span>
                                             </div>
-                                            
+
                                             {/* Content */}
                                             <div className="flex-1 min-w-0">
                                                 <h3 className={`text-xl font-bold ${textColor} mb-2 capitalize`}>
                                                     {pos}
                                                 </h3>
-                                                
+
                                                 {/* Progress Bar */}
                                                 <div className="mb-3">
                                                     <div className="flex justify-between text-sm text-gray-600 mb-1">
@@ -315,25 +318,23 @@ const PosStatistics = ({ isVisible, onClose, screen }) => {
                                                         <span>{stats.total} total</span>
                                                     </div>
                                                     <div className="w-full bg-gray-200 rounded-full h-2">
-                                                        <div 
-                                                            className={`h-2 rounded-full transition-all duration-1000 ease-out ${
-                                                                isCompleted 
-                                                                    ? 'bg-gradient-to-r from-green-500 to-emerald-600' 
+                                                        <div
+                                                            className={`h-2 rounded-full transition-all duration-1000 ease-out ${isCompleted
+                                                                    ? 'bg-gradient-to-r from-green-500 to-emerald-600'
                                                                     : `bg-gradient-to-r ${gradient}`
-                                                            }`}
+                                                                }`}
                                                             style={{ width: `${progress}%` }}
                                                         ></div>
                                                     </div>
                                                 </div>
 
                                                 {/* Status */}
-                                                <div className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
-                                                    isCompleted 
-                                                        ? 'bg-green-100 text-green-800' 
-                                                        : isInProgress 
-                                                        ? 'bg-blue-100 text-blue-800'
-                                                        : 'bg-gray-100 text-gray-800'
-                                                }`}>
+                                                <div className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${isCompleted
+                                                        ? 'bg-green-100 text-green-800'
+                                                        : isInProgress
+                                                            ? 'bg-blue-100 text-blue-800'
+                                                            : 'bg-gray-100 text-gray-800'
+                                                    }`}>
                                                     {isCompleted ? (
                                                         <>
                                                             <FaCheckCircle className="mr-1" />
@@ -359,7 +360,7 @@ const PosStatistics = ({ isVisible, onClose, screen }) => {
                                     </div>
                                 );
                             })}
-                            
+
                             {filteredPos.length === 0 && !loading && pos_statistics && (
                                 <div className="col-span-2 text-center py-16">
                                     <div className="text-8xl mb-6 opacity-20">🔍</div>
