@@ -1,233 +1,103 @@
-
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
 import WordService from '../services/WordService';
+import { setCurrentPosName } from '../store/word_store';
 import '../App.css';
 
-import { setCurrentCategory } from '../store/word_store';
-
-// Icon imports
+// Icon imports for POS
 import { 
-  FaHashtag, FaPalette, FaPaw, FaUtensils, FaHome, FaTree, 
-  FaCar, FaHeart, FaBook, FaMusic, FaPlane, FaShoppingBag, 
-  FaFutbol, FaUserFriends, FaBriefcase, FaFlask, FaStar,
-  FaChartLine, FaCheckCircle, FaLock, FaCrown
+  FaRunning, FaBook, FaStar, FaChartBar, 
+  FaCheckCircle, FaLock, FaChartLine, FaHashtag,
+  FaPalette, FaPaw, FaUtensils, FaHome, FaTree,
+  FaCar, FaHeart, FaMusic, FaPlane, FaShoppingBag,
+  FaFutbol, FaUserFriends, FaBriefcase, FaFlask
 } from 'react-icons/fa';
-import { GiClothes } from "react-icons/gi";
 
-const Categories = ({ isVisible, onClose, screen }) => {
+const PosStatistics = ({ isVisible, onClose, screen }) => {
     const dispatch = useDispatch();
-    const navigate = useNavigate();
-    const { selectedLanguage, currentCategory } = useSelector((state) => state.wordSlice);
-    const [categories, setCategories] = useState([]);
-    const [loading, setLoading] = useState(false);
+    const { selectedLanguage, pos_statistics, loading, currentPosName } = useSelector((state) => state.wordSlice);
     const [searchTerm, setSearchTerm] = useState('');
 
-    // Enhanced category styling with gradients
-    const getCategoryStyle = (categoryName, progress = 0) => {
-        const isCompleted = progress === 100;
-        const isInProgress = progress > 0 && progress < 100;
-        
+    // POS styling with gradients and icons
+    const getPosStyle = (posName) => {
         const styleMap = {
-            'Numbers': { 
-                icon: <FaHashtag />, 
-                gradient: 'from-purple-500 to-indigo-600',
-                bgGradient: 'from-purple-50 to-indigo-50',
-                textColor: 'text-purple-700'
-            },
-            'Цифры': { 
-                icon: <FaHashtag />, 
-                gradient: 'from-purple-500 to-indigo-600',
-                bgGradient: 'from-purple-50 to-indigo-50',
-                textColor: 'text-purple-700'
-            },
-            'Colors': { 
-                icon: <FaPalette />, 
-                gradient: 'from-pink-500 to-rose-600',
-                bgGradient: 'from-pink-50 to-rose-50',
-                textColor: 'text-pink-700'
-            },
-            'Цвета': { 
-                icon: <FaPalette />, 
-                gradient: 'from-pink-500 to-rose-600',
-                bgGradient: 'from-pink-50 to-rose-50',
-                textColor: 'text-pink-700'
-            },
-            'Animals': { 
-                icon: <FaPaw />, 
-                gradient: 'from-orange-500 to-amber-600',
-                bgGradient: 'from-orange-50 to-amber-50',
-                textColor: 'text-orange-700'
-            },
-            'Животные': { 
-                icon: <FaPaw />, 
-                gradient: 'from-orange-500 to-amber-600',
-                bgGradient: 'from-orange-50 to-amber-50',
-                textColor: 'text-orange-700'
-            },
-            'Food & Drinks': { 
-                icon: <FaUtensils />, 
+            'verb': { 
+                icon: <FaRunning />, 
                 gradient: 'from-red-500 to-orange-600',
                 bgGradient: 'from-red-50 to-orange-50',
                 textColor: 'text-red-700'
             },
-            'Еда': { 
-                icon: <FaUtensils />, 
-                gradient: 'from-red-500 to-orange-600',
-                bgGradient: 'from-red-50 to-orange-50',
-                textColor: 'text-red-700'
-            },
-            'House & Rooms': { 
-                icon: <FaHome />, 
+            'noun': { 
+                icon: <FaBook />, 
                 gradient: 'from-blue-500 to-cyan-600',
                 bgGradient: 'from-blue-50 to-cyan-50',
                 textColor: 'text-blue-700'
             },
-            'Дом': { 
-                icon: <FaHome />, 
-                gradient: 'from-blue-500 to-cyan-600',
-                bgGradient: 'from-blue-50 to-cyan-50',
-                textColor: 'text-blue-700'
-            },
-            'Months & Seasons': { 
-                icon: <FaTree />, 
-                gradient: 'from-green-500 to-emerald-600',
-                bgGradient: 'from-green-50 to-emerald-50',
-                textColor: 'text-green-700'
-            },
-            'Clothing': { 
-                icon: <GiClothes />, 
+            'adjective': { 
+                icon: <FaStar />, 
                 gradient: 'from-yellow-500 to-amber-600',
                 bgGradient: 'from-yellow-50 to-amber-50',
                 textColor: 'text-yellow-700'
             },
-            'Emotions & Feelings': { 
+            'adverb': { 
+                icon: <FaChartBar />, 
+                gradient: 'from-purple-500 to-indigo-600',
+                bgGradient: 'from-purple-50 to-indigo-50',
+                textColor: 'text-purple-700'
+            },
+            'pronoun': { 
+                icon: <FaUserFriends />, 
+                gradient: 'from-pink-500 to-rose-600',
+                bgGradient: 'from-pink-50 to-rose-50',
+                textColor: 'text-pink-700'
+            },
+            'preposition': { 
+                icon: <FaHashtag />, 
+                gradient: 'from-green-500 to-emerald-600',
+                bgGradient: 'from-green-50 to-emerald-50',
+                textColor: 'text-green-700'
+            },
+            'conjunction': { 
+                icon: <FaPlane />, 
+                gradient: 'from-teal-500 to-cyan-600',
+                bgGradient: 'from-teal-50 to-cyan-50',
+                textColor: 'text-teal-700'
+            },
+            'interjection': { 
                 icon: <FaHeart />, 
                 gradient: 'from-rose-500 to-pink-600',
                 bgGradient: 'from-rose-50 to-pink-50',
                 textColor: 'text-rose-700'
             },
-            'Education': { 
-                icon: <FaBook />, 
-                gradient: 'from-indigo-500 to-purple-600',
-                bgGradient: 'from-indigo-50 to-purple-50',
-                textColor: 'text-indigo-700'
-            },
-            'Music': { 
-                icon: <FaMusic />, 
-                gradient: 'from-teal-500 to-cyan-600',
-                bgGradient: 'from-teal-50 to-cyan-50',
-                textColor: 'text-teal-700'
-            },
-            'Travel': { 
-                icon: <FaPlane />, 
-                gradient: 'from-cyan-500 to-blue-600',
-                bgGradient: 'from-cyan-50 to-blue-50',
-                textColor: 'text-cyan-700'
-            },
-            'Shopping': { 
-                icon: <FaShoppingBag />, 
-                gradient: 'from-amber-500 to-orange-600',
-                bgGradient: 'from-amber-50 to-orange-50',
-                textColor: 'text-amber-700'
-            },
-            'Sports': { 
-                icon: <FaFutbol />, 
-                gradient: 'from-lime-500 to-green-600',
-                bgGradient: 'from-lime-50 to-green-50',
-                textColor: 'text-lime-700'
-            },
-            'People': { 
-                icon: <FaUserFriends />, 
-                gradient: 'from-violet-500 to-purple-600',
-                bgGradient: 'from-violet-50 to-purple-50',
-                textColor: 'text-violet-700'
-            },
-            'Work': { 
+            'determiner': { 
                 icon: <FaBriefcase />, 
                 gradient: 'from-gray-500 to-slate-600',
                 bgGradient: 'from-gray-50 to-slate-50',
                 textColor: 'text-gray-700'
             },
-            'Science': { 
-                icon: <FaFlask />, 
-                gradient: 'from-emerald-500 to-teal-600',
-                bgGradient: 'from-emerald-50 to-teal-50',
-                textColor: 'text-emerald-700'
-            },
             'default': { 
-                icon: <FaHashtag />, 
+                icon: <FaBook />, 
                 gradient: 'from-gray-500 to-slate-600',
                 bgGradient: 'from-gray-50 to-slate-50',
                 textColor: 'text-gray-700'
             }
         };
 
-        const style = styleMap[categoryName] || styleMap['default'];
-        
-        return {
-            ...style,
-            isCompleted,
-            isInProgress,
-            badgeColor: isCompleted ? 'bg-gradient-to-r from-green-500 to-emerald-600' : 
-                         isInProgress ? 'bg-gradient-to-r from-blue-500 to-cyan-600' : 
-                         'bg-gradient-to-r from-gray-400 to-slate-500'
-        };
+        return styleMap[posName?.toLowerCase()] || styleMap['default'];
     };
 
     useEffect(() => {
         if (isVisible && selectedLanguage) {
-            loadCategories();
+            loadPosStatistics();
         }
     }, [isVisible, selectedLanguage]);
 
-    const loadCategories = async () => {
-        setLoading(true);
+    const loadPosStatistics = async () => {
         try {
-            const response = await dispatch(WordService.getCategories(selectedLanguage));
-            // Assuming backend now returns: total_words, learned_words, progress_percentage
-            setCategories(response?.payload?.payload || []);
+            await dispatch(WordService.getPosStatistics(selectedLanguage)).unwrap();
         } catch (error) {
-            console.error('Error loading categories:', error);
-        } finally {
-            setLoading(false);
+            console.error('Error loading POS statistics:', error);
         }
-    };
-
-    const handleCategorySelect = (categoryId, categoryName) => {
-        onClose();
-        const skip = 0;
-        const limit = 20; // Use the same page size as your pagination
-        if (screen === 'WordScreen') {
-            dispatch(WordService.getWordsByCategoryId({
-                categoryId: categoryId,
-                langCode: selectedLanguage,
-                only_starred: false,
-                only_learned: false,
-                skip: skip,
-                limit: limit
-            }));
-            dispatch(setCurrentCategory({
-                id: categoryId,
-                name: categoryName
-            }));
-        }
-        else if (screen === 'LearnedScreen') {
-            dispatch(WordService.getWordsByCategoryId({
-                categoryId: categoryId,
-                langCode: selectedLanguage,
-                only_starred: false,
-                only_learned: true,
-                skip: skip,
-                limit: limit
-            }));
-            dispatch(setCurrentCategory({
-                id: categoryId,
-                name: categoryName
-            }));
-        }
-
     };
 
     const handleBackdropClick = (e) => {
@@ -236,17 +106,57 @@ const Categories = ({ isVisible, onClose, screen }) => {
         }
     };
 
-    // Filter categories based on search
-    const filteredCategories = categories.filter(category =>
-        category.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    // Filter POS based on search
+    const filteredPos = pos_statistics ? Object.entries(pos_statistics).filter(([pos]) =>
+        pos.toLowerCase().includes(searchTerm.toLowerCase())
+    ) : [];
 
-    // Stats for header
-    const totalWords = categories.reduce((sum, cat) => sum + (cat.total_words || cat.word_count || 0), 0);
-    const learnedWords = categories.reduce((sum, cat) => sum + (cat.learned_words || 0), 0);
-    const completedCategories = categories.filter(cat => cat.progress_percentage === 100).length;
+    // Calculate overall statistics
+    const totalStats = pos_statistics ? {
+        totalWords: Object.values(pos_statistics).reduce((sum, stat) => sum + stat.total, 0),
+        learnedWords: Object.values(pos_statistics).reduce((sum, stat) => sum + stat.learned, 0),
+        totalCategories: Object.keys(pos_statistics).length,
+        masteredCategories: Object.values(pos_statistics).filter(stat => stat.learned === stat.total && stat.total > 0).length
+    } : { totalWords: 0, learnedWords: 0, totalCategories: 0, masteredCategories: 0 };
+
+    const overallProgress = totalStats.totalWords > 0 
+        ? Math.round((totalStats.learnedWords / totalStats.totalWords) * 100) 
+        : 0;
 
     if (!isVisible) return null;
+
+    const handlePosSelect = (posName) => {
+        onClose();
+        const skip = 0;
+        const limit = 20; // Use the same page size as your pagination
+        if (screen === 'WordScreen') {
+            dispatch(WordService.getWordsByPosName({
+                posName: posName,
+                langCode: selectedLanguage,
+                only_starred: false,
+                only_learned: false,
+                skip: skip,
+                limit: limit
+            }));
+            dispatch(setCurrentPosName({
+                name: posName
+            }));
+        }
+        else if (screen === 'LearnedScreen') {
+            dispatch(WordService.getWordsByPosName({
+                posName: posName,
+                langCode: selectedLanguage,
+                only_starred: false,
+                only_learned: true,
+                skip: skip,
+                limit: limit
+            }));
+            dispatch(setCurrentPosName({
+                name: posName
+            }));
+        }
+
+    };
 
     return (
         <div
@@ -258,39 +168,42 @@ const Categories = ({ isVisible, onClose, screen }) => {
                 <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-700 text-white p-8 relative overflow-hidden">
                     {/* Background Pattern */}
                     <div className="absolute inset-0 opacity-10">
-                        {/* <div className="absolute top-4 right-4 w-20 h-20 bg-white rounded-full"></div>
-                        <div className="absolute bottom-4 left-4 w-16 h-16 bg-white rounded-full"></div> */}
+                        {/* Decorative elements can be added here */}
                     </div>
                     
                     <div className="relative z-10">
-                        <div className="flex flex-row justify-between items-center mb-6 ">
+                        <div className="flex flex-row justify-between items-center mb-6">
                             <div>
-                                <h2 className="text-2xl font-bold mb-2">Word Categories</h2>
-                                <p className="text-purple-200 text-lg">Master vocabulary by topics</p>
+                                <h2 className="text-2xl font-bold mb-2">Grammar Statistics</h2>
+                                <p className="text-purple-200 text-lg">Track your progress by parts of speech</p>
                             </div>
-                            <div className='flex items-center justify-center rounded-full text-white bg-white/10 p-5 w-16 h-16 '>
+                            <div className='flex items-center justify-center rounded-full text-white bg-white/10 p-5 w-16 h-16'>
                                 <button
-                                onClick={onClose}
-                                className="flex items-center between-center text-white/80 hover:text-white text-2xl cursor-pointer transition-all  rounded-xl"
-                            >
-                                ✕
-                            </button>
+                                    onClick={onClose}
+                                    className="flex items-center between-center text-white/80 hover:text-white text-2xl cursor-pointer transition-all rounded-xl"
+                                >
+                                    ✕
+                                </button>
                             </div>
                         </div>
 
                         {/* Stats Overview */}
-                        <div className="grid grid-cols-3 gap-4 mb-6">
+                        <div className="grid grid-cols-4 gap-4 mb-6">
                             <div className="text-center p-4 bg-white/10 rounded-2xl backdrop-blur-sm">
-                                <div className="text-xl font-bold">{categories.length}</div>
-                                <div className="text-sm text-purple-200">Categories</div>
+                                <div className="text-xl font-bold">{totalStats.totalCategories}</div>
+                                <div className="text-sm text-purple-200">POS Types</div>
                             </div>
                             <div className="text-center p-4 bg-white/10 rounded-2xl backdrop-blur-sm">
-                                <div className="text-xl font-bold">{learnedWords}</div>
+                                <div className="text-xl font-bold">{totalStats.learnedWords}</div>
                                 <div className="text-sm text-purple-200">Words Learned</div>
                             </div>
                             <div className="text-center p-4 bg-white/10 rounded-2xl backdrop-blur-sm">
-                                <div className="text-xl font-bold">{completedCategories}</div>
-                                <div className="text-sm text-purple-200">Completed</div>
+                                <div className="text-xl font-bold">{totalStats.masteredCategories}</div>
+                                <div className="text-sm text-purple-200">Mastered</div>
+                            </div>
+                            <div className="text-center p-4 bg-white/10 rounded-2xl backdrop-blur-sm">
+                                <div className="text-xl font-bold">{overallProgress}%</div>
+                                <div className="text-sm text-purple-200">Overall</div>
                             </div>
                         </div>
 
@@ -298,7 +211,7 @@ const Categories = ({ isVisible, onClose, screen }) => {
                         <div className="relative">
                             <input
                                 type="text"
-                                placeholder="Search categories..."
+                                placeholder="Search parts of speech..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 className="w-full bg-white/10 border border-white/20 rounded-2xl px-6 py-4 text-white placeholder-purple-200 focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-transparent backdrop-blur-sm"
@@ -311,26 +224,35 @@ const Categories = ({ isVisible, onClose, screen }) => {
                 </div>
 
                 {/* Enhanced Content */}
-                <div className="overflow-y-auto max-h-[38vh] p-6 bg-gradient-to-br from-slate-50 to-purple-50">
+                <div className="overflow-y-auto max-h-[38vh] p-6 bg-gradient-to-br from-slate-50 to-indigo-50">
                     {loading ? (
                         <div className="flex flex-col items-center justify-center py-16">
                             <div className="animate-spin rounded-full h-16 w-16 border-4 border-purple-500 border-t-transparent mb-4"></div>
-
-                            <span className="text-gray-600 text-lg font-medium">Loading your categories...</span>
+                            <span className="text-gray-600 text-lg font-medium">Loading grammar statistics...</span>
+                        </div>
+                    ) : !pos_statistics ? (
+                        <div className="flex flex-col items-center justify-center py-16">
+                            <div className="text-8xl mb-6 opacity-20">📊</div>
+                            <h3 className="text-2xl font-bold text-gray-600 mb-3">No data available</h3>
+                            <p className="text-gray-500 max-w-md mx-auto text-center">
+                                Select a language to see your grammar progress statistics
+                            </p>
                         </div>
                     ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {filteredCategories.map((category) => {
-                                const progress = category.progress_percentage || 0;
-                                const { icon, gradient, bgGradient, textColor, isCompleted, isInProgress, badgeColor } = getCategoryStyle(category.name, progress);
-                                const totalWords = category.total_words || category.word_count || 0;
-                                const learnedWords = category.learned_words || 0;
+                            {filteredPos.map(([pos, stats]) => {
+                                const progress = stats.total > 0 ? Math.round((stats.learned / stats.total) * 100) : 0;
+                                const isCompleted = progress === 100;
+                                const isInProgress = progress > 0 && progress < 100;
+                                const { icon, gradient, bgGradient, textColor } = getPosStyle(pos);
 
                                 return (
                                     <div
-                                        key={category.id}
-                                        onClick={() => handleCategorySelect(category.id, category.name)}
-                                        className={`group relative bg-white rounded-3xl p-6 cursor-pointer transition-all duration-500 hover:scale-105 hover:shadow-2xl border-2 ${
+                                        key={pos}
+                                        onClick={()=>{
+                                            handlePosSelect(pos)
+                                        }}
+                                        className={`group relative bg-white rounded-3xl p-6 transition-all duration-500 hover:scale-105 hover:shadow-2xl border-2 cursor-pointer ${
                                             isCompleted 
                                                 ? 'border-green-200 hover:border-green-300' 
                                                 : 'border-white hover:border-purple-200'
@@ -382,15 +304,15 @@ const Categories = ({ isVisible, onClose, screen }) => {
                                             
                                             {/* Content */}
                                             <div className="flex-1 min-w-0">
-                                                <h3 className={`text-xl font-bold ${textColor} mb-2 truncate h-10  w-[75%]`}>
-                                                    {category.name}
+                                                <h3 className={`text-xl font-bold ${textColor} mb-2 capitalize`}>
+                                                    {pos}
                                                 </h3>
                                                 
                                                 {/* Progress Bar */}
                                                 <div className="mb-3">
                                                     <div className="flex justify-between text-sm text-gray-600 mb-1">
-                                                        <span>{learnedWords} learned</span>
-                                                        <span>{totalWords} total</span>
+                                                        <span>{stats.learned} learned</span>
+                                                        <span>{stats.total} total</span>
                                                     </div>
                                                     <div className="w-full bg-gray-200 rounded-full h-2">
                                                         <div 
@@ -438,12 +360,12 @@ const Categories = ({ isVisible, onClose, screen }) => {
                                 );
                             })}
                             
-                            {filteredCategories.length === 0 && !loading && (
+                            {filteredPos.length === 0 && !loading && pos_statistics && (
                                 <div className="col-span-2 text-center py-16">
-                                    <div className="text-8xl mb-6 opacity-20">📚</div>
-                                    <h3 className="text-2xl font-bold text-gray-600 mb-3">No categories found</h3>
+                                    <div className="text-8xl mb-6 opacity-20">🔍</div>
+                                    <h3 className="text-2xl font-bold text-gray-600 mb-3">No matching parts of speech</h3>
                                     <p className="text-gray-500 max-w-md mx-auto">
-                                        {searchTerm ? `No categories matching "${searchTerm}"` : 'Try selecting a different language to see available categories'}
+                                        {searchTerm ? `No parts of speech matching "${searchTerm}"` : 'No grammar statistics available'}
                                     </p>
                                 </div>
                             )}
@@ -454,8 +376,8 @@ const Categories = ({ isVisible, onClose, screen }) => {
                 {/* Footer */}
                 <div className="bg-white border-t border-gray-200 p-4 text-center">
                     <p className="text-gray-600 text-sm">
-                        <span className="font-semibold text-purple-600">{learnedWords}</span> words mastered across{' '}
-                        <span className="font-semibold text-purple-600">{categories.length}</span> categories
+                        <span className="font-semibold text-purple-600">{totalStats.learnedWords}</span> words mastered across{' '}
+                        <span className="font-semibold text-purple-600">{totalStats.totalCategories}</span> parts of speech
                     </p>
                 </div>
             </div>
@@ -463,5 +385,4 @@ const Categories = ({ isVisible, onClose, screen }) => {
     );
 };
 
-export default Categories;
-
+export default PosStatistics;

@@ -8,7 +8,7 @@ import LanguageSelected from '../layouts/LanguageSelected.jsx';
 import WordList from '../layouts/WordList.jsx';
 import EmptyStarredComponent from '../components/home/EmptyStarredComponent.jsx'
 
-import { setCurrentCategory } from '../store/word_store';
+import { setCurrentCategory, setCurrentPosName } from '../store/word_store';
 
 import { IoClose, IoArrowDown } from "react-icons/io5";
 
@@ -16,13 +16,14 @@ export default function WordScreen() {
     const dispatch = useDispatch();
     const isInitialMount = useRef(true);
 
-    const { 
-        words, 
-        selectedLanguage, 
-        statistics, 
+    const {
+        words,
+        selectedLanguage,
+        statistics,
         currentCategory,
+        currentPosName,
         words_pending,
-        pagination 
+        pagination
     } = useSelector((state) => state.wordSlice);
 
     const [filter, setFilter] = useState('all');
@@ -34,7 +35,7 @@ export default function WordScreen() {
     // Check scroll position
     useEffect(() => {
         const checkScrollPosition = () => {
-            const isNearBottom = window.innerHeight + document.documentElement.scrollTop 
+            const isNearBottom = window.innerHeight + document.documentElement.scrollTop
                 >= document.documentElement.offsetHeight - 100;
             setShowScrollToBottom(!isNearBottom);
         };
@@ -54,17 +55,18 @@ export default function WordScreen() {
         }
     }, [is_auth, dispatch]);
 
+
     // Fetch words function with pagination - FIXED
     const fetchWords = useCallback(async (reset = true) => {
         if (isFetching || !is_auth || !selectedLanguage) return;
-        
+
         setIsFetching(true);
-        
+
         const skip = reset ? 0 : words.length;
         const limit = pagination.pageSize;
 
         const shouldReset = reset || words.some(word => word.is_learned === true);
-        
+
         try {
             if (currentCategory.id) {
                 await dispatch(WordService.getWordsByCategoryId({
@@ -72,19 +74,31 @@ export default function WordScreen() {
                     langCode: selectedLanguage,
                     only_starred: filter === 'starred',
                     only_learned: filter === 'learned',
-                    // skip: skip,
                     skip: shouldReset ? 0 : skip,
                     limit: limit
                 })).unwrap();
-            } else {
-                await dispatch(WordService.handleLanguageSelect({
-                    filter,
+            } 
+
+            else if (currentPosName.name) {
+                await dispatch(WordService.getWordsByPosName({
+                    posName: currentPosName.name,
                     langCode: selectedLanguage,
-                    // skip: skip,
+                    only_starred: filter === 'starred',
+                    only_learned: filter === 'learned',
                     skip: shouldReset ? 0 : skip,
                     limit: limit
                 })).unwrap();
             }
+            
+            else {
+                await dispatch(WordService.handleLanguageSelect({
+                    filter,
+                    langCode: selectedLanguage,
+                    skip: shouldReset ? 0 : skip,
+                    limit: limit
+                })).unwrap();
+            }
+
         } catch (error) {
             console.error('Error fetching words:', error);
         } finally {
@@ -93,34 +107,38 @@ export default function WordScreen() {
                 dispatch(setLoadingMore(false));
             }
         }
-    }, [is_auth, selectedLanguage, currentCategory.id, filter, words.length, pagination.pageSize, dispatch, isFetching]);
+    }, 
+    // [is_auth, selectedLanguage, currentCategory.id, filter, words.length, pagination.pageSize, dispatch, isFetching]
+    [is_auth, selectedLanguage, currentCategory.id, currentPosName.name, filter, words.length, pagination.pageSize, dispatch, isFetching]
+);
 
-    // ✅ Fetch words when selectedLanguage OR filter changes - FIXED
+
+
+    const [lastScreenContext, setLastScreenContext] = useState('');
+
+    // Fetch words when selected language or category changes - FIXED
     // useEffect(() => {
-    //     if (isInitialMount.current) {
-    //         isInitialMount.current = false;
-    //         return;
-    //     }
-        
     //     if (is_auth && selectedLanguage) {
-    //         fetchWords(true);
+    //         const currentContext = `${selectedLanguage}-${currentCategory.id}-learned`;
+
+    //         // Only fetch if context actually changed
+    //         if (currentContext !== lastScreenContext) {
+    //             setLastScreenContext(currentContext);
+    //             fetchWords(true);
+    //         }
     //     }
-    // }, [selectedLanguage, filter, currentCategory.id]);
+    // }, [selectedLanguage, currentCategory.id, is_auth, lastScreenContext, fetchWords]);
+    useEffect(() => {
+    if (is_auth && selectedLanguage) {
+        const currentContext = `${selectedLanguage}-${currentCategory.id}-${currentPosName.name || ''}-${filter}`;
 
- const [lastScreenContext, setLastScreenContext] = useState('');
-
-// Fetch words when selected language or category changes - FIXED
-useEffect(() => {
-  if (is_auth && selectedLanguage) {
-    const currentContext = `${selectedLanguage}-${currentCategory.id}-learned`;
-    
-    // Only fetch if context actually changed
-    if (currentContext !== lastScreenContext) {
-      setLastScreenContext(currentContext);
-      fetchWords(true);
+        // Only fetch if context actually changed
+        if (currentContext !== lastScreenContext) {
+            setLastScreenContext(currentContext);
+            fetchWords(true);
+        }
     }
-  }
-}, [selectedLanguage, currentCategory.id, is_auth, lastScreenContext, fetchWords]);
+}, [selectedLanguage, currentCategory.id, currentPosName.name, filter, is_auth, lastScreenContext, fetchWords]);
 
 
 
@@ -139,10 +157,10 @@ useEffect(() => {
     // Infinite scroll handler - FIXED
     useEffect(() => {
         const handleScroll = () => {
-            if (window.innerHeight + document.documentElement.scrollTop 
-                >= document.documentElement.offsetHeight - 200 && 
-                !isFetching && 
-                pagination.hasMore && 
+            if (window.innerHeight + document.documentElement.scrollTop
+                >= document.documentElement.offsetHeight - 200 &&
+                !isFetching &&
+                pagination.hasMore &&
                 !words_pending) {
                 loadMoreWords();
             }
@@ -184,7 +202,7 @@ useEffect(() => {
                     )}
                 </button>
             )}
-            
+
             {/* Progress Text */}
             {words.length > 0 && (
                 <div className="text-center text-gray-600 text-sm">
@@ -193,7 +211,7 @@ useEffect(() => {
                     {!pagination.hasMore && words.length > 0 && ' • All words loaded'}
                 </div>
             )}
-            
+
             {/* Back to Top */}
             {words.length >= 40 && (
                 <button
@@ -221,26 +239,53 @@ useEffect(() => {
 
             {
                 currentCategory.id && (
-                    <div style={{fontFamily:'Sour Gummy'}}
-                     className='pr-6 pt-2 flex items-center justify-end'>
+                    <div style={{ fontFamily: 'Sour Gummy' }}
+                        className='pr-6 pt-2 flex items-center justify-end'>
                         <span className='flex items-center font-bold text-md bg-gray-50 px-2 py-2 rounded-full'>Category: {currentCategory.name}
-                            <button 
-                            onClick={() => {
-                                dispatch(setCurrentCategory({
-                                    id: null,
-                                    name: null
-                                }));
-                                // Reset to first page when clearing category
-                                if (selectedLanguage) {
-                                    dispatch(WordService.handleLanguageSelect({
-                                        filter,
-                                        langCode: selectedLanguage,
-                                        skip: 0,
-                                        limit: pagination.pageSize
+                            <button
+                                onClick={() => {
+                                    dispatch(setCurrentCategory({
+                                        id: null,
+                                        name: null
                                     }));
-                                }
-                            }}
-                            className='ml-5 cursor-pointer hover:text-gray-500'>
+                                    // Reset to first page when clearing category
+                                    if (selectedLanguage) {
+                                        dispatch(WordService.handleLanguageSelect({
+                                            filter,
+                                            langCode: selectedLanguage,
+                                            skip: 0,
+                                            limit: pagination.pageSize
+                                        }));
+                                    }
+                                }}
+                                className='ml-5 cursor-pointer hover:text-gray-500'>
+                                <IoClose className='text-xl' />
+                            </button>
+                        </span>
+                    </div>
+                )
+            }
+
+            {
+                currentPosName.name && (
+                    <div style={{ fontFamily: 'Sour Gummy' }}
+                        className='pr-6 pt-2 flex items-center justify-end'>
+                        <span className='flex items-center font-bold text-md bg-gray-50 px-2 py-2 rounded-full'>Pos name: {currentPosName.name}
+                            <button
+                                onClick={() => {
+                                    dispatch(setCurrentPosName({
+                                        name: null
+                                    }));
+                                    if (selectedLanguage) {
+                                        dispatch(WordService.handleLanguageSelect({
+                                            filter,
+                                            langCode: selectedLanguage,
+                                            skip: 0,
+                                            limit: pagination.pageSize
+                                        }));
+                                    }
+                                }}
+                                className='ml-5 cursor-pointer hover:text-gray-500'>
                                 <IoClose className='text-xl' />
                             </button>
                         </span>
@@ -252,7 +297,7 @@ useEffect(() => {
             {showScrollToBottom && words.length > 0 && (
                 <button
                     onClick={scrollToBottom}
-                    className="fixed bottom-24 right-6 bg-indigo-500 text-white p-3 rounded-full shadow-lg hover:bg-indigo-600 transition-colors cursor-pointer z-10"
+                    className="fixed bottom-30 md:bottom-24 right-6 bg-indigo-500 text-white p-3 rounded-full shadow-lg hover:bg-indigo-600 transition-colors cursor-pointer z-10"
                     title="Scroll to bottom"
                 >
                     <IoArrowDown className="text-lg" />
@@ -263,7 +308,7 @@ useEffect(() => {
             {selectedLanguage ? (
                 <div className="flex-1">
                     <WordList filter={filter} screen={'WordScreen'} />
-                    
+
                     {/* Loading More Indicator */}
                     {isFetching && words.length > 0 && (
                         <div className="flex justify-center items-center py-8">
@@ -271,10 +316,10 @@ useEffect(() => {
                             <span className="text-gray-600">Loading more words...</span>
                         </div>
                     )}
-                    
+
                     {/* Pagination Controls */}
                     {words.length > 0 && <PaginationControls />}
-                    
+
                     {/* Initial Loading State */}
                     {words_pending && words.length === 0 && (
                         <div className="flex flex-col items-center justify-center py-16">
@@ -294,7 +339,7 @@ useEffect(() => {
                                 No Words Found
                             </h3>
                             <p className="text-gray-600 max-w-md">
-                                {filter === 'learned' 
+                                {filter === 'learned'
                                     ? "You haven't learned any words yet. Start learning to see them here!"
                                     : "No words available for the current selection."
                                 }

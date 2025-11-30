@@ -4,7 +4,16 @@ Problems
 
 2 - Level must be checked.
 
-3 - Add pos to the words.
+3 - If the program started directly from learned screen, first time seeing the unlearned words
+
+4 - After selecting the pos, windows scrool Download, is the words size is compoleted, again program oblige to itself for reloading. 
+need to add control for this as in size is > 36 and coming words is 0, stop sending request to backend
+
+5 - In the words or learned screens, if user doesnt enter to another one during using any, dont need to reload words again. user experience is extremely bad.
+    [or can seperate the words as learned and unlearned] ** Need to things about it
+
+6 - If category selected, and user select pos, need to delete category from filter or reverse
 
 Solving
+
 

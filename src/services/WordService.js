@@ -3,138 +3,124 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 
 import $api from '../http/api';
 
+
+
 class WordService {
 
 
-    // In your WordService
-static handleLanguageSelect = createAsyncThunk(
-    'word/main/words',
-    async ({ filter, langCode, skip = 0, limit = 20 }, thunkAPI) => {
-        try {
-            const response = await $api.get(`/words/main/words`, {
-                params: {
-                    language_code: langCode,
-                    only_starred: filter === 'starred',
-                    only_learned: filter === 'learned',
+    static getPosStatistics = createAsyncThunk(
+        '/words/statistics/get_pos_statistics',
+        async (lang_code, thunkAPI) => {
+            try {
+                const response = await $api.get(`/words/statistics/get_pos_statistics`,{
+                    params: {
+                        lang_code: lang_code
+                    }
+                });
+                return response.data;
+            } catch (error) {
+                const errorData = error.response?.data || { message: error.message };
+                const statusCode = error.response?.status || 500;
+                return thunkAPI.rejectWithValue({
+                    payload: errorData,
+                    status: statusCode,
+                });
+            }
+        }
+    )
+
+    static getWordsByPosName = createAsyncThunk(
+        'word/main/fetch_words_by_posname',
+        async ({ posName, langCode, only_starred = false, only_learned = false, skip = 0, limit = 20 }, thunkAPI) => {
+            try {
+                const response = await $api.get(`/words/main/fetch_words_by_posname`, {
+                    params: {
+                        pos_name: posName,
+                        lang_code: langCode,
+                        only_starred: only_starred,
+                        only_learned: only_learned,
+                        skip: skip,
+                        limit: limit
+                    }
+                });
+                return {
+                    payload: response.data,
+                    status: response.status,
                     skip: skip,
                     limit: limit
-                }
-            });
-            return {
-                payload: response.data,
-                status: response.status,
-                skip: skip,
-                limit: limit
-            };
-        } catch (error) {
-            const errorData = error.response?.data || { message: error.message };
-            const statusCode = error.response?.status || 500;
-            return thunkAPI.rejectWithValue({
-                payload: errorData,
-                status: statusCode,
-            });
+                };
+            } catch (error) {
+                const errorData = error.response?.data || { message: error.message };
+                const statusCode = error.response?.status || 500;
+                return thunkAPI.rejectWithValue({
+                    payload: errorData,
+                    status: statusCode,
+                });
+            }
         }
-    }
-);
+    )
 
-static getWordsByCategoryId = createAsyncThunk(
-    'word/main/fetch_words_by_categories',
-    async ({ categoryId, langCode, only_starred = false, only_learned = false, skip = 0, limit = 20 }, thunkAPI) => {
-        try {
-            const response = await $api.get(`/words/main/fetch_words_by_categories`, {
-                params: {
-                    category_id: categoryId,
-                    lang_code: langCode,
-                    only_starred: only_starred,
-                    only_learned: only_learned,
+    static handleLanguageSelect = createAsyncThunk(
+        'word/main/words',
+        async ({ filter, langCode, skip = 0, limit = 20 }, thunkAPI) => {
+            try {
+                const response = await $api.get(`/words/main/words`, {
+                    params: {
+                        language_code: langCode,
+                        only_starred: filter === 'starred',
+                        only_learned: filter === 'learned',
+                        skip: skip,
+                        limit: limit
+                    }
+                });
+                return {
+                    payload: response.data,
+                    status: response.status,
                     skip: skip,
                     limit: limit
-                }
-            });
-            return {
-                payload: response.data,
-                status: response.status,
-                skip: skip,
-                limit: limit
-            };
-        } catch (error) {
-            const errorData = error.response?.data || { message: error.message };
-            const statusCode = error.response?.status || 500;
-            return thunkAPI.rejectWithValue({
-                payload: errorData,
-                status: statusCode,
-            });
+                };
+            } catch (error) {
+                const errorData = error.response?.data || { message: error.message };
+                const statusCode = error.response?.status || 500;
+                return thunkAPI.rejectWithValue({
+                    payload: errorData,
+                    status: statusCode,
+                });
+            }
         }
-    }
-);
+    )
 
 
-    // Old code, work without pagination.
-    // static getWordsByCategoryId = createAsyncThunk(
-    //     'word/main/fetch_words_by_categories',
-    //     async ({ categoryId, langCode, only_starred = false, only_learned = false, skip = 0, limit = 50 }, thunkAPI) => {
-    //         try {
-    //             const response = await $api.get(`/words/main/fetch_words_by_categories/`, {
-    //                 params: {
-    //                     category_id: categoryId,
-    //                     lang_code: langCode,
-    //                     only_starred: only_starred,
-    //                     only_learned: only_learned,
-    //                     skip: skip,
-    //                     limit: limit
-    //                 }
-    //             });
-    //             return {
-    //                 payload: response.data,
-    //                 status: response.status,
-    //             };
-    //         } catch (error) {
-    //             const errorData = error.response?.data || { message: error.message };
-    //             const statusCode = error.response?.status || 500;
-    //             return thunkAPI.rejectWithValue({
-    //                 payload: errorData,
-    //                 status: statusCode,
-    //             });
-    //         }
-    //     }
-    // )
-
-
-    // static handleLanguageSelect = createAsyncThunk(
-    //     '/words/:langCode',
-    //     async ({ langCode, filter = 'all' }, thunkAPI) => {
-
-    //         let starred = false;
-    //         let learned = false;
-
-    //         if (filter === 'starred') {
-    //             starred = true;
-    //         }
-    //         if (filter === 'learned') {
-    //             learned = true;
-    //         }
-
-    //         try {
-    //             const response = await $api.get(`/words/${langCode}?limit=50`,{
-    //                 params: 
-    //                 { 
-    //                     only_starred: starred,
-    //                     only_learned: learned
-    //                 }
-    //             });
-    //             return response.data;
-    //         } catch (error) {
-    //             // Extract error details
-    //             const errorData = error.response?.data || { message: error.message };
-    //             const statusCode = error.response?.status || 500;
-    //             // Pass custom error payload
-    //             return thunkAPI.rejectWithValue({
-    //                 payload: errorData,
-    //                 status: statusCode,
-    //             });
-    //         }
-    //     }
-    // )
+    static getWordsByCategoryId = createAsyncThunk(
+        'word/main/fetch_words_by_categories',
+        async ({ categoryId, langCode, only_starred = false, only_learned = false, skip = 0, limit = 20 }, thunkAPI) => {
+            try {
+                const response = await $api.get(`/words/main/fetch_words_by_categories`, {
+                    params: {
+                        category_id: categoryId,
+                        lang_code: langCode,
+                        only_starred: only_starred,
+                        only_learned: only_learned,
+                        skip: skip,
+                        limit: limit
+                    }
+                });
+                return {
+                    payload: response.data,
+                    status: response.status,
+                    skip: skip,
+                    limit: limit
+                };
+            } catch (error) {
+                const errorData = error.response?.data || { message: error.message };
+                const statusCode = error.response?.status || 500;
+                return thunkAPI.rejectWithValue({
+                    payload: errorData,
+                    status: statusCode,
+                });
+            }
+        }
+    )
 
 
     static setStatus = createAsyncThunk(
@@ -197,26 +183,6 @@ static getWordsByCategoryId = createAsyncThunk(
     )
 
 
-    static getPosStatistics = createAsyncThunk(
-        '/words/get_pos_statistics',
-        async (data, thunkAPI) => {
-            try {
-                const response = await $api.get(`/words/get_pos_statistics`);
-                return response.data;
-            } catch (error) {
-                // Extract error details
-                const errorData = error.response?.data || { message: error.message };
-                const statusCode = error.response?.status || 500;
-                // Pass custom error payload
-                return thunkAPI.rejectWithValue({
-                    payload: errorData,
-                    status: statusCode,
-                });
-            }
-        }
-    )
-
-
     static getWordWithPos = createAsyncThunk(
         '/words/get_word_with_pos',
         async (data, thunkAPI) => {
@@ -252,14 +218,14 @@ static getWordsByCategoryId = createAsyncThunk(
             } catch (error) {
                 const errorData = error.response?.data || { message: error.message };
                 const statusCode = error.response?.status || 500;
-                
+
                 return thunkAPI.rejectWithValue({
                     payload: errorData,
                     status: statusCode,
                 });
             }
         }
-    );
+    )
 
 
     static profile_fetch_statistics = createAsyncThunk(
@@ -271,21 +237,21 @@ static getWordsByCategoryId = createAsyncThunk(
             } catch (error) {
                 const errorData = error.response?.data || { message: error.message };
                 const statusCode = error.response?.status || 500;
-                
+
                 return thunkAPI.rejectWithValue({
                     payload: errorData,
                     status: statusCode,
                 });
             }
         }
-    );
+    )
 
 
     static getDailyStreak = createAsyncThunk(
         '/words/user/daily_streak',
         async (data, thunkAPI) => {
             try {
-                const response = await $api.get(`/words/user/daily_streak`);  
+                const response = await $api.get(`/words/user/daily_streak`);
                 return response.data;
             } catch (error) {
                 // Extract error details
