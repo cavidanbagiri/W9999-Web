@@ -1,5 +1,6 @@
 
-import { createSlice } from '@reduxjs/toolkit';
+
+import { createSlice, createAction } from '@reduxjs/toolkit';
 import { generateAIWordThunk, generateAITextWithQuestionThunk } from '../services/AIService';
 
 const MAX_CACHE_SIZE = 50;
@@ -10,12 +11,39 @@ const initialState = {
   isLoading: false,
   error: null,
   cache: {},
-
-  conversation: {
-    messages: [], // Array of objects: { role: 'user' | 'assistant', content: string, id: number, isStreaming: boolean }
-    isChatLoading: false, // Separate loading state for chat
-  },
+  
+  // Conversations organized by word ID
+  conversations: {}, // Structure: { [wordId]: { messages: [], isLoading: false } }
 };
+
+// Custom actions for chat operations (they need word context)
+export const addChatMessage = createAction('ai/addChatMessage', 
+  (wordId, message) => ({
+    payload: { wordId, message }
+  })
+);
+
+export const updateChatMessage = createAction('ai/updateChatMessage',
+  (wordId, messageId, updates) => ({
+    payload: { wordId, messageId, updates }
+  })
+);
+
+export const clearChatForWord = createAction('ai/clearChatForWord',
+  (wordId) => ({ payload: { wordId } })
+);
+
+export const removeChatMessage = createAction('ai/removeChatMessage',
+  (wordId, messageId) => ({
+    payload: { wordId, messageId }
+  })
+);
+
+export const setChatLoading = createAction('ai/setChatLoading',
+  (wordId, isLoading) => ({
+    payload: { wordId, isLoading }
+  })
+);
 
 const aiSlice = createSlice({
   name: 'ai',
@@ -40,47 +68,83 @@ const aiSlice = createSlice({
     clearCache: (state) => {
       state.cache = {};
     },
-    // 🔥 UPDATED: Add a message to the conversation (now supports streaming)
-    addChatMessage: (state, action) => {
-      const newMessage = {
-        id: action.payload.id || Date.now(),
-        role: action.payload.role,
-        content: action.payload.content || '',
-        isStreaming: action.payload.isStreaming || false
-      };
-      state.conversation.messages.push(newMessage);
-    },
-    // 🔥 NEW: Update an existing message (for streaming)
-    updateChatMessage: (state, action) => {
-      const { id, content, isStreaming } = action.payload;
-      const message = state.conversation.messages.find(msg => msg.id === id);
-      if (message) {
-        if (content !== undefined) {
-          message.content = content;
-        }
-        if (isStreaming !== undefined) {
-          message.isStreaming = isStreaming;
-        }
-      }
-    },
-    // 🔥 NEW: Remove a message (useful for cleaning up failed streams)
-    removeChatMessage: (state, action) => {
-      state.conversation.messages = state.conversation.messages.filter(
-        msg => msg.id !== action.payload
-      );
-    },
-    // 🔥 UPDATED: Set the chat-specific loading state
-    setChatLoading: (state, action) => {
-      state.conversation.isChatLoading = action.payload;
-    },
-    // 🔥 UPDATED: Clear the conversation
-    clearConversation: (state) => {
-      state.conversation.messages = [];
-      state.conversation.isChatLoading = false;
+    // Clear ALL conversations (for logout or reset)
+    clearAllConversations: (state) => {
+      state.conversations = {};
     },
   },
   extraReducers: (builder) => {
+    // Handle custom actions for chat operations
     builder
+      // Add chat message to specific word's conversation
+      .addCase(addChatMessage, (state, action) => {
+        const { wordId, message } = action.payload;
+        
+        if (!state.conversations[wordId]) {
+          state.conversations[wordId] = {
+            messages: [],
+            isLoading: false
+          };
+        }
+        
+        const newMessage = {
+          id: message.id || Date.now(),
+          role: message.role,
+          content: message.content || '',
+          isStreaming: message.isStreaming || false
+        };
+        
+        state.conversations[wordId].messages.push(newMessage);
+      })
+      
+      // Update existing chat message
+      .addCase(updateChatMessage, (state, action) => {
+        const { wordId, messageId, updates } = action.payload;
+        
+        if (state.conversations[wordId]) {
+          const message = state.conversations[wordId].messages.find(msg => msg.id === messageId);
+          if (message) {
+            if (updates.content !== undefined) {
+              message.content = updates.content;
+            }
+            if (updates.isStreaming !== undefined) {
+              message.isStreaming = updates.isStreaming;
+            }
+          }
+        }
+      })
+      
+      // Remove a chat message
+      .addCase(removeChatMessage, (state, action) => {
+        const { wordId, messageId } = action.payload;
+        
+        if (state.conversations[wordId]) {
+          state.conversations[wordId].messages = 
+            state.conversations[wordId].messages.filter(msg => msg.id !== messageId);
+        }
+      })
+      
+      // Set loading state for specific word's chat
+      .addCase(setChatLoading, (state, action) => {
+        const { wordId, isLoading } = action.payload;
+        
+        if (!state.conversations[wordId]) {
+          state.conversations[wordId] = {
+            messages: [],
+            isLoading: false
+          };
+        }
+        
+        state.conversations[wordId].isLoading = isLoading;
+      })
+      
+      // Clear chat for specific word
+      .addCase(clearChatForWord, (state, action) => {
+        const { wordId } = action.payload;
+        delete state.conversations[wordId];
+      })
+      
+      // AI word generation thunks
       .addCase(generateAIWordThunk.pending, (state, action) => {
         state.isLoading = true;
         state.error = null;
@@ -101,38 +165,62 @@ const aiSlice = createSlice({
           state.cache[state.currentWord.id] = action.payload;
         }
       })
-      // AI Chat Answers - KEEP for non-streaming fallback if needed
+      
+      // AI Chat Answers - non-streaming fallback
       .addCase(generateAITextWithQuestionThunk.pending, (state, action) => {
-        state.conversation.isChatLoading = true;
+        const wordId = action.meta?.arg?.wordId || state.currentWord?.id;
+        
+        if (wordId) {
+          if (!state.conversations[wordId]) {
+            state.conversations[wordId] = {
+              messages: [],
+              isLoading: true
+            };
+          } else {
+            state.conversations[wordId].isLoading = true;
+          }
+        }
         state.error = null;
       })
+      
       .addCase(generateAITextWithQuestionThunk.fulfilled, (state, action) => {
-        state.conversation.isChatLoading = false;
-        // Remove any streaming message that might exist and add the final response
-        state.conversation.messages = state.conversation.messages.filter(
-          msg => !msg.isStreaming
-        );
-        state.conversation.messages.push({
-          role: 'assistant',
-          content: action.payload.reply,
-          id: Date.now(),
-          isStreaming: false
-        });
+        const wordId = action.meta?.arg?.wordId || state.currentWord?.id;
+        
+        if (wordId && state.conversations[wordId]) {
+          state.conversations[wordId].isLoading = false;
+          
+          // Remove any streaming message that might exist and add the final response
+          state.conversations[wordId].messages = 
+            state.conversations[wordId].messages.filter(msg => !msg.isStreaming);
+          
+          state.conversations[wordId].messages.push({
+            role: 'assistant',
+            content: action.payload.reply,
+            id: Date.now(),
+            isStreaming: false
+          });
+        }
         state.error = null;
       })
+      
       .addCase(generateAITextWithQuestionThunk.rejected, (state, action) => {
-        state.conversation.isChatLoading = false;
+        const wordId = action.meta?.arg?.wordId || state.currentWord?.id;
+        
+        if (wordId && state.conversations[wordId]) {
+          state.conversations[wordId].isLoading = false;
+          
+          // Remove any streaming message and add error message
+          state.conversations[wordId].messages = 
+            state.conversations[wordId].messages.filter(msg => !msg.isStreaming);
+          
+          state.conversations[wordId].messages.push({
+            role: 'assistant',
+            content: "Sorry, I encountered an error. Please try again.",
+            id: Date.now(),
+            isStreaming: false
+          });
+        }
         state.error = action.payload;
-        // Remove any streaming message and add error message
-        state.conversation.messages = state.conversation.messages.filter(
-          msg => !msg.isStreaming
-        );
-        state.conversation.messages.push({
-          role: 'assistant',
-          content: "Sorry, I encountered an error. Please try again.",
-          id: Date.now(),
-          isStreaming: false
-        });
       });
   },
 });
@@ -143,12 +231,9 @@ export const {
   clearAIResponse, 
   setAIResponse, 
   clearCache,
-  addChatMessage,       
-  setChatLoading,      
-  clearConversation,
-  updateChatMessage,    // 🔥 NEW: Export the new action
-  removeChatMessage     // 🔥 NEW: Export the new action
+  clearAllConversations
 } = aiSlice.actions;
+
 export default aiSlice.reducer;
 
 
@@ -158,7 +243,9 @@ export default aiSlice.reducer;
 
 
 
-// import { createSlice } from '@reduxjs/toolkit';
+
+
+// import { createSlice, createAction } from '@reduxjs/toolkit';
 // import { generateAIWordThunk, generateAITextWithQuestionThunk } from '../services/AIService';
 
 // const MAX_CACHE_SIZE = 50;
@@ -170,12 +257,39 @@ export default aiSlice.reducer;
 //   error: null,
 //   cache: {},
 
-//   conversation: {
-//     messages: [], // Array of objects: { role: 'user' | 'assistant', content: string }
-//     isChatLoading: false, // Separate loading state for chat
+//   // conversation: {
+//   //   messages: [], // Array of objects: { role: 'user' | 'assistant', content: string, id: number, isStreaming: boolean }
+//   //   isChatLoading: false, // Separate loading state for chat
+//   // },
+
+//   conversations: {
+//   []: {
+//     messages: [],
+//     isLoading: false
 //   },
+//   []: {
+//     messages: [],
+//     isLoading: false
+//   }
+// }
 
 // };
+
+// export const addChatMessage = createAction('ai/addChatMessage', 
+//   (wordId, message) => ({
+//     payload: { wordId, message }
+//   })
+// );
+
+// export const updateChatMessage = createAction('ai/updateChatMessage',
+//   (wordId, messageId, updates) => ({
+//     payload: { wordId, messageId, updates }
+//   })
+// );
+
+// export const clearChatForWord = createAction('ai/clearChatForWord',
+//   (wordId) => ({ payload: { wordId } })
+// );
 
 // const aiSlice = createSlice({
 //   name: 'ai',
@@ -190,9 +304,9 @@ export default aiSlice.reducer;
 //     clearAIResponse: (state) => {
 //       state.aiResponse = null;
 //       state.error = null;
-//       state.isLoading = false; // Reset loading state
+//       state.isLoading = false;
 //     },
-//     setAIResponse: (state, action) => { // Add this action
+//     setAIResponse: (state, action) => {
 //       state.aiResponse = action.payload;
 //       state.isLoading = false;
 //       state.error = null;
@@ -200,15 +314,43 @@ export default aiSlice.reducer;
 //     clearCache: (state) => {
 //       state.cache = {};
 //     },
-//     // 🔥 NEW: Add a message to the conversation
-//     addChatMessage: (state, action) => {
-//       state.conversation.messages.push(action.payload);
+//     // 🔥 UPDATED: Add a message to the conversation (now supports streaming)
+
+    
+
+//     // addChatMessage: (state, action) => {
+//     //   const newMessage = {
+//     //     id: action.payload.id || Date.now(),
+//     //     role: action.payload.role,
+//     //     content: action.payload.content || '',
+//     //     isStreaming: action.payload.isStreaming || false
+//     //   };
+//     //   state.conversation.messages.push(newMessage);
+//     // },
+//     // // 🔥 NEW: Update an existing message (for streaming)
+//     // updateChatMessage: (state, action) => {
+//     //   const { id, content, isStreaming } = action.payload;
+//     //   const message = state.conversation.messages.find(msg => msg.id === id);
+//     //   if (message) {
+//     //     if (content !== undefined) {
+//     //       message.content = content;
+//     //     }
+//     //     if (isStreaming !== undefined) {
+//     //       message.isStreaming = isStreaming;
+//     //     }
+//     //   }
+//     // },
+//     // 🔥 NEW: Remove a message (useful for cleaning up failed streams)
+//     removeChatMessage: (state, action) => {
+//       state.conversation.messages = state.conversation.messages.filter(
+//         msg => msg.id !== action.payload
+//       );
 //     },
-//     // 🔥 NEW: Set the chat-specific loading state
+//     // 🔥 UPDATED: Set the chat-specific loading state
 //     setChatLoading: (state, action) => {
 //       state.conversation.isChatLoading = action.payload;
 //     },
-//     // 🔥 NEW: Clear the conversation (optional)
+//     // 🔥 UPDATED: Clear the conversation
 //     clearConversation: (state) => {
 //       state.conversation.messages = [];
 //       state.conversation.isChatLoading = false;
@@ -226,45 +368,49 @@ export default aiSlice.reducer;
 //         state.error = null;
 
 //         if (state.currentWord?.id) {
-//           // LRU Cache implementation
 //           const cacheKeys = Object.keys(state.cache);
           
-//           // Remove oldest item if cache is full
 //           if (cacheKeys.length >= MAX_CACHE_SIZE) {
-//             // Simple approach: remove the first (oldest) key
 //             const oldestKey = cacheKeys[0];
 //             delete state.cache[oldestKey];
 //           }
           
-//           // Add new item to cache
 //           state.cache[state.currentWord.id] = action.payload;
 //         }
 //       })
-//       // AI Chat Answers - UPDATED
+//       // AI Chat Answers - KEEP for non-streaming fallback if needed
 //       .addCase(generateAITextWithQuestionThunk.pending, (state, action) => {
-//         state.conversation.isChatLoading = true; // Use chat-specific loading
+//         state.conversation.isChatLoading = true;
 //         state.error = null;
 //       })
 //       .addCase(generateAITextWithQuestionThunk.fulfilled, (state, action) => {
 //         state.conversation.isChatLoading = false;
-//         // 🔥 Don't just set chat_response, add the AI's response to messages
-//         // The user's message should already be added optimistically (see Step 2)
+//         // Remove any streaming message that might exist and add the final response
+//         state.conversation.messages = state.conversation.messages.filter(
+//           msg => !msg.isStreaming
+//         );
 //         state.conversation.messages.push({
 //           role: 'assistant',
-//           content: action.payload.reply // Assuming your backend returns { reply: "..." }
+//           content: action.payload.reply,
+//           id: Date.now(),
+//           isStreaming: false
 //         });
 //         state.error = null;
 //       })
 //       .addCase(generateAITextWithQuestionThunk.rejected, (state, action) => {
 //         state.conversation.isChatLoading = false;
 //         state.error = action.payload;
-//         // Optional: Add an error message from the assistant
+//         // Remove any streaming message and add error message
+//         state.conversation.messages = state.conversation.messages.filter(
+//           msg => !msg.isStreaming
+//         );
 //         state.conversation.messages.push({
 //           role: 'assistant',
-//           content: "Sorry, I encountered an error. Please try again."
+//           content: "Sorry, I encountered an error. Please try again.",
+//           id: Date.now(),
+//           isStreaming: false
 //         });
 //       });
-
 //   },
 // });
 
@@ -274,8 +420,11 @@ export default aiSlice.reducer;
 //   clearAIResponse, 
 //   setAIResponse, 
 //   clearCache,
-//   addChatMessage,       
+//   // addChatMessage,       
 //   setChatLoading,      
-//   clearConversation  
+//   clearConversation,
+//   // updateChatMessage,    // 🔥 NEW: Export the new action
+//   removeChatMessage     // 🔥 NEW: Export the new action
 // } = aiSlice.actions;
 // export default aiSlice.reducer;
+

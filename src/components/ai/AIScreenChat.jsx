@@ -1,41 +1,71 @@
 
 
+
+
 import { useDispatch, useSelector } from 'react-redux';
-import { useState, useEffect, useRef } from 'react';
-import AIService from '../../services/AIService';
+import { useState, useEffect, useRef, useMemo } from 'react';
+import ReactMarkdown from 'react-markdown';
+import { IoArrowDown } from "react-icons/io5";
+import { IoSparklesSharp } from "react-icons/io5";
+import { addChatMessage, updateChatMessage, removeChatMessage } from '../../store/ai_store';
 import LANGUAGES from '../../constants/Languages';
 import TRANSLATE_LANGUAGES_LIST from '../../constants/TranslateLanguagesList';
-import { addChatMessage, updateChatMessage, removeChatMessage } from '../../store/ai_store';
 import { API_URL } from '../../http/api';
-import ReactMarkdown from 'react-markdown';
-
-import { IoCloseOutline, IoArrowDown } from "react-icons/io5";
-import { IoSparklesSharp } from "react-icons/io5";
 
 // Helper function to generate unique IDs
 const generateUniqueId = () => {
   return Date.now() + Math.random().toString(36).substr(2, 9);
 };
 
-export default function AIScreenChat({ currentWord, nativeLang, onClose }) {
+export default function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat }) {
   const dispatch = useDispatch();
   const [message, setMessage] = useState('');
   const [isStreaming, setIsStreaming] = useState(false);
   const [streamController, setStreamController] = useState(null);
   const [showScrollToBottom, setShowScrollToBottom] = useState(false);
 
-  const { conversation } = useSelector((state) => state.aiSlice);
-  const { messages, isChatLoading } = conversation;
+  // Get conversation for current word from Redux
+  const { conversations } = useSelector((state) => state.aiSlice);
+  const currentConversation = conversations[currentWord?.id] || {
+    messages: [],
+    isLoading: false
+  };
+
+  const messages = currentConversation.messages;
   const messagesEndRef = useRef();
   const textInputRef = useRef();
   const messagesContainerRef = useRef();
 
-  const quickPrompts = [
-    `Give me a detailed explanation of "${currentWord?.text}"`,
-    `What's the difference between "${currentWord?.text}" and similar words?`,
-    `Provide real-life scenarios using "${currentWord?.text}"`,
-    `How can I remember "${currentWord?.text}" more easily?`,
-  ];
+  // 🔥 CRITICAL: Reset everything when word changes
+  useEffect(() => {
+    // Cancel any ongoing stream
+    if (streamController) {
+      streamController.abort();
+      setStreamController(null);
+    }
+    
+    // Reset local state
+    setMessage('');
+    setIsStreaming(false);
+    setShowScrollToBottom(false);
+    
+    // Clear input focus
+    textInputRef.current?.blur();
+    
+    // Scroll to top for new word
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop = 0;
+    }
+  }, [currentWord?.id]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (streamController) {
+        streamController.abort();
+      }
+    };
+  }, [streamController]);
 
   // Check scroll position to show/hide scroll-to-bottom button
   useEffect(() => {
@@ -65,11 +95,13 @@ export default function AIScreenChat({ currentWord, nativeLang, onClose }) {
   };
 
   const handleSubmit = async () => {
-    if (!message.trim() || isStreaming) return;
+    if (!message.trim() || isStreaming || !currentWord) return;
 
+    const wordId = currentWord.id;
+    
     // Add user message with unique ID
     const userMessageId = generateUniqueId();
-    dispatch(addChatMessage({ 
+    dispatch(addChatMessage(wordId, { 
       role: 'user', 
       content: message.trim(),
       id: userMessageId 
@@ -82,7 +114,7 @@ export default function AIScreenChat({ currentWord, nativeLang, onClose }) {
 
     // Add empty AI message that will be filled via streaming
     const aiMessageId = generateUniqueId();
-    dispatch(addChatMessage({
+    dispatch(addChatMessage(wordId, {
       role: 'assistant',
       content: '',
       id: aiMessageId,
@@ -92,7 +124,7 @@ export default function AIScreenChat({ currentWord, nativeLang, onClose }) {
     setMessage('');
     setIsStreaming(true);
 
-    // Auto-scroll to bottom when user sends a message (optional)
+    // Auto-scroll to bottom when user sends a message
     setTimeout(() => {
       scrollToBottom();
     }, 100);
@@ -152,8 +184,7 @@ export default function AIScreenChat({ currentWord, nativeLang, onClose }) {
 
                 if (data.error) {
                   console.error('Stream error from backend:', data.error);
-                  dispatch(updateChatMessage({
-                    id: aiMessageId,
+                  dispatch(updateChatMessage(wordId, aiMessageId, {
                     content: `Error: ${data.error}`,
                     isStreaming: false
                   }));
@@ -162,16 +193,14 @@ export default function AIScreenChat({ currentWord, nativeLang, onClose }) {
 
                 if (data.content) {
                   fullResponse += data.content;
-                  dispatch(updateChatMessage({
-                    id: aiMessageId,
+                  dispatch(updateChatMessage(wordId, aiMessageId, {
                     content: fullResponse,
                     isStreaming: true
                   }));
                 }
 
                 if (data.done) {
-                  dispatch(updateChatMessage({
-                    id: aiMessageId,
+                  dispatch(updateChatMessage(wordId, aiMessageId, {
                     content: fullResponse,
                     isStreaming: false
                   }));
@@ -192,12 +221,11 @@ export default function AIScreenChat({ currentWord, nativeLang, onClose }) {
 
       if (error.name === 'AbortError') {
         console.log('Request was aborted');
-        dispatch(removeChatMessage(aiMessageId));
+        dispatch(removeChatMessage(wordId, aiMessageId));
         return;
       }
 
-      dispatch(updateChatMessage({
-        id: aiMessageId,
+      dispatch(updateChatMessage(wordId, aiMessageId, {
         content: error.message || "Sorry, I'm having trouble responding right now. Please try again later.",
         isStreaming: false
       }));
@@ -224,22 +252,36 @@ export default function AIScreenChat({ currentWord, nativeLang, onClose }) {
     }
   };
 
+  // Generate quick prompts based on current word
+  const quickPrompts = useMemo(() => {
+    if (!currentWord) return [];
+
+    const { text, language_code } = currentWord;
+    const targetLang = LANGUAGES.find(lang => lang.code === language_code)?.name;
+
+    return [
+      `Explain "${text}" in simple ${targetLang || 'English'} terms`,
+      `Give me 3 example sentences with "${text}"`,
+      `What are common mistakes with "${text}"?`,
+      `Synonyms and antonyms for "${text}"`,
+    ];
+  }, [currentWord?.text, currentWord?.language_code]);
+
   // Format message text with markdown
   const formatMessage = (text) => {
     return (
       <ReactMarkdown
         components={{
-          // Customize how markdown elements are rendered
-          strong: ({children}) => <strong className="font-bold text-gray-900">{children}</strong>,
-          em: ({children}) => <em className="italic text-gray-800">{children}</em>,
-          h1: ({children}) => <h1 className="text-xl font-bold text-gray-900 mt-4 mb-2">{children}</h1>,
-          h2: ({children}) => <h2 className="text-lg font-bold text-gray-900 mt-3 mb-2">{children}</h2>,
-          h3: ({children}) => <h3 className="text-base font-bold text-gray-900 mt-2 mb-1">{children}</h3>,
-          p: ({children}) => <p className="mb-2 leading-relaxed">{children}</p>,
-          ul: ({children}) => <ul className="list-disc list-inside mb-2 space-y-1">{children}</ul>,
-          ol: ({children}) => <ol className="list-decimal list-inside mb-2 space-y-1">{children}</ol>,
-          li: ({children}) => <li className="leading-relaxed">{children}</li>,
-          blockquote: ({children}) => <blockquote className="border-l-4 border-gray-300 pl-3 italic text-gray-700 my-2">{children}</blockquote>,
+          strong: ({ children }) => <strong className="font-bold text-gray-900">{children}</strong>,
+          em: ({ children }) => <em className="italic text-gray-800">{children}</em>,
+          h1: ({ children }) => <h1 className="text-xl font-bold text-gray-900 mt-4 mb-2">{children}</h1>,
+          h2: ({ children }) => <h2 className="text-lg font-bold text-gray-900 mt-3 mb-2">{children}</h2>,
+          h3: ({ children }) => <h3 className="text-base font-bold text-gray-900 mt-2 mb-1">{children}</h3>,
+          p: ({ children }) => <p className="mb-2 leading-relaxed">{children}</p>,
+          ul: ({ children }) => <ul className="list-disc list-inside mb-2 space-y-1">{children}</ul>,
+          ol: ({ children }) => <ol className="list-decimal list-inside mb-2 space-y-1">{children}</ol>,
+          li: ({ children }) => <li className="leading-relaxed">{children}</li>,
+          blockquote: ({ children }) => <blockquote className="border-l-4 border-gray-300 pl-3 italic text-gray-700 my-2">{children}</blockquote>,
         }}
       >
         {text}
@@ -249,32 +291,21 @@ export default function AIScreenChat({ currentWord, nativeLang, onClose }) {
 
   return (
     <div className="flex flex-col h-[calc(100vh-100px)] bg-gray-50">
-      {/* Header */}
-      <div className="flex items-center justify-between p-4 bg-white border-b border-gray-200">
-        <div className="flex items-center">
-          <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center mr-3">
-            <span className="text-purple-600 text-lg">
-              <IoSparklesSharp />
-            </span>
-          </div>
-          <div>
-            <h2 className="text-lg font-semibold text-gray-900 font-sans">AI Language Coach</h2>
-            <p className="text-sm text-gray-600 font-sans">
-              Ask about <span className="font-semibold text-purple-600">"{currentWord?.text}"</span>
-            </p>
-          </div>
+      
+      {/* Header with Direct Chat button */}
+      <div className="border-b border-gray-200 bg-white px-4 py-3 flex justify-between items-center">
+        <div>
+          <h2 className="text-lg font-semibold text-gray-900">Chat about: <span className="text-purple-600">{currentWord?.text}</span></h2>
+          <p className="text-sm text-gray-500">Your AI language assistant</p>
         </div>
-        <div className="flex items-center gap-2">
+        {onOpenDirectChat && (
           <button
-            onClick={onClose}
-            className="w-10 h-10 bg-white cursor-pointer rounded-full flex items-center justify-center hover:bg-gray-100 transition-colors shadow-sm border border-gray-200"
-            title="Close chat"
+            onClick={onOpenDirectChat}
+            className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm font-medium text-gray-700 transition-colors"
           >
-            <span className="text-gray-600 text-xl">
-              <IoCloseOutline />
-            </span>
+            💬 Direct Chat
           </button>
-        </div>
+        )}
       </div>
 
       {/* Chat Messages */}
@@ -315,7 +346,7 @@ export default function AIScreenChat({ currentWord, nativeLang, onClose }) {
           <div className="space-y-4">
             {messages.map((msg) => (
               <div
-                key={msg.id} 
+                key={msg.id}
                 className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 <div
@@ -347,7 +378,7 @@ export default function AIScreenChat({ currentWord, nativeLang, onClose }) {
           </div>
         )}
 
-        {/* Scroll to Bottom Button - Only shows when user scrolls up */}
+        {/* Scroll to Bottom Button */}
         {showScrollToBottom && (
           <button
             onClick={scrollToBottom}
@@ -389,22 +420,6 @@ export default function AIScreenChat({ currentWord, nativeLang, onClose }) {
             )}
           </button>
         </div>
-
-        {/* Quick Suggestions when there are messages */}
-        {/* {messages.length > 0 && (
-          <div className="flex flex-wrap gap-2 mt-3">
-            {quickPrompts.slice(0, 2).map((prompt, index) => (
-              <button
-                key={index}
-                onClick={() => handlePromptPress(prompt)}
-                disabled={isStreaming}
-                className="text-xs bg-purple-100 text-purple-700 px-3 py-1.5 rounded-full hover:bg-purple-200 transition-colors font-sans disabled:opacity-50 cursor-pointer"
-              >
-                {prompt.split('"')[0].trim()}
-              </button>
-            ))}
-          </div>
-        )} */}
       </div>
     </div>
   );
@@ -419,16 +434,14 @@ export default function AIScreenChat({ currentWord, nativeLang, onClose }) {
 
 
 
-
-
-
-
 // import { useDispatch, useSelector } from 'react-redux';
-// import { useState, useEffect, useRef } from 'react';
+// import { useState, useEffect, useRef, useMemo } from 'react';
+// import AIService from '../../services/AIService';
 // import LANGUAGES from '../../constants/Languages';
 // import TRANSLATE_LANGUAGES_LIST from '../../constants/TranslateLanguagesList';
 // import { addChatMessage, updateChatMessage, removeChatMessage } from '../../store/ai_store';
 // import { API_URL } from '../../http/api';
+// import ReactMarkdown from 'react-markdown';
 
 // import { IoCloseOutline, IoArrowDown } from "react-icons/io5";
 // import { IoSparklesSharp } from "react-icons/io5";
@@ -439,17 +452,9 @@ export default function AIScreenChat({ currentWord, nativeLang, onClose }) {
 // };
 
 // export default function AIScreenChat({ currentWord, nativeLang, onClose }) {
-//   const dispatch = useDispatch();
-//   const [message, setMessage] = useState('');
-//   const [isStreaming, setIsStreaming] = useState(false);
-//   const [streamController, setStreamController] = useState(null);
-//   const [showScrollToBottom, setShowScrollToBottom] = useState(false);
 
-//   const { conversation } = useSelector((state) => state.aiSlice);
-//   const { messages, isChatLoading } = conversation;
-//   const messagesEndRef = useRef();
-//   const textInputRef = useRef();
-//   const messagesContainerRef = useRef();
+//   const dispatch = useDispatch();
+
 
 //   const quickPrompts = [
 //     `Give me a detailed explanation of "${currentWord?.text}"`,
@@ -457,6 +462,47 @@ export default function AIScreenChat({ currentWord, nativeLang, onClose }) {
 //     `Provide real-life scenarios using "${currentWord?.text}"`,
 //     `How can I remember "${currentWord?.text}" more easily?`,
 //   ];
+
+
+//   const [message, setMessage] = useState('');
+//   const [isStreaming, setIsStreaming] = useState(false);
+//   const [streamController, setStreamController] = useState(null);
+//   const [showScrollToBottom, setShowScrollToBottom] = useState(false);
+
+//   const [previousWordId, setPreviousWordId] = useState(null);
+
+//   const { conversations } = useSelector((state) => state.aiSlice);
+//   const currentConversation = conversations[currentWord?.id] || {
+//     messages: [],
+//     isLoading: false
+//   };
+
+//   // const { messages, isChatLoading } = conversation;
+//   const messagesEndRef = useRef();
+//   const textInputRef = useRef();
+//   const messagesContainerRef = useRef();
+
+//   // 🔴 CRITICAL FIX: Reset everything when word changes
+//   useEffect(() => {
+//     // Cancel any ongoing stream
+//     if (streamController) {
+//       streamController.abort();
+//       setStreamController(null);
+//     }
+
+//     // Reset local state
+//     setMessage('');
+//     setIsStreaming(false);
+//     setShowScrollToBottom(false);
+
+//     // Clear input focus
+//     textInputRef.current?.blur();
+
+//     // Scroll to top
+//     if (messagesContainerRef.current) {
+//       messagesContainerRef.current.scrollTop = 0;
+//     }
+//   }, [currentWord?.id]); // Only depend on word.id, not the entire object
 
 //   // Check scroll position to show/hide scroll-to-bottom button
 //   useEffect(() => {
@@ -475,6 +521,23 @@ export default function AIScreenChat({ currentWord, nativeLang, onClose }) {
 //     }
 //   }, []);
 
+//   useEffect(() => {
+//     return () => {
+//       if (streamController) {
+//         streamController.abort();
+//       }
+//     };
+//   }, [streamController]);
+
+//   useEffect(() => {
+//     if (currentWord?.id !== previousWordId) {
+//       setPreviousWordId(currentWord?.id);
+//       // setMessages([]);
+//       setIsStreaming(false);
+//       setStreamController(null);
+//     }
+//   }, [currentWord?.id, previousWordId]);
+
 //   const scrollToBottom = () => {
 //     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
 //     setShowScrollToBottom(false);
@@ -486,11 +549,21 @@ export default function AIScreenChat({ currentWord, nativeLang, onClose }) {
 //   };
 
 //   const handleSubmit = async () => {
-//     if (!message.trim() || isStreaming) return;
+//     // if (!message.trim() || isStreaming) return;
+
+//     if (!message.trim() || isStreaming || !currentWord) return;
+
+//     const wordId = currentWord.id;
 
 //     // Add user message with unique ID
+//     // const userMessageId = generateUniqueId();
+//     // dispatch(addChatMessage({
+//     //   role: 'user',
+//     //   content: message.trim(),
+//     //   id: userMessageId
+//     // }));
 //     const userMessageId = generateUniqueId();
-//     dispatch(addChatMessage({ 
+//     dispatch(addChatMessage(wordId, { 
 //       role: 'user', 
 //       content: message.trim(),
 //       id: userMessageId 
@@ -617,9 +690,13 @@ export default function AIScreenChat({ currentWord, nativeLang, onClose }) {
 //         return;
 //       }
 
-//       dispatch(updateChatMessage({
-//         id: aiMessageId,
-//         content: error.message || "Sorry, I'm having trouble responding right now. Please try again later.",
+//       // dispatch(updateChatMessage({
+//       //   id: aiMessageId,
+//       //   content: error.message || "Sorry, I'm having trouble responding right now. Please try again later.",
+//       //   isStreaming: false
+//       // }));
+//       dispatch(updateChatMessage(wordId, aiMessageId, {
+//         content: fullResponse,
 //         isStreaming: false
 //       }));
 //     } finally {
@@ -645,43 +722,48 @@ export default function AIScreenChat({ currentWord, nativeLang, onClose }) {
 //     }
 //   };
 
-//   // Remove auto-scroll effect - let user control scrolling
-//   // useEffect(() => {
-//   //   messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-//   // }, [messages, isStreaming]);
+//   // Format message text with markdown
+//   const formatMessage = (text) => {
+//     return (
+//       <ReactMarkdown
+//         components={{
+//           // Customize how markdown elements are rendered
+//           strong: ({ children }) => <strong className="font-bold text-gray-900">{children}</strong>,
+//           em: ({ children }) => <em className="italic text-gray-800">{children}</em>,
+//           h1: ({ children }) => <h1 className="text-xl font-bold text-gray-900 mt-4 mb-2">{children}</h1>,
+//           h2: ({ children }) => <h2 className="text-lg font-bold text-gray-900 mt-3 mb-2">{children}</h2>,
+//           h3: ({ children }) => <h3 className="text-base font-bold text-gray-900 mt-2 mb-1">{children}</h3>,
+//           p: ({ children }) => <p className="mb-2 leading-relaxed">{children}</p>,
+//           ul: ({ children }) => <ul className="list-disc list-inside mb-2 space-y-1">{children}</ul>,
+//           ol: ({ children }) => <ol className="list-decimal list-inside mb-2 space-y-1">{children}</ol>,
+//           li: ({ children }) => <li className="leading-relaxed">{children}</li>,
+//           blockquote: ({ children }) => <blockquote className="border-l-4 border-gray-300 pl-3 italic text-gray-700 my-2">{children}</blockquote>,
+//         }}
+//       >
+//         {text}
+//       </ReactMarkdown>
+//     );
+//   };
+
+//   const generateQuickPrompts = useMemo(() => {
+//     if (!currentWord) return [];
+
+//     const { text, language_code } = currentWord;
+//     const targetLang = LANGUAGES.find(lang => lang.code === language_code)?.name;
+
+//     return [
+//       `Explain "${text}" in simple ${targetLang || 'English'} terms`,
+//       `Give me 3 example sentences with "${text}"`,
+//       `What are common mistakes with "${text}"?`,
+//       `Synonyms and antonyms for "${text}"`,
+//     ];
+//   }, [currentWord?.text, currentWord?.language_code]);
 
 //   return (
 //     <div className="flex flex-col h-[calc(100vh-100px)] bg-gray-50">
-//       {/* Header */}
-//       <div className="flex items-center justify-between p-4 bg-white border-b border-gray-200">
-//         <div className="flex items-center">
-//           <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center mr-3">
-//             <span className="text-purple-600 text-lg">
-//               <IoSparklesSharp />
-//             </span>
-//           </div>
-//           <div>
-//             <h2 className="text-lg font-semibold text-gray-900 font-sans">AI Language Coach</h2>
-//             <p className="text-sm text-gray-600 font-sans">
-//               Ask about <span className="font-semibold text-purple-600">"{currentWord?.text}"</span>
-//             </p>
-//           </div>
-//         </div>
-//         <div className="flex items-center gap-2">
-//           <button
-//             onClick={onClose}
-//             className="w-10 h-10 bg-white cursor-pointer rounded-full flex items-center justify-center hover:bg-gray-100 transition-colors shadow-sm border border-gray-200"
-//             title="Close chat"
-//           >
-//             <span className="text-gray-600 text-xl">
-//               <IoCloseOutline />
-//             </span>
-//           </button>
-//         </div>
-//       </div>
 
 //       {/* Chat Messages */}
-//       <div 
+//       <div
 //         ref={messagesContainerRef}
 //         className="flex-1 overflow-y-auto p-4 relative"
 //       >
@@ -718,18 +800,21 @@ export default function AIScreenChat({ currentWord, nativeLang, onClose }) {
 //           <div className="space-y-4">
 //             {messages.map((msg) => (
 //               <div
-//                 key={msg.id} 
+//                 key={msg.id}
 //                 className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
 //               >
 //                 <div
-//                   className={`max-w-[80%] rounded-2xl px-4 py-3 ${
-//                     msg.role === 'user'
-//                       ? 'bg-purple-600 text-white rounded-br-md'
-//                       : 'bg-white text-gray-900 rounded-bl-md border border-gray-200 shadow-sm'
-//                   } ${msg.isStreaming ? 'streaming-cursor' : ''}`}
+//                   className={`max-w-[95%] rounded-2xl px-4 py-3 ${msg.role === 'user'
+//                       ? 'bg-purple-600 text-white'
+//                       : 'bg-white text-gray-900 border border-gray-200 shadow-sm'
+//                     } ${msg.isStreaming ? 'streaming-cursor' : ''}`}
 //                 >
-//                   <div className="text-sm leading-relaxed whitespace-pre-wrap font-sans">
-//                     {msg.content}
+//                   <div className="text-sm leading-relaxed font-sans">
+//                     {msg.role === 'user' ? (
+//                       <div className="whitespace-pre-wrap">{msg.content}</div>
+//                     ) : (
+//                       formatMessage(msg.content)
+//                     )}
 //                     {msg.isStreaming && msg.content === '' && (
 //                       <div className="flex space-x-1">
 //                         <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
@@ -774,11 +859,10 @@ export default function AIScreenChat({ currentWord, nativeLang, onClose }) {
 //           <button
 //             onClick={handleSubmit}
 //             disabled={!message.trim() || isStreaming}
-//             className={`w-12 h-12 rounded-full flex items-center justify-center transition-all ${
-//               message.trim() && !isStreaming
+//             className={`w-12 h-12 rounded-full flex items-center justify-center transition-all ${message.trim() && !isStreaming
 //                 ? 'bg-purple-600 hover:bg-purple-700 cursor-pointer hover:scale-105 active:scale-95'
 //                 : 'bg-gray-300 cursor-not-allowed'
-//             }`}
+//               }`}
 //             title="Send message"
 //           >
 //             {isStreaming ? (
@@ -789,21 +873,6 @@ export default function AIScreenChat({ currentWord, nativeLang, onClose }) {
 //           </button>
 //         </div>
 
-//         {/* Quick Suggestions when there are messages */}
-//         {messages.length > 0 && (
-//           <div className="flex flex-wrap gap-2 mt-3">
-//             {quickPrompts.slice(0, 2).map((prompt, index) => (
-//               <button
-//                 key={index}
-//                 onClick={() => handlePromptPress(prompt)}
-//                 disabled={isStreaming}
-//                 className="text-xs bg-purple-100 text-purple-700 px-3 py-1.5 rounded-full hover:bg-purple-200 transition-colors font-sans disabled:opacity-50 cursor-pointer"
-//               >
-//                 {prompt.split('"')[0].trim()}
-//               </button>
-//             ))}
-//           </div>
-//         )}
 //       </div>
 //     </div>
 //   );

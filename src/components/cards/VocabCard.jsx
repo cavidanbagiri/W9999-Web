@@ -6,6 +6,7 @@ import { FaStar, FaRegStar, FaChartLine, FaCheck, FaCheckCircle } from 'react-ic
 import { IoVolumeMedium } from 'react-icons/io5';
 import WordService from '../../services/WordService';
 import VoiceButtonComponent from '../../layouts/VoiceButtonComponent';
+import { setCurrentWord } from '../../store/ai_store';
 
 export default function VocabCard({ word, language }) {
   const dispatch = useDispatch();
@@ -38,6 +39,7 @@ export default function VocabCard({ word, language }) {
   }, [word.id, word.is_starred, word.is_learned]);
 
   const handleCardClick = () => {
+    dispatch(setCurrentWord(word));
     navigate('/card-detail', { state: { word } });
   };
 
