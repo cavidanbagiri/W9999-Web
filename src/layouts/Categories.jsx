@@ -252,7 +252,7 @@ const Categories = ({ isVisible, onClose, screen }) => {
             className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-end justify-center"
             onClick={handleBackdropClick}
         >
-            <div className="bg-white w-full max-w-4xl rounded-t-3xl max-h-[85vh] overflow-hidden animate-slide-up shadow-2xl">
+            <div className="bg-white w-full max-w-4xl rounded-t-3xl max-h-[95vh] overflow-hidden animate-slide-up shadow-2xl">
                 {/* Enhanced Header */}
                 <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-700 text-white p-8 relative overflow-hidden">
                     {/* Background Pattern */}
@@ -310,7 +310,7 @@ const Categories = ({ isVisible, onClose, screen }) => {
                 </div>
 
                 {/* Enhanced Content */}
-                <div className="overflow-y-auto max-h-[38vh] p-6 bg-gradient-to-br from-slate-50 to-purple-50">
+                <div className="overflow-y-auto max-h-[48vh] p-6 bg-gradient-to-br from-slate-50 to-purple-50">
                     {loading ? (
                         <div className="flex flex-col items-center justify-center py-16">
                             <div className="animate-spin rounded-full h-16 w-16 border-4 border-purple-500 border-t-transparent mb-4"></div>

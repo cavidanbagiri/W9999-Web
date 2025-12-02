@@ -4,16 +4,21 @@ Problems
 
 2 - In category section also need to check the total learned words maybe doesnt look true as pos
 
-3 - Solve Pos modal design problem. 
-
-5 - AI Component screen, two components is different in size
-
 6 - if the  language is not selected in search_screen, return back to the wrong but need to set as, if not selected language, set the all  languages
+
+11 - Add the conversation to the some context, because after one message, text doesnt understand by ai.
+
+13 - In the console l see the error: 'A props object containing a "key" prop is being spread into JSX:
+  let props = {key: someKey, currentWord: ..., nativeLang: ..., onOpenDirectChat: ...};
+  <AIScreenChat {...props} />
+React keys must be passed directly to JSX without using spread:
+  let props = {currentWord: ..., nativeLang: ..., onOpenDirectChat: ...};
+  <AIScreenChat key={someKey} {...props} />'
 
 Solving
 
 Today:
-    [4,3,1,2,5]
+    [7,8,9,3,1,6,2]
 
 
 DeepSeek:

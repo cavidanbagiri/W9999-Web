@@ -261,8 +261,10 @@ export default function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat
 
     return [
       `Explain "${text}" in simple ${targetLang || 'English'} terms`,
-      `Give me 3 example sentences with "${text}"`,
-      `What are common mistakes with "${text}"?`,
+      `Give me detailed explanation of "${text}"`,
+      // `Write a short story (100 words) with "${currentWord?.text}"`,
+      `Create a 100-word story using "${text}" in ${targetLang} with  translation`,
+      // `What are common mistakes with "${text}"?`,
       `Synonyms and antonyms for "${text}"`,
     ];
   }, [currentWord?.text, currentWord?.language_code]);
@@ -290,7 +292,7 @@ export default function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-100px)] bg-gray-50">
+    <div className="flex flex-col sm:pb-20 md:pb-0 h-[calc(100vh-100px)] bg-gray-50">
       
       {/* Header with Direct Chat button */}
       <div className="border-b border-gray-200 bg-white px-4 py-3 flex justify-between items-center">
@@ -301,7 +303,7 @@ export default function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat
         {onOpenDirectChat && (
           <button
             onClick={onOpenDirectChat}
-            className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm font-medium text-gray-700 transition-colors"
+            className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm font-medium text-gray-700 transition-colors cursor-pointer"
           >
             💬 Direct Chat
           </button>
@@ -353,10 +355,10 @@ export default function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat
                   className={`max-w-[95%] rounded-2xl px-4 py-3 ${
                     msg.role === 'user'
                       ? 'bg-purple-600 text-white'
-                      : 'bg-white text-gray-900 border border-gray-200 shadow-sm'
+                      : 'text-gray-900'
                   } ${msg.isStreaming ? 'streaming-cursor' : ''}`}
                 >
-                  <div className="text-sm leading-relaxed font-sans">
+                  <div className="text-lg leading-relaxed font-sans"> {/* Changed from text-sm to text-lg */}
                     {msg.role === 'user' ? (
                       <div className="whitespace-pre-wrap">{msg.content}</div>
                     ) : (

@@ -167,7 +167,7 @@ const PosStatistics = ({ isVisible, onClose, screen }) => {
             className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-end justify-center"
             onClick={handleBackdropClick}
         >
-            <div className="bg-white w-full max-w-4xl rounded-t-3xl max-h-[85vh] overflow-hidden animate-slide-up shadow-2xl">
+            <div className="bg-white w-full max-w-4xl rounded-t-3xl max-h-[95vh] overflow-hidden animate-slide-up shadow-2xl">
                 {/* Enhanced Header */}
                 <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-700 text-white p-8 relative overflow-hidden">
                     {/* Background Pattern */}
@@ -192,7 +192,7 @@ const PosStatistics = ({ isVisible, onClose, screen }) => {
                         </div>
 
                         {/* Stats Overview */}
-                        <div className="grid grid-cols-4 gap-4 mb-6">
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                             <div className="text-center p-4 bg-white/10 rounded-2xl backdrop-blur-sm">
                                 <div className="text-xl font-bold">{totalStats.totalCategories}</div>
                                 <div className="text-sm text-purple-200">POS Types</div>

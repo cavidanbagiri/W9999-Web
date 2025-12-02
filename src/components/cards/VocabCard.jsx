@@ -64,12 +64,12 @@ export default function VocabCard({ word, language }) {
     >
       {/* Header: Word + Level Badge */}
       <div className="flex items-start justify-between mb-4">
-        <div className="flex-1">
-          <h3 className="text-3xl font-bold text-gray-900 font-sans group-hover:text-purple-700 transition-colors">
+        <div className="flex-1 max-w-[80%]">
+          <h3 className="text-3xl overflow-hidden font-bold text-gray-900 font-sans group-hover:text-purple-700 transition-colors">
             {word.text}
           </h3>
           {word.pos && (
-            <span className="inline-block mt-1 text-xs font-semibold text-gray-500 uppercase tracking-wide font-sans">
+            <span className="inline-block mt-1 text-xs  font-semibold text-gray-500 uppercase tracking-wide font-sans">
               {word.pos}
             </span>
           )}
