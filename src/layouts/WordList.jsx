@@ -6,11 +6,9 @@ import VocabCard from '../components/cards/VocabCard.jsx';
 
 
 export function WordList({ screen }) {
-    const dispatch = useDispatch();
-    const { words, loading, selectedLanguage, hasMore, currentCategory } = useSelector((state) => state.wordSlice);
-    const [filter, setFilter] = useState('all');
-    const [page, setPage] = useState(1);
 
+    const { words, unlearned_words, learned_words, loading, selectedLanguage, hasMore, currentCategory } = useSelector((state) => state.wordSlice);
+   
     return (
         <div className="mt-1 ">
            
@@ -24,13 +22,23 @@ export function WordList({ screen }) {
                     :
 
                     <div className="space-y-3 flex flex-wrap justify-around px-2 gap-2 mt-2">
-                        {words?.map((item) => (
-                            <VocabCard
-                                key={item.id.toString()}
-                                word={item}
-                                language={selectedLanguage}
-                            />
-                        ))}
+                        {screen === 'WordScreen' ?
+                            unlearned_words?.map((item) => (
+                                <VocabCard
+                                    key={item.id.toString()}
+                                    word={item}
+                                    language={selectedLanguage}
+                                />
+                            ))
+                            :
+                            learned_words?.map((item) => (
+                                <VocabCard
+                                    key={item.id.toString()}
+                                    word={item}
+                                    language={selectedLanguage}
+                                />
+                            ))
+                        }
                     </div>
             }
 

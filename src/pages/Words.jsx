@@ -16,6 +16,7 @@ export default function WordScreen() {
 
     const {
         words,
+        unlearned_words,
         selectedLanguage,
         statistics,
         currentCategory,
@@ -62,7 +63,7 @@ export default function WordScreen() {
 
         setIsFetching(true);
 
-        const skip = reset ? 0 : words.length;
+        const skip = reset ? 0 : unlearned_words.length;
         const limit = pagination.pageSize;
 
 
@@ -103,13 +104,12 @@ export default function WordScreen() {
                 dispatch(setLoadingMore(false));
             }
         }
-    }, [is_auth, selectedLanguage, currentCategory.id, currentPosName.name, filter, words.length, pagination.pageSize, dispatch, isFetching]);
+    }, [is_auth, selectedLanguage, currentCategory.id, currentPosName.name, filter, unlearned_words.length, pagination.pageSize, dispatch, isFetching]);
 
 
     useEffect(() => {
         if (is_auth && selectedLanguage) {
             const currentContext = `${selectedLanguage}-${currentCategory.id}-${currentPosName.name || ''}-${filter}`;
-            // console.log('use effect screen context is workinf')
             if (currentContext !== lastScreenContext) {
                 setLastScreenContext(currentContext);
                 fetchWords(true);
@@ -120,20 +120,9 @@ export default function WordScreen() {
 
     const loadMoreWords = useCallback(() => {
 
-        const conditions = {
-            isFetching,
-            hasMore: pagination.hasMore,
-            wordsPending: words_pending,
-            wordsLength: words.length,
-            totalWords: pagination.totalWords,
-            currentLoaded: words.length,
-            total: pagination.totalWords || 0
-        };
+        if (!isFetching && pagination.hasMore && !words_pending && unlearned_words.length > 0) {
 
-
-        if (!isFetching && pagination.hasMore && !words_pending && words.length > 0) {
-
-            const currentLoaded = words.length;
+            const currentLoaded = unlearned_words.length;
             const total = pagination.totalWords || 0;
 
             if (currentLoaded >= total) {
@@ -142,43 +131,9 @@ export default function WordScreen() {
             fetchWords(false);
         } else {
         }
-    }, [isFetching, pagination.hasMore, words_pending, words.length, pagination.totalWords, pagination.pageSize, fetchWords]);
+    }, [isFetching, pagination.hasMore, words_pending, unlearned_words.length, pagination.totalWords, pagination.pageSize, fetchWords]);
 
 
-    useEffect(() => {
-        const handleScroll = () => {
-            const scrollTop = document.documentElement.scrollTop;
-            const windowHeight = window.innerHeight;
-            const documentHeight = document.documentElement.offsetHeight;
-            const scrollPosition = scrollTop + windowHeight;
-
-            // ✅ FIX: Make the threshold much smaller for few remaining words
-            const isNearBottom = scrollPosition >= documentHeight - 50; // Reduced to 50px
-
-
-
-            if (isScrollDebouncing ||
-                !isNearBottom ||
-                isFetching ||
-                !pagination.hasMore ||
-                words_pending) {
-                return;
-            }
-
-            setIsScrollDebouncing(true);
-            loadMoreWords();
-
-            // Debounce for 500ms
-            setTimeout(() => {
-                setIsScrollDebouncing(false);
-            }, 500);
-        };
-
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, [loadMoreWords, words_pending, isFetching, pagination.hasMore, isScrollDebouncing]);
-
-    // Auto-select language when only one available - FIXED
     useEffect(() => {
         if (statistics?.length === 1 && !selectedLanguage) {
             const lang_code = statistics[0]['language_code'];
@@ -187,16 +142,6 @@ export default function WordScreen() {
         }
     }, [statistics, dispatch, selectedLanguage]);
 
-    useEffect(() => {
-        if (pagination.hasMore &&
-            !isFetching &&
-            !words_pending &&
-            words.length > 0 &&
-            (pagination.totalWords - words.length) <= 5) { // If 5 or fewer words remain
-            // console.log('load more less than 5 is work')
-            loadMoreWords();
-        }
-    }, [words.length, pagination.totalWords, pagination.hasMore, isFetching, words_pending, loadMoreWords]);
 
     const PaginationControls = () => (
         <div className="flex flex-col items-center justify-center mt-8 space-y-4 px-4">
@@ -211,22 +156,22 @@ export default function WordScreen() {
                         {isFetching ? (
                             <>
                                 <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                <span>Loading {pagination.totalWords - words.length} More Words...</span>
+                                <span>Loading {pagination.totalWords - unlearned_words.length} More Words...</span>
                             </>
                         ) : (
                             <>
-                                <span>📥 Load {pagination.totalWords - words.length} More Words</span>
+                                <span>📥 Load {pagination.totalWords - unlearned_words.length} More Words</span>
                             </>
                         )}
                     </button>
                     <p className="text-sm text-gray-600 mt-2">
-                        {words.length} of {pagination.totalWords} words loaded • {pagination.totalWords - words.length} remaining
+                        {unlearned_words.length} of {pagination.totalWords} words loaded • {pagination.totalWords - unlearned_words.length} remaining
                     </p>
                 </div>
             )}
 
             {/* Back to Top */}
-            {words.length >= 20 && (
+            {unlearned_words.length >= 20 && (
                 <button
                     onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                     className="text-indigo-500 hover:text-indigo-700 text-sm font-medium transition-colors"
@@ -246,7 +191,7 @@ export default function WordScreen() {
             />
 
             {/* Check if starred is empty */}
-            {filter === 'starred' && words?.length === 0 && !words_pending && (
+            {filter === 'starred' && unlearned_words?.length === 0 && !words_pending && (
                 <EmptyStarredComponent selectedLanguage={selectedLanguage} />
             )}
 
@@ -307,7 +252,7 @@ export default function WordScreen() {
             }
 
             {/* Scroll to Bottom Button */}
-            {showScrollToBottom && words.length > 0 && (
+            {showScrollToBottom && unlearned_words.length > 0 && (
                 <button
                     onClick={scrollToBottom}
                     className="fixed bottom-30 md:bottom-24 right-6 bg-indigo-500 text-white p-3 rounded-full shadow-lg hover:bg-indigo-600 transition-colors cursor-pointer z-10"
@@ -320,10 +265,10 @@ export default function WordScreen() {
             {/* Words List */}
             {selectedLanguage ? (
                 <div className="flex-1">
-                    <WordList filter={filter} screen={'WordScreen'} />
+                    <WordList screen={'WordScreen'} />
 
                     {/* Loading More Indicator */}
-                    {isFetching && words.length > 0 && (
+                    {isFetching && unlearned_words.length > 0 && (
                         <div className="flex justify-center items-center py-8">
                             <div className="w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin mr-3"></div>
                             <span className="text-gray-600">Loading more words...</span>
@@ -331,10 +276,10 @@ export default function WordScreen() {
                     )}
 
                     {/* Pagination Controls */}
-                    {words.length > 0 && <PaginationControls />}
+                    {unlearned_words.length > 0 && <PaginationControls />}
 
                     {/* Initial Loading State */}
-                    {words_pending && words.length === 0 && (
+                    {words_pending && unlearned_words.length === 0 && (
                         <div className="flex flex-col items-center justify-center py-16">
                             <div className="w-12 h-12 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mb-4"></div>
                             <div className="text-gray-600 text-lg">Loading words...</div>
@@ -343,7 +288,7 @@ export default function WordScreen() {
                     )}
 
                     {/* No Words State */}
-                    {!words_pending && words.length === 0 && filter !== 'starred' && (
+                    {!words_pending && unlearned_words.length === 0 && filter !== 'starred' && (
                         <div className="flex flex-col items-center justify-center py-16 text-center">
                             <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mb-4">
                                 <span className="text-gray-400 text-2xl">📚</span>

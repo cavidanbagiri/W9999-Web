@@ -7,8 +7,10 @@ import WordService from '../services/WordService.js';
 axios.defaults.withCredentials = true;
 
 const initialState = {
-    words: [],
-    wordsData: [],
+    // words: [],
+    unlearned_words: [],
+    learned_words: [],
+    // wordsData: [],
     selectedLanguage: null,
     words_pending: false,
     is_words_error: false,
@@ -64,8 +66,10 @@ export const wordSlice = createSlice({
         },
 
         clearAfterLogout: (state) => {
-            state.words = [];
-            state.wordsData = [];
+            // state.words = [];
+            state.unlearned_words = [];
+            state.learned_words = [];
+            // state.wordsData = [];
             state.selectedLanguage = null;
             state.available_lang_toggle = true;
             state.statistics = null;
@@ -156,21 +160,40 @@ export const wordSlice = createSlice({
         builder.addCase(WordService.handleLanguageSelect.fulfilled, (state, action) => {
             const { skip = 0 } = action.meta.arg || {};
             const responseData = action.payload?.payload || action.payload;
+            console.log('coming repsonse data is : ', responseData)
 
             if (skip === 0) {
                 // First page - replace words
-                state.words = Array.isArray(responseData) ? responseData : (responseData.words || []);
+                if(responseData.page_type === 'unlearned'){
+                    state.unlearned_words = Array.isArray(responseData) ? responseData : (responseData.words || []);
+                }
+                else if(responseData.page_type === 'learned'){
+                    state.learned_words = Array.isArray(responseData) ? responseData : (responseData.words || []);
+                }
+                // state.words = Array.isArray(responseData) ? responseData : (responseData.words || []);
                 state.words_pending = false;
             } else {
                 // Subsequent pages - append words
-                const newWords = Array.isArray(responseData) ? responseData : (responseData.words || []);
-                state.words = [...state.words, ...newWords];
-                state.pagination.isLoadingMore = false;
+                if (responseData.page_type === 'unlearned'){
+                    const newWords = Array.isArray(responseData) ? responseData : (responseData.words || []);
+                    state.unlearned_words = [...state.unlearned_words, ...newWords];
+                    state.pagination.isLoadingMore = false;
+                }
+                else if(responseData.page_type === 'learned'){
+                    const newWords = Array.isArray(responseData) ? responseData : (responseData.words || []);
+                    state.learned_words = [...state.learned_words, ...newWords];
+                    state.pagination.isLoadingMore = false;
+                }
             }
 
             // Update pagination state
-            if (responseData && typeof responseData === 'object' && !Array.isArray(responseData)) {
-                state.pagination.totalWords = responseData.total_count || state.words.length;
+            if (responseData && typeof responseData === 'object' && !Array.isArray(responseData)  && responseData.page_type === 'unlearned') {
+                state.pagination.totalWords = responseData.total_count || state.unlearned_words.length;
+                state.pagination.hasMore = responseData.has_more !== undefined ? responseData.has_more : (responseData.words?.length === state.pagination.pageSize);
+                state.pagination.currentPage = skip / state.pagination.pageSize;
+            }
+            else if (responseData && typeof responseData === 'object' && !Array.isArray(responseData) && responseData.page_type === 'learned') {
+                state.pagination.totalWords = responseData.total_count || state.learned_words.length;
                 state.pagination.hasMore = responseData.has_more !== undefined ? responseData.has_more : (responseData.words?.length === state.pagination.pageSize);
                 state.pagination.currentPage = skip / state.pagination.pageSize;
             }
@@ -249,7 +272,15 @@ export const wordSlice = createSlice({
 
             if (skip === 0) {
                 // First page - replace words
-                state.words = Array.isArray(responseData) ? responseData : (responseData.words || []);
+
+                if (responseData.page_type === 'unlearned'){
+                    state.unlearned_words = Array.isArray(responseData) ? responseData : (responseData.words || []);
+                }
+                else if(responseData.page_type === 'learned'){
+                    state.learned_words = Array.isArray(responseData) ? responseData : (responseData.words || []);
+                }
+
+                // state.words = Array.isArray(responseData) ? responseData : (responseData.words || []);
                 state.words_pending = false;
                 state.loading = false;
             } else {
@@ -258,16 +289,27 @@ export const wordSlice = createSlice({
 
                 // ✅ FIX: Check for duplicates before appending
                 if (newWords.length > 0) {
-                    const existingIds = new Set(state.words.map(w => w.id));
-                    const uniqueNewWords = newWords.filter(word => !existingIds.has(word.id));
-
+                    let uniqueNewWords = [];
+                    if (responseData.page_type === 'unlearned'){
+                        const existingIds = new Set(state.unlearned_words.map(w => w.id));
+                        uniqueNewWords = newWords.filter(word => !existingIds.has(word.id));
+                    }
+                    else if(responseData.page_type === 'learned'){
+                        const existingIds = new Set(state.learned_words.map(w => w.id));
+                        uniqueNewWords = newWords.filter(word => !existingIds.has(word.id));
+                    }
                     if (uniqueNewWords.length === 0) {
                         state.pagination.hasMore = false;
                         state.pagination.isLoadingMore = false;
                         return;
                     }
 
-                    state.words = [...state.words, ...uniqueNewWords];
+                    if(responseData.page_type === 'unlearned'){
+                        state.unlearned_words = [...state.unlearned_words, ...uniqueNewWords];
+                    }
+                    else if(responseData.page_type === 'learned'){
+                        state.learned_words = [...state.learned_words, ...uniqueNewWords];
+                    }
                 } else {
                     state.pagination.hasMore = false;
                 }
@@ -276,25 +318,35 @@ export const wordSlice = createSlice({
             }
 
             // Update pagination state
-            if (responseData && typeof responseData === 'object' && !Array.isArray(responseData)) {
-                state.pagination.totalWords = responseData.total_count || state.words.length;
+            if (responseData && typeof responseData === 'object' && !Array.isArray(responseData)  && responseData.page_type === 'unlearned') {
+                state.pagination.totalWords = responseData.total_count || state.unlearned_words.length;
 
                 // Use state.words.length for current loaded count
-                const currentLoaded = state.words.length;
+                const currentLoaded = state.unlearned_words.length;
 
                 state.pagination.hasMore = responseData.has_more !== undefined
                     ? responseData.has_more
                     : currentLoaded < (responseData.total_count || 0);
 
-                console.log('🔍 Category hasMore Calculation:', {
-                    currentLoaded: state.words.length,
-                    totalCount: responseData.total_count,
-                    backendHasMore: responseData.has_more,
-                    finalHasMore: state.pagination.hasMore
-                });
+                state.pagination.currentPage = skip / state.pagination.pageSize;
+            }
+            // Update pagination state
+            else if (responseData && typeof responseData === 'object' && !Array.isArray(responseData)  && responseData.page_type === 'learned') {
+                state.pagination.totalWords = responseData.total_count || state.learned_words.length;
+
+                // Use state.words.length for current loaded count
+                const currentLoaded = state.learned_words.length;
+
+                state.pagination.hasMore = responseData.has_more !== undefined
+                    ? responseData.has_more
+                    : currentLoaded < (responseData.total_count || 0);
 
                 state.pagination.currentPage = skip / state.pagination.pageSize;
             }
+
+
+
+
         });
 
         builder.addCase(WordService.getWordsByCategoryId.rejected, (state, action) => {
@@ -333,15 +385,34 @@ export const wordSlice = createSlice({
 
             if (skip === 0) {
                 // First page - replace words
-                state.words = Array.isArray(responseData) ? responseData : (responseData.words || []);
+
+                if (responseData.page_type === 'unlearned'){
+                    state.unlearned_words = Array.isArray(responseData) ? responseData : (responseData.words || []);
+                }
+                else if(responseData.page_type === 'learned'){
+                    state.learned_words = Array.isArray(responseData) ? responseData : (responseData.words || []);
+                }
+
+                // state.words = Array.isArray(responseData) ? responseData : (responseData.words || []);
+
+                // state.words = Array.isArray(responseData) ? responseData : (responseData.words || []);
                 state.words_pending = false;
                 state.loading = false;
             } else {
                 // Subsequent pages - append words
                 const newWords = Array.isArray(responseData) ? responseData : (responseData.words || []);
 
-                const existingIds = new Set(state.words.map(w => w.id));
-                const uniqueNewWords = newWords.filter(word => !existingIds.has(word.id));
+                let uniqueNewWords = [];
+
+                if (responseData.page_type === 'unlearned'){
+                    const existingIds = new Set(state.unlearned_words.map(w => w.id));
+                    uniqueNewWords = newWords.filter(word => !existingIds.has(word.id));
+                }
+                else if(responseData.page_type === 'learned'){
+                    const existingIds = new Set(state.learned_words.map(w => w.id));
+                    uniqueNewWords = newWords.filter(word => !existingIds.has(word.id));
+                }
+
 
                 // If no new words received, stop pagination
                 if (uniqueNewWords.length === 0) {
@@ -350,16 +421,38 @@ export const wordSlice = createSlice({
                     return;
                 }
 
-                state.words = [...state.words, ...uniqueNewWords];
+                // state.words = [...state.words, ...uniqueNewWords];
+                if(responseData.page_type === 'unlearned'){
+                    state.unlearned_words = [...state.unlearned_words, ...uniqueNewWords];
+                }
+                else if(responseData.page_type === 'learned'){
+                    state.learned_words = [...state.learned_words, ...uniqueNewWords];
+                }
                 state.pagination.isLoadingMore = false;
             }
 
             // Update pagination state
-            if (responseData && typeof responseData === 'object' && !Array.isArray(responseData)) {
-                state.pagination.totalWords = responseData.total_count || state.words.length;
+            if (responseData && typeof responseData === 'object' && !Array.isArray(responseData) && responseData.page_type === 'unlearned') {
+                state.pagination.totalWords = responseData.total_count || state.unlearned_words.length;
 
                 // Calculate hasMore based on actual data
-                const currentLoaded = state.words.length;
+                const currentLoaded = state.unlearned_words.length;
+                const totalCount = responseData.total_count || 0;
+
+                // Use backend's has_more if provided, otherwise calculate
+                if (responseData.has_more !== undefined) {
+                    state.pagination.hasMore = responseData.has_more;
+                } else {
+                    state.pagination.hasMore = currentLoaded < totalCount;
+                }
+
+                state.pagination.currentPage = skip / state.pagination.pageSize;
+            }
+            else if (responseData && typeof responseData === 'object' && !Array.isArray(responseData) && responseData.page_type === 'learned') {
+                state.pagination.totalWords = responseData.total_count || state.learned_words.length;
+
+                // Calculate hasMore based on actual data
+                const currentLoaded = state.learned_words.length;
                 const totalCount = responseData.total_count || 0;
 
                 // Use backend's has_more if provided, otherwise calculate

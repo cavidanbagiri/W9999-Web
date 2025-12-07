@@ -18,7 +18,7 @@ export default function LearnedScreen() {
 
   const { is_auth } = useSelector((state) => state.authSlice);
   const {
-    words,
+    learned_words,
     words_pending,
     selectedLanguage,
     statistics,
@@ -51,42 +51,42 @@ export default function LearnedScreen() {
 
     setIsFetching(true);
 
-    const skip = reset ? 0 : words.length;
+    const skip = reset ? 0 : learned_words.length;
     const limit = pagination.pageSize;
 
-    const shouldReset = reset || words.some(word => word.is_learned !== true);
+    const shouldReset = reset || learned_words.some(word => word.is_learned !== true);
 
     try {
       if (currentCategory.id) {
-                await dispatch(WordService.getWordsByCategoryId({
-                    categoryId: currentCategory.id,
-                    langCode: selectedLanguage,
-                    only_starred: false,
-                    only_learned: true,
-                    skip: shouldReset ? 0 : skip,
-                    limit: limit
-                })).unwrap();
-            } 
+        await dispatch(WordService.getWordsByCategoryId({
+          categoryId: currentCategory.id,
+          langCode: selectedLanguage,
+          only_starred: false,
+          only_learned: true,
+          skip: shouldReset ? 0 : skip,
+          limit: limit
+        })).unwrap();
+      }
 
-            else if (currentPosName.name) {
-                await dispatch(WordService.getWordsByPosName({
-                    posName: currentPosName.name,
-                    langCode: selectedLanguage,
-                    only_starred: false,
-                    only_learned: true,
-                    skip: shouldReset ? 0 : skip,
-                    limit: limit
-                })).unwrap();
-            }
-            
-            else {
-                await dispatch(WordService.handleLanguageSelect({
-                    filter: 'learned',
-                    langCode: selectedLanguage,
-                    skip: shouldReset ? 0 : skip,
-                    limit: limit
-                })).unwrap();
-            }
+      else if (currentPosName.name) {
+        await dispatch(WordService.getWordsByPosName({
+          posName: currentPosName.name,
+          langCode: selectedLanguage,
+          only_starred: false,
+          only_learned: true,
+          skip: shouldReset ? 0 : skip,
+          limit: limit
+        })).unwrap();
+      }
+
+      else {
+        await dispatch(WordService.handleLanguageSelect({
+          filter: 'learned',
+          langCode: selectedLanguage,
+          skip: shouldReset ? 0 : skip,
+          limit: limit
+        })).unwrap();
+      }
     } catch (error) {
       console.error('Error fetching words:', error);
     } finally {
@@ -95,24 +95,23 @@ export default function LearnedScreen() {
         dispatch(setLoadingMore(false));
       }
     }
-  }, 
-  // [is_auth, selectedLanguage, currentCategory.id, words.length, pagination.pageSize, dispatch, isFetching]
-  [is_auth, selectedLanguage, currentCategory.id, currentPosName.name, filter, words.length, pagination.pageSize, dispatch, isFetching]
-);
+  },
+    [is_auth, selectedLanguage, currentCategory.id, currentPosName.name, filter, learned_words.length, pagination.pageSize, dispatch, isFetching]
+  );
 
 
   const [lastScreenContext, setLastScreenContext] = useState('');
 
   useEffect(() => {
-      if (is_auth && selectedLanguage) {
-          const currentContext = `${selectedLanguage}-${currentCategory.id}-${currentPosName.name || ''}-${filter}`;
-  
-          // Only fetch if context actually changed
-          if (currentContext !== lastScreenContext) {
-              setLastScreenContext(currentContext);
-              fetchWords(true);
-          }
+    if (is_auth && selectedLanguage) {
+      const currentContext = `${selectedLanguage}-${currentCategory.id}-${currentPosName.name || ''}-${filter}`;
+
+      // Only fetch if context actually changed
+      if (currentContext !== lastScreenContext) {
+        setLastScreenContext(currentContext);
+        fetchWords(true);
       }
+    }
   }, [selectedLanguage, currentCategory.id, currentPosName.name, filter, is_auth, lastScreenContext, fetchWords]);
 
 
@@ -125,21 +124,6 @@ export default function LearnedScreen() {
     }
   }, [isFetching, pagination.hasMore, words_pending, fetchWords]);
 
-  // Infinite scroll handler - FIXED
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.innerHeight + document.documentElement.scrollTop
-        >= document.documentElement.offsetHeight - 200 &&
-        !isFetching &&
-        pagination.hasMore &&
-        !words_pending) {
-        loadMoreWords();
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [loadMoreWords, words_pending, isFetching, pagination.hasMore]);
 
   // Header stats
   const learnedStats = {
@@ -166,22 +150,22 @@ export default function LearnedScreen() {
           ) : (
             <>
               <span>Load More Words</span>
-              <span className="text-blue-100">({words.length} of {totalLearned})</span>
+              <span className="text-blue-100">({learned_words.length} of {totalLearned})</span>
             </>
           )}
         </button>
       )}
 
       {/* Progress Text */}
-      {words.length > 0 && (
+      {learned_words.length > 0 && (
         <div className="text-center text-gray-600 text-sm">
-          Showing {words.length} of {totalLearned} learned words
+          Showing {learned_words.length} of {totalLearned} learned words
           {pagination.hasMore && ' • Scroll down to load more'}
         </div>
       )}
 
       {/* Back to Top */}
-      {words.length >= 40 && (
+      {learned_words.length >= 40 && (
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           className="text-blue-500 hover:text-blue-700 text-sm font-medium transition-colors"
@@ -214,7 +198,7 @@ export default function LearnedScreen() {
             </div>
 
             {/* Desktop Stats */}
-            {selectedLanguage && words?.length > 0 && (
+            {selectedLanguage && learned_words?.length > 0 && (
               <div className="flex items-center gap-6">
                 <div className="text-center">
                   <div className="text-2xl font-bold text-blue-600">{totalLearned}</div>
@@ -225,7 +209,7 @@ export default function LearnedScreen() {
                   <div className="text-sm text-gray-600">Languages</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-purple-600">{words.length}</div>
+                  <div className="text-2xl font-bold text-purple-600">{learned_words.length}</div>
                   <div className="text-sm text-gray-600">Loaded</div>
                 </div>
               </div>
@@ -248,73 +232,21 @@ export default function LearnedScreen() {
               <div>
                 <h1 className="text-xl font-bold text-gray-900">Learned</h1>
                 <p className="text-sm text-gray-600">
-                  {words.length} of {totalLearned} words
+                  {learned_words.length} of {totalLearned} words
                 </p>
               </div>
             </div>
 
             {/* Mobile Stats Badge */}
-            {selectedLanguage && words?.length > 0 && (
+            {selectedLanguage && learned_words?.length > 0 && (
               <div className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-sm font-medium">
-                {words.length} loaded
+                {learned_words.length} loaded
               </div>
             )}
           </div>
         </div>
       </div>
 
-      {currentCategory.id && (
-        <div style={{ fontFamily: 'Sour Gummy' }}
-          className='pr-6 pt-2 flex items-center justify-end'>
-          <span className='flex items-center font-bold text-md bg-gray-50 px-2 py-2 rounded-full'>
-            Category: {currentCategory.name}
-            <button
-              onClick={() => {
-                dispatch(setCurrentCategory({
-                  id: null,
-                  name: null
-                }));
-                // Reset pagination when clearing category
-                dispatch(WordService.handleLanguageSelect({
-                  filter: 'learned',
-                  langCode: selectedLanguage,
-                  skip: 0,
-                  limit: pagination.pageSize
-                }));
-              }}
-              className='ml-5 cursor-pointer hover:text-gray-500'>
-              <IoClose className='text-xl' />
-            </button>
-          </span>
-        </div>
-      )}
-
-      {
-        currentPosName.name && (
-          <div style={{ fontFamily: 'Sour Gummy' }}
-            className='pr-6 pt-2 flex items-center justify-end'>
-            <span className='flex items-center font-bold text-md bg-gray-50 px-2 py-2 rounded-full'>Pos name: {currentPosName.name}
-              <button
-                onClick={() => {
-                  dispatch(setCurrentPosName({
-                    name: null
-                  }));
-                  if (selectedLanguage) {
-                    dispatch(WordService.handleLanguageSelect({
-                      filter,
-                      langCode: selectedLanguage,
-                      skip: 0,
-                      limit: pagination.pageSize
-                    }));
-                  }
-                }}
-                className='ml-5 cursor-pointer hover:text-gray-500'>
-                <IoClose className='text-xl' />
-              </button>
-            </span>
-          </div>
-        )
-      }
 
       <div className="max-w-8xl mx-auto">
         {/* Main Content Area */}
@@ -376,7 +308,7 @@ export default function LearnedScreen() {
             {/* Content States */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-200 min-h-[400px]">
               {/* Loading State */}
-              {selectedLanguage && words_pending && words.length === 0 && (
+              {selectedLanguage && words_pending && learned_words.length === 0 && (
                 <div className="flex flex-col items-center justify-center py-16">
                   <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
                   <div className="text-gray-600 text-lg">Loading learned words...</div>
@@ -385,12 +317,66 @@ export default function LearnedScreen() {
               )}
 
               {/* No Words State */}
-              {selectedLanguage && !words_pending && words?.length === 0 && (
+              {selectedLanguage && !words_pending && learned_words?.length === 0 && (
                 <EmptyWordsComponents />
               )}
 
+              {currentCategory.id && (
+                <div style={{ fontFamily: 'Sour Gummy' }}
+                  className='pr-6 pt-2 flex items-center justify-end'>
+                  <span className='flex items-center font-bold text-md bg-gray-50 px-2 py-2 rounded-full'>
+                    Category: {currentCategory.name}
+                    <button
+                      onClick={() => {
+                        dispatch(setCurrentCategory({
+                          id: null,
+                          name: null
+                        }));
+                        // Reset pagination when clearing category
+                        dispatch(WordService.handleLanguageSelect({
+                          filter: 'learned',
+                          langCode: selectedLanguage,
+                          skip: 0,
+                          limit: pagination.pageSize
+                        }));
+                      }}
+                      className='ml-5 cursor-pointer hover:text-gray-500'>
+                      <IoClose className='text-xl' />
+                    </button>
+                  </span>
+                </div>
+              )}
+
+              {
+                currentPosName.name && (
+                  <div style={{ fontFamily: 'Sour Gummy' }}
+                    className='pr-6 pt-2 flex items-center justify-end'>
+                    <span className='flex items-center font-bold text-md bg-gray-50 px-2 py-2 rounded-full'>Pos name: {currentPosName.name}
+                      <button
+                        onClick={() => {
+                          dispatch(setCurrentPosName({
+                            name: null
+                          }));
+                          if (selectedLanguage) {
+                            dispatch(WordService.handleLanguageSelect({
+                              filter,
+                              langCode: selectedLanguage,
+                              skip: 0,
+                              limit: pagination.pageSize
+                            }));
+                          }
+                        }}
+                        className='ml-5 cursor-pointer hover:text-gray-500'>
+                        <IoClose className='text-xl' />
+                      </button>
+                    </span>
+                  </div>
+                )
+              }
+
+
               {/* Words List */}
-              {selectedLanguage && words?.length > 0 && (
+              {selectedLanguage && learned_words?.length > 0 && (
                 <div className="p-4 lg:p-6">
                   {/* Mobile Progress Header */}
                   <div className="lg:hidden mb-6 bg-gradient-to-r from-blue-50 to-green-50 rounded-xl p-4 border border-blue-100">
@@ -405,7 +391,7 @@ export default function LearnedScreen() {
                     </div>
                   </div>
 
-                  <WordList filter={'learned'} screen={'LearnedScreen'} />
+                  <WordList screen={'LearnedScreen'} />
 
                   {/* Pagination Controls */}
                   <PaginationControls />
