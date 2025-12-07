@@ -40,13 +40,21 @@ const initialState = {
     },
     currentCategoryName: null,
 
-    // Pagination state
     pagination: {
-        currentPage: 0,
-        pageSize: 20,
-        totalWords: 0,
-        hasMore: true,
-        isLoadingMore: false
+        unlearned: {
+            currentPage: 0,
+            pageSize: 20,
+            totalWords: 0,
+            hasMore: true,
+            isLoadingMore: false
+        },
+        learned: {
+            currentPage: 0,
+            pageSize: 20,
+            totalWords: 0,
+            hasMore: true,
+            isLoadingMore: false
+        }
     },
 };
 
@@ -66,23 +74,15 @@ export const wordSlice = createSlice({
         },
 
         clearAfterLogout: (state) => {
-            // state.words = [];
             state.unlearned_words = [];
             state.learned_words = [];
-            // state.wordsData = [];
             state.selectedLanguage = null;
             state.available_lang_toggle = true;
             state.statistics = null;
             state.pos_statistics = null;
             state.searchResults = null;
-            // Reset pagination on logout
-            state.pagination = {
-                currentPage: 0,
-                pageSize: 20,
-                totalWords: 0,
-                hasMore: true,
-                isLoadingMore: false
-            };
+           
+            state.pagination = initialState.pagination;
         },
 
         setDetail: (state, action) => {
@@ -112,28 +112,31 @@ export const wordSlice = createSlice({
 
         setCurrentPosName: (state, action) => {
             state.currentPosName.name = action.payload.name;
-            // console.log('current pos is ', state.currentPosName.name)
         },
 
         // NEW: Add pagination reducers
         resetPagination: (state) => {
-            state.pagination = {
-                currentPage: 0,
-                pageSize: 20,
-                totalWords: 0,
-                hasMore: true,
-                isLoadingMore: false
-            };
+            state.pagination = initialState.pagination;
         },
 
-        setPaginationTotal: (state, action) => {
-            state.pagination.totalWords = action.payload;
-        },
     },
     extraReducers: (builder) => {
         // Handle the setLoadingMore action
         builder.addCase(setLoadingMore, (state, action) => {
-            state.pagination.isLoadingMore = action.payload !== undefined ? action.payload : true;
+            state.pagination.unlearned.isLoadingMore = action.payload !== undefined ? action.payload : true;
+            state.pagination.learned.isLoadingMore = action.payload !== undefined ? action.payload : true;
+            // console.log('action.payload is ', action.payload)
+            // const page = action.payload;
+            // console.log('the page is ', page)
+            // if (page === 'unlearned') {
+            //     state.pagination.unlearned.isLoadingMore = false;
+            // } else if (page === 'learned') {
+            //     state.pagination.learned.isLoadingMore = false;
+            // } else {
+            //     state.pagination.unlearned.isLoadingMore = false;
+            //     state.pagination.learned.isLoadingMore = false;
+            // }
+            
         });
 
         // WordService getStatisticsForDashboard
@@ -154,13 +157,13 @@ export const wordSlice = createSlice({
             if (skip === 0) {
                 state.words_pending = true;
             } else {
-                state.pagination.isLoadingMore = true;
+                state.pagination.unlearned.isLoadingMore = true;
+                state.pagination.learned.isLoadingMore = true;
             }
         });
         builder.addCase(WordService.handleLanguageSelect.fulfilled, (state, action) => {
             const { skip = 0 } = action.meta.arg || {};
             const responseData = action.payload?.payload || action.payload;
-            console.log('coming repsonse data is : ', responseData)
 
             if (skip === 0) {
                 // First page - replace words
@@ -177,30 +180,31 @@ export const wordSlice = createSlice({
                 if (responseData.page_type === 'unlearned'){
                     const newWords = Array.isArray(responseData) ? responseData : (responseData.words || []);
                     state.unlearned_words = [...state.unlearned_words, ...newWords];
-                    state.pagination.isLoadingMore = false;
+                    state.pagination.unlearned.isLoadingMore = false;
                 }
                 else if(responseData.page_type === 'learned'){
                     const newWords = Array.isArray(responseData) ? responseData : (responseData.words || []);
                     state.learned_words = [...state.learned_words, ...newWords];
-                    state.pagination.isLoadingMore = false;
+                    state.pagination.learned.isLoadingMore = false;
                 }
             }
 
             // Update pagination state
             if (responseData && typeof responseData === 'object' && !Array.isArray(responseData)  && responseData.page_type === 'unlearned') {
-                state.pagination.totalWords = responseData.total_count || state.unlearned_words.length;
-                state.pagination.hasMore = responseData.has_more !== undefined ? responseData.has_more : (responseData.words?.length === state.pagination.pageSize);
-                state.pagination.currentPage = skip / state.pagination.pageSize;
+                state.pagination.unlearned.totalWords = responseData.total_count || state.unlearned_words.length;
+                state.pagination.unlearned.hasMore = responseData.has_more !== undefined ? responseData.has_more : (responseData.words?.length === state.pagination.unlearned.pageSize);
+                state.pagination.unlearned.currentPage = skip / state.pagination.unlearned.pageSize;
             }
             else if (responseData && typeof responseData === 'object' && !Array.isArray(responseData) && responseData.page_type === 'learned') {
-                state.pagination.totalWords = responseData.total_count || state.learned_words.length;
-                state.pagination.hasMore = responseData.has_more !== undefined ? responseData.has_more : (responseData.words?.length === state.pagination.pageSize);
-                state.pagination.currentPage = skip / state.pagination.pageSize;
+                state.pagination.learned.totalWords = responseData.total_count || state.learned_words.length;
+                state.pagination.learned.hasMore = responseData.has_more !== undefined ? responseData.has_more : (responseData.words?.length === state.pagination.learned.pageSize);
+                state.pagination.learned.currentPage = skip / state.pagination.learned.pageSize;
             }
         });
         builder.addCase(WordService.handleLanguageSelect.rejected, (state, action) => {
             state.words_pending = false;
-            state.pagination.isLoadingMore = false;
+            state.pagination.learned.isLoadingMore = false;
+            state.pagination.unlearned.isLoadingMore = false;
         });
 
         // WordService setStatus
@@ -262,7 +266,8 @@ export const wordSlice = createSlice({
                 state.words_pending = true;
                 state.loading = true;
             } else {
-                state.pagination.isLoadingMore = true;
+                state.pagination.unlearned.isLoadingMore = true;
+                state.pagination.learned.isLoadingMore = true;
             }
         });
 
@@ -293,16 +298,22 @@ export const wordSlice = createSlice({
                     if (responseData.page_type === 'unlearned'){
                         const existingIds = new Set(state.unlearned_words.map(w => w.id));
                         uniqueNewWords = newWords.filter(word => !existingIds.has(word.id));
+                        if (uniqueNewWords.length === 0) {
+                            state.pagination.unlearned.hasMore = false;
+                            state.pagination.unlearned.isLoadingMore = false;
+                            return;
+                        }
                     }
                     else if(responseData.page_type === 'learned'){
                         const existingIds = new Set(state.learned_words.map(w => w.id));
                         uniqueNewWords = newWords.filter(word => !existingIds.has(word.id));
+                        if (uniqueNewWords.length === 0) {
+                            state.pagination.learned.hasMore = false;
+                            state.pagination.learned.isLoadingMore = false;
+                            return;
+                        }
                     }
-                    if (uniqueNewWords.length === 0) {
-                        state.pagination.hasMore = false;
-                        state.pagination.isLoadingMore = false;
-                        return;
-                    }
+                    
 
                     if(responseData.page_type === 'unlearned'){
                         state.unlearned_words = [...state.unlearned_words, ...uniqueNewWords];
@@ -311,37 +322,48 @@ export const wordSlice = createSlice({
                         state.learned_words = [...state.learned_words, ...uniqueNewWords];
                     }
                 } else {
-                    state.pagination.hasMore = false;
+                    // state.pagination.hasMore = false;
+                    if(responseData.page_type === 'unlearned'){
+                        state.pagination.unlearned.hasMore = false;
+                    }
+                    else if(responseData.page_type === 'learned'){
+                        state.pagination.learned.hasMore = false;
+                    }
                 }
-
-                state.pagination.isLoadingMore = false;
+                if(responseData.page_type === 'unlearned'){
+                    state.pagination.unlearned.isLoadingMore = false;
+                }
+                else if(responseData.page_type === 'learned'){
+                    state.pagination.learned.isLoadingMore = false;
+                }
+                // state.pagination.isLoadingMore = false;
             }
 
             // Update pagination state
             if (responseData && typeof responseData === 'object' && !Array.isArray(responseData)  && responseData.page_type === 'unlearned') {
-                state.pagination.totalWords = responseData.total_count || state.unlearned_words.length;
+                state.pagination.unlearned.totalWords = responseData.total_count || state.unlearned_words.length;
 
                 // Use state.words.length for current loaded count
                 const currentLoaded = state.unlearned_words.length;
 
-                state.pagination.hasMore = responseData.has_more !== undefined
+                state.pagination.unlearned.hasMore = responseData.has_more !== undefined
                     ? responseData.has_more
                     : currentLoaded < (responseData.total_count || 0);
 
-                state.pagination.currentPage = skip / state.pagination.pageSize;
+                state.pagination.unlearned.currentPage = skip / state.pagination.unlearned.pageSize;
             }
             // Update pagination state
             else if (responseData && typeof responseData === 'object' && !Array.isArray(responseData)  && responseData.page_type === 'learned') {
-                state.pagination.totalWords = responseData.total_count || state.learned_words.length;
+                state.pagination.learned.totalWords = responseData.total_count || state.learned_words.length;
 
                 // Use state.words.length for current loaded count
                 const currentLoaded = state.learned_words.length;
 
-                state.pagination.hasMore = responseData.has_more !== undefined
+                state.pagination.learned.hasMore = responseData.has_more !== undefined
                     ? responseData.has_more
                     : currentLoaded < (responseData.total_count || 0);
 
-                state.pagination.currentPage = skip / state.pagination.pageSize;
+                state.pagination.learned.currentPage = skip / state.pagination.learned.pageSize;
             }
 
 
@@ -352,7 +374,9 @@ export const wordSlice = createSlice({
         builder.addCase(WordService.getWordsByCategoryId.rejected, (state, action) => {
             state.words_pending = false;
             state.loading = false;
-            state.pagination.isLoadingMore = false;
+            // state.pagination.isLoadingMore = false;
+            state.pagination.unlearned.isLoadingMore = false;
+            state.pagination.learned.isLoadingMore = false;
         });
 
 
@@ -376,7 +400,8 @@ export const wordSlice = createSlice({
                 state.words_pending = true;
                 state.loading = true;
             } else {
-                state.pagination.isLoadingMore = true;
+                state.pagination.unlearned.isLoadingMore = true;
+                state.pagination.learned.isLoadingMore = true;
             }
         });
         builder.addCase(WordService.getWordsByPosName.fulfilled, (state, action) => {
@@ -415,25 +440,40 @@ export const wordSlice = createSlice({
 
 
                 // If no new words received, stop pagination
-                if (uniqueNewWords.length === 0) {
-                    state.pagination.hasMore = false;
-                    state.pagination.isLoadingMore = false;
-                    return;
+
+                if(responseData.page_type === 'unlearned'){
+                    if (uniqueNewWords.length === 0) {
+                        state.pagination.unlearned.hasMore = false;
+                        state.pagination.unlearned.isLoadingMore = false;
+                        return;
+                    }
+                }
+                else if(responseData.page_type === 'learned'){
+                    if (uniqueNewWords.length === 0) {
+                        state.pagination.learned.hasMore = false;
+                        state.pagination.learned.isLoadingMore = false;
+                        return;
+                    }
                 }
 
-                // state.words = [...state.words, ...uniqueNewWords];
                 if(responseData.page_type === 'unlearned'){
                     state.unlearned_words = [...state.unlearned_words, ...uniqueNewWords];
                 }
                 else if(responseData.page_type === 'learned'){
                     state.learned_words = [...state.learned_words, ...uniqueNewWords];
                 }
-                state.pagination.isLoadingMore = false;
+                // state.pagination.isLoadingMore = false;
+                if(responseData.page_type === 'unlearned'){
+                    state.pagination.unlearned.isLoadingMore = false;
+                }
+                else if(responseData.page_type === 'learned'){
+                    state.pagination.learned.isLoadingMore = false;
+                }
             }
 
             // Update pagination state
             if (responseData && typeof responseData === 'object' && !Array.isArray(responseData) && responseData.page_type === 'unlearned') {
-                state.pagination.totalWords = responseData.total_count || state.unlearned_words.length;
+                state.pagination.unlearned.totalWords = responseData.total_count || state.unlearned_words.length;
 
                 // Calculate hasMore based on actual data
                 const currentLoaded = state.unlearned_words.length;
@@ -441,15 +481,15 @@ export const wordSlice = createSlice({
 
                 // Use backend's has_more if provided, otherwise calculate
                 if (responseData.has_more !== undefined) {
-                    state.pagination.hasMore = responseData.has_more;
+                    state.pagination.unlearned.hasMore = responseData.has_more;
                 } else {
-                    state.pagination.hasMore = currentLoaded < totalCount;
+                    state.pagination.unlearned.hasMore = currentLoaded < totalCount;
                 }
 
-                state.pagination.currentPage = skip / state.pagination.pageSize;
+                state.pagination.unlearned.currentPage = skip / state.pagination.unlearned.pageSize;
             }
             else if (responseData && typeof responseData === 'object' && !Array.isArray(responseData) && responseData.page_type === 'learned') {
-                state.pagination.totalWords = responseData.total_count || state.learned_words.length;
+                state.pagination.learned.totalWords = responseData.total_count || state.learned_words.length;
 
                 // Calculate hasMore based on actual data
                 const currentLoaded = state.learned_words.length;
@@ -457,12 +497,12 @@ export const wordSlice = createSlice({
 
                 // Use backend's has_more if provided, otherwise calculate
                 if (responseData.has_more !== undefined) {
-                    state.pagination.hasMore = responseData.has_more;
+                    state.pagination.learned.hasMore = responseData.has_more;
                 } else {
-                    state.pagination.hasMore = currentLoaded < totalCount;
+                    state.pagination.learned.hasMore = currentLoaded < totalCount;
                 }
 
-                state.pagination.currentPage = skip / state.pagination.pageSize;
+                state.pagination.learned.currentPage = skip / state.pagination.learned.pageSize;
             }
         });
 
@@ -480,7 +520,7 @@ export const {
     setCurrentCategory,
     setCurrentPosName,
     resetPagination,
-    setPaginationTotal
+    // setPaginationTotal
 } = wordSlice.actions;
 
 export default wordSlice.reducer;

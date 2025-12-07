@@ -45,14 +45,13 @@ export default function LearnedScreen() {
     }
   }, [statistics, selectedLanguage]);
 
-  // Fetch words function with pagination - FIXED
   const fetchWords = useCallback(async (reset = true) => {
     if (isFetching || !is_auth || !selectedLanguage) return;
 
     setIsFetching(true);
 
     const skip = reset ? 0 : learned_words.length;
-    const limit = pagination.pageSize;
+    const limit = pagination.learned.pageSize;
 
     const shouldReset = reset || learned_words.some(word => word.is_learned !== true);
 
@@ -96,7 +95,7 @@ export default function LearnedScreen() {
       }
     }
   },
-    [is_auth, selectedLanguage, currentCategory.id, currentPosName.name, filter, learned_words.length, pagination.pageSize, dispatch, isFetching]
+    [is_auth, selectedLanguage, currentCategory.id, currentPosName.name, filter, learned_words.length, pagination.learned.pageSize, dispatch, isFetching]
   );
 
 
@@ -119,10 +118,10 @@ export default function LearnedScreen() {
 
   // Load more function - FIXED
   const loadMoreWords = useCallback(() => {
-    if (!isFetching && pagination.hasMore && !words_pending) {
+    if (!isFetching && pagination.learned.hasMore && !words_pending) {
       fetchWords(false);
     }
-  }, [isFetching, pagination.hasMore, words_pending, fetchWords]);
+  }, [isFetching, pagination.learned.hasMore, words_pending, fetchWords]);
 
 
   // Header stats
@@ -132,11 +131,10 @@ export default function LearnedScreen() {
     progress: statistics?.find(stat => stat.language_code === selectedLanguage)?.learned_words || 0
   };
 
-  // Pagination component
   const PaginationControls = () => (
     <div className="flex flex-col items-center justify-center mt-8 space-y-4">
       {/* Load More Button */}
-      {pagination.hasMore && (
+      {pagination.learned.hasMore && (
         <button
           onClick={loadMoreWords}
           disabled={isFetching || words_pending}
@@ -160,7 +158,7 @@ export default function LearnedScreen() {
       {learned_words.length > 0 && (
         <div className="text-center text-gray-600 text-sm">
           Showing {learned_words.length} of {totalLearned} learned words
-          {pagination.hasMore && ' • Scroll down to load more'}
+          {pagination.learned.hasMore && ' • Scroll down to load more'}
         </div>
       )}
 
@@ -337,7 +335,7 @@ export default function LearnedScreen() {
                           filter: 'learned',
                           langCode: selectedLanguage,
                           skip: 0,
-                          limit: pagination.pageSize
+                          limit: pagination.learned.pageSize
                         }));
                       }}
                       className='ml-5 cursor-pointer hover:text-gray-500'>
@@ -362,7 +360,7 @@ export default function LearnedScreen() {
                               filter,
                               langCode: selectedLanguage,
                               skip: 0,
-                              limit: pagination.pageSize
+                              limit: pagination.learned.pageSize
                             }));
                           }
                         }}
@@ -399,7 +397,7 @@ export default function LearnedScreen() {
               )}
 
               {/* Loading More Indicator */}
-              {pagination.isLoadingMore && (
+              {pagination.learned.isLoadingMore && (
                 <div className="flex justify-center items-center py-8">
                   <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mr-3"></div>
                   <span className="text-gray-600">Loading more words...</span>

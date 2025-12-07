@@ -23,63 +23,30 @@ Today:
 
 DeepSeek:
 
-Words.jsx
 
+Do you know, this is my redux setLoadingMore action:
 
-export default function WordScreen() {
-    const dispatch = useDispatch();
+// Create the action first, before the slice
+export const setLoadingMore = createAction('word/setLoadingMore');
 
-    const {
-        words,
-        unlearned_words,
-        selectedLanguage,
-        statistics,
-        currentCategory,
-        currentPosName,
-        words_pending,
-        pagination
-    } = useSelector((state) => state.wordSlice);
+extraReducers: (builder) => {
+        // Handle the setLoadingMore action
+        builder.addCase(setLoadingMore, (state, action) => {
+            state.pagination.unlearned.isLoadingMore = action.payload !== undefined ? action.payload : true;
+            state.pagination.learned.isLoadingMore = action.payload !== undefined ? action.payload : true;
+        });
 
-    const [filter, setFilter] = useState('all');
-    const [showScrollToBottom, setShowScrollToBottom] = useState(false);
-    const [isFetching, setIsFetching] = useState(false);
-    const [isScrollDebouncing, setIsScrollDebouncing] = useState(false);
-    const [lastScreenContext, setLastScreenContext] = useState('');
+This is words.jsx: The logic in LearnedScreen also.
 
-    const { is_auth } = useSelector((state) => state.authSlice);
-
-    // Check scroll position
-    useEffect(() => {
-        const checkScrollPosition = () => {
-            const isNearBottom = window.innerHeight + document.documentElement.scrollTop
-                >= document.documentElement.offsetHeight - 100;
-            setShowScrollToBottom(!isNearBottom);
-        };
-
-        window.addEventListener('scroll', checkScrollPosition);
-        return () => window.removeEventListener('scroll', checkScrollPosition);
-    }, []);
-
-    const scrollToBottom = () => {
-        window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth' });
-        setShowScrollToBottom(false);
-    };
-
-    useEffect(() => {
-        if (is_auth) {
-            dispatch(WordService.getStatisticsForDashboard());
-        }
-    }, [is_auth, dispatch]);
-
-
-    // Fetch words function with pagination - FIXED
+import { setSelectedLanguage, setLoadingMore } from '../store/word_store.js';
+ // Fetch words function with pagination - FIXED
     const fetchWords = useCallback(async (reset = true) => {
         if (isFetching || !is_auth || !selectedLanguage) return;
 
         setIsFetching(true);
 
         const skip = reset ? 0 : unlearned_words.length;
-        const limit = pagination.pageSize;
+        const limit = pagination.unlearned.pageSize;
 
 
         try {
@@ -119,255 +86,6 @@ export default function WordScreen() {
                 dispatch(setLoadingMore(false));
             }
         }
-    }, [is_auth, selectedLanguage, currentCategory.id, currentPosName.name, filter, unlearned_words.length, pagination.pageSize, dispatch, isFetching]);
+    }, [is_auth, selectedLanguage, currentCategory.id, currentPosName.name, filter, unlearned_words.length, pagination.unlearned.pageSize, dispatch, isFetching]);
 
 
-    useEffect(() => {
-        if (is_auth && selectedLanguage) {
-            const currentContext = `${selectedLanguage}-${currentCategory.id}-${currentPosName.name || ''}-${filter}`;
-            if (currentContext !== lastScreenContext) {
-                setLastScreenContext(currentContext);
-                fetchWords(true);
-            }
-        }
-    }, [selectedLanguage, currentCategory.id, currentPosName.name, filter, is_auth, lastScreenContext, fetchWords]);
-
-
-    const loadMoreWords = useCallback(() => {
-
-        if (!isFetching && pagination.hasMore && !words_pending && unlearned_words.length > 0) {
-
-            const currentLoaded = unlearned_words.length;
-            const total = pagination.totalWords || 0;
-
-            if (currentLoaded >= total) {
-                return;
-            }
-            fetchWords(false);
-        } else {
-        }
-    }, [isFetching, pagination.hasMore, words_pending, unlearned_words.length, pagination.totalWords, pagination.pageSize, fetchWords]);
-
-
-    useEffect(() => {
-        if (statistics?.length === 1 && !selectedLanguage) {
-            const lang_code = statistics[0]['language_code'];
-            dispatch(setSelectedLanguage(lang_code));
-            setFilter('all');
-        }
-    }, [statistics, dispatch, selectedLanguage]);
-
-
-    const PaginationControls = () => (
-        <div className="flex flex-col items-center justify-center mt-8 space-y-4 px-4">
-            {/* Manual Load More Button - Make it more visible */}
-            {pagination.hasMore && (
-                <div className="text-center">
-                    <button
-                        onClick={loadMoreWords}
-                        disabled={isFetching || words_pending}
-                        className="bg-indigo-600 text-white px-8 py-4 rounded-xl hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors font-medium flex items-center space-x-3 shadow-lg"
-                    >
-                        {isFetching ? (
-                            <>
-                                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                <span>Loading {pagination.totalWords - unlearned_words.length} More Words...</span>
-                            </>
-                        ) : (
-                            <>
-                                <span>📥 Load {pagination.totalWords - unlearned_words.length} More Words</span>
-                            </>
-                        )}
-                    </button>
-                    <p className="text-sm text-gray-600 mt-2">
-                        {unlearned_words.length} of {pagination.totalWords} words loaded • {pagination.totalWords - unlearned_words.length} remaining
-                    </p>
-                </div>
-            )}
-
-            {/* Back to Top */}
-            {unlearned_words.length >= 20 && (
-                <button
-                    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                    className="text-indigo-500 hover:text-indigo-700 text-sm font-medium transition-colors"
-                >
-                    ↑ Back to Top
-                </button>
-            )}
-        </div>
-    );
-
-    return (...)
-
-  Learned.jsx
-  
-export default function LearnedScreen() {
-
-
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const isInitialMount = useRef(true);
-
-  const { is_auth } = useSelector((state) => state.authSlice);
-  const {
-    learned_words,
-    words_pending,
-    selectedLanguage,
-    statistics,
-    currentCategory,
-    currentPosName,
-    pagination
-  } = useSelector((state) => state.wordSlice);
-
-  const [filter, setFilter] = useState('all');
-  const [totalLearned, setTotalLearned] = useState(0);
-  const [isFetching, setIsFetching] = useState(false);
-
-  // Fetch statistics on component mount
-  useEffect(() => {
-    if (is_auth) {
-      dispatch(WordService.getStatisticsForDashboard());
-    }
-  }, [is_auth, dispatch]);
-
-  useEffect(() => {
-    if (statistics?.length > 0) {
-      const selectedLang = statistics.find(stat => stat.language_code === selectedLanguage);
-      setTotalLearned(selectedLang?.learned_words);
-    }
-  }, [statistics, selectedLanguage]);
-
-  // Fetch words function with pagination - FIXED
-  const fetchWords = useCallback(async (reset = true) => {
-    if (isFetching || !is_auth || !selectedLanguage) return;
-
-    setIsFetching(true);
-
-    const skip = reset ? 0 : learned_words.length;
-    const limit = pagination.pageSize;
-
-    const shouldReset = reset || learned_words.some(word => word.is_learned !== true);
-
-    try {
-      if (currentCategory.id) {
-        await dispatch(WordService.getWordsByCategoryId({
-          categoryId: currentCategory.id,
-          langCode: selectedLanguage,
-          only_starred: false,
-          only_learned: true,
-          skip: shouldReset ? 0 : skip,
-          limit: limit
-        })).unwrap();
-      }
-
-      else if (currentPosName.name) {
-        await dispatch(WordService.getWordsByPosName({
-          posName: currentPosName.name,
-          langCode: selectedLanguage,
-          only_starred: false,
-          only_learned: true,
-          skip: shouldReset ? 0 : skip,
-          limit: limit
-        })).unwrap();
-      }
-
-      else {
-        await dispatch(WordService.handleLanguageSelect({
-          filter: 'learned',
-          langCode: selectedLanguage,
-          skip: shouldReset ? 0 : skip,
-          limit: limit
-        })).unwrap();
-      }
-    } catch (error) {
-      console.error('Error fetching words:', error);
-    } finally {
-      setIsFetching(false);
-      if (!reset) {
-        dispatch(setLoadingMore(false));
-      }
-    }
-  },
-    [is_auth, selectedLanguage, currentCategory.id, currentPosName.name, filter, learned_words.length, pagination.pageSize, dispatch, isFetching]
-  );
-
-
-  const [lastScreenContext, setLastScreenContext] = useState('');
-
-  useEffect(() => {
-    if (is_auth && selectedLanguage) {
-      const currentContext = `${selectedLanguage}-${currentCategory.id}-${currentPosName.name || ''}-${filter}`;
-
-      // Only fetch if context actually changed
-      if (currentContext !== lastScreenContext) {
-        setLastScreenContext(currentContext);
-        fetchWords(true);
-      }
-    }
-  }, [selectedLanguage, currentCategory.id, currentPosName.name, filter, is_auth, lastScreenContext, fetchWords]);
-
-
-
-
-  // Load more function - FIXED
-  const loadMoreWords = useCallback(() => {
-    if (!isFetching && pagination.hasMore && !words_pending) {
-      fetchWords(false);
-    }
-  }, [isFetching, pagination.hasMore, words_pending, fetchWords]);
-
-
-  // Header stats
-  const learnedStats = {
-    totalWords: totalLearned || 0,
-    languages: statistics?.length || 0,
-    progress: statistics?.find(stat => stat.language_code === selectedLanguage)?.learned_words || 0
-  };
-
-  // Pagination component
-  const PaginationControls = () => (
-    <div className="flex flex-col items-center justify-center mt-8 space-y-4">
-      {/* Load More Button */}
-      {pagination.hasMore && (
-        <button
-          onClick={loadMoreWords}
-          disabled={isFetching || words_pending}
-          className="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors font-medium flex items-center space-x-2"
-        >
-          {isFetching ? (
-            <>
-              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-              <span>Loading...</span>
-            </>
-          ) : (
-            <>
-              <span>Load More Words</span>
-              <span className="text-blue-100">({learned_words.length} of {totalLearned})</span>
-            </>
-          )}
-        </button>
-      )}
-
-      {/* Progress Text */}
-      {learned_words.length > 0 && (
-        <div className="text-center text-gray-600 text-sm">
-          Showing {learned_words.length} of {totalLearned} learned words
-          {pagination.hasMore && ' • Scroll down to load more'}
-        </div>
-      )}
-
-      {/* Back to Top */}
-      {learned_words.length >= 40 && (
-        <button
-          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          className="text-blue-500 hover:text-blue-700 text-sm font-medium transition-colors"
-        >
-          ↑ Back to Top
-        </button>
-      )}
-    </div>
-  );
-
-
-
-  return (...)

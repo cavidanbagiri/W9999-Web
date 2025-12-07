@@ -64,7 +64,7 @@ export default function WordScreen() {
         setIsFetching(true);
 
         const skip = reset ? 0 : unlearned_words.length;
-        const limit = pagination.pageSize;
+        const limit = pagination.unlearned.pageSize;
 
 
         try {
@@ -104,7 +104,7 @@ export default function WordScreen() {
                 dispatch(setLoadingMore(false));
             }
         }
-    }, [is_auth, selectedLanguage, currentCategory.id, currentPosName.name, filter, unlearned_words.length, pagination.pageSize, dispatch, isFetching]);
+    }, [is_auth, selectedLanguage, currentCategory.id, currentPosName.name, filter, unlearned_words.length, pagination.unlearned.pageSize, dispatch, isFetching]);
 
 
     useEffect(() => {
@@ -120,10 +120,10 @@ export default function WordScreen() {
 
     const loadMoreWords = useCallback(() => {
 
-        if (!isFetching && pagination.hasMore && !words_pending && unlearned_words.length > 0) {
+        if (!isFetching && pagination.unlearned.hasMore && !words_pending && unlearned_words.length > 0) {
 
             const currentLoaded = unlearned_words.length;
-            const total = pagination.totalWords || 0;
+            const total = pagination.unlearned.totalWords || 0;
 
             if (currentLoaded >= total) {
                 return;
@@ -131,7 +131,7 @@ export default function WordScreen() {
             fetchWords(false);
         } else {
         }
-    }, [isFetching, pagination.hasMore, words_pending, unlearned_words.length, pagination.totalWords, pagination.pageSize, fetchWords]);
+    }, [isFetching, pagination.unlearned.hasMore, words_pending, unlearned_words.length, pagination.unlearned.totalWords, pagination.unlearned.pageSize, fetchWords]);
 
 
     useEffect(() => {
@@ -146,7 +146,7 @@ export default function WordScreen() {
     const PaginationControls = () => (
         <div className="flex flex-col items-center justify-center mt-8 space-y-4 px-4">
             {/* Manual Load More Button - Make it more visible */}
-            {pagination.hasMore && (
+            {pagination.unlearned.hasMore && (
                 <div className="text-center">
                     <button
                         onClick={loadMoreWords}
@@ -156,16 +156,16 @@ export default function WordScreen() {
                         {isFetching ? (
                             <>
                                 <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                <span>Loading {pagination.totalWords - unlearned_words.length} More Words...</span>
+                                <span>Loading {pagination.unlearned.totalWords - unlearned_words.length} More Words...</span>
                             </>
                         ) : (
                             <>
-                                <span>📥 Load {pagination.totalWords - unlearned_words.length} More Words</span>
+                                <span>📥 Load {pagination.unlearned.totalWords - unlearned_words.length} More Words</span>
                             </>
                         )}
                     </button>
                     <p className="text-sm text-gray-600 mt-2">
-                        {unlearned_words.length} of {pagination.totalWords} words loaded • {pagination.totalWords - unlearned_words.length} remaining
+                        {unlearned_words.length} of {pagination.unlearned.totalWords} words loaded • {pagination.unlearned.totalWords - unlearned_words.length} remaining
                     </p>
                 </div>
             )}
@@ -212,7 +212,7 @@ export default function WordScreen() {
                                             filter,
                                             langCode: selectedLanguage,
                                             skip: 0,
-                                            limit: pagination.pageSize
+                                            limit: pagination.unlearned.pageSize
                                         }));
                                     }
                                 }}
@@ -239,7 +239,7 @@ export default function WordScreen() {
                                             filter,
                                             langCode: selectedLanguage,
                                             skip: 0,
-                                            limit: pagination.pageSize
+                                            limit: pagination.unlearned.pageSize
                                         }));
                                     }
                                 }}
