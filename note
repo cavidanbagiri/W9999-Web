@@ -2,8 +2,6 @@ Problems
 
 1 - Level must be checked.
 
-2 - In category section also need to check the total learned words maybe doesnt look true as pos
-
 6 - if the  language is not selected in search_screen, return back to the wrong but need to set as, if not selected language, set the all  languages
 
 11 - Add the conversation to the some context, because after one message, text doesnt understand by ai.
@@ -18,7 +16,8 @@ React keys must be passed directly to JSX without using spread:
 Solving
 
 Today:
-    [7,8,9,3,1,6,2]
+    [2,6,13,1,11]
 
 
 DeepSeek:
+

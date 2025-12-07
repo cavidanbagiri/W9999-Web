@@ -109,7 +109,7 @@ export default function WordScreen() {
     useEffect(() => {
         if (is_auth && selectedLanguage) {
             const currentContext = `${selectedLanguage}-${currentCategory.id}-${currentPosName.name || ''}-${filter}`;
-
+            // console.log('use effect screen context is workinf')
             if (currentContext !== lastScreenContext) {
                 setLastScreenContext(currentContext);
                 fetchWords(true);
@@ -143,10 +143,6 @@ export default function WordScreen() {
         } else {
         }
     }, [isFetching, pagination.hasMore, words_pending, words.length, pagination.totalWords, pagination.pageSize, fetchWords]);
-
-
-
-
 
 
     useEffect(() => {
@@ -197,7 +193,7 @@ export default function WordScreen() {
             !words_pending &&
             words.length > 0 &&
             (pagination.totalWords - words.length) <= 5) { // If 5 or fewer words remain
-
+            // console.log('load more less than 5 is work')
             loadMoreWords();
         }
     }, [words.length, pagination.totalWords, pagination.hasMore, isFetching, words_pending, loadMoreWords]);

@@ -105,7 +105,7 @@ export const wordSlice = createSlice({
             state.currentCategory.name = action.payload.name;
             // console.log('current category is ', state.currentCategory.id)
         },
-        
+
         setCurrentPosName: (state, action) => {
             state.currentPosName.name = action.payload.name;
             // console.log('current pos is ', state.currentPosName.name)
@@ -232,7 +232,7 @@ export const wordSlice = createSlice({
             state.categories_pending = false;
         });
 
-        // WordService getWordsByCategoryId - UPDATED for pagination
+        // WordService getWordsByCategoryId - FIXED for pagination
         builder.addCase(WordService.getWordsByCategoryId.pending, (state, action) => {
             const { skip = 0 } = action.meta.arg || {};
             if (skip === 0) {
@@ -242,6 +242,7 @@ export const wordSlice = createSlice({
                 state.pagination.isLoadingMore = true;
             }
         });
+
         builder.addCase(WordService.getWordsByCategoryId.fulfilled, (state, action) => {
             const { skip = 0 } = action.meta.arg || {};
             const responseData = action.payload?.payload || action.payload;
@@ -254,17 +255,48 @@ export const wordSlice = createSlice({
             } else {
                 // Subsequent pages - append words
                 const newWords = Array.isArray(responseData) ? responseData : (responseData.words || []);
-                state.words = [...state.words, ...newWords];
+
+                // ✅ FIX: Check for duplicates before appending
+                if (newWords.length > 0) {
+                    const existingIds = new Set(state.words.map(w => w.id));
+                    const uniqueNewWords = newWords.filter(word => !existingIds.has(word.id));
+
+                    if (uniqueNewWords.length === 0) {
+                        state.pagination.hasMore = false;
+                        state.pagination.isLoadingMore = false;
+                        return;
+                    }
+
+                    state.words = [...state.words, ...uniqueNewWords];
+                } else {
+                    state.pagination.hasMore = false;
+                }
+
                 state.pagination.isLoadingMore = false;
             }
 
-            // Update pagination state for categories
+            // Update pagination state
             if (responseData && typeof responseData === 'object' && !Array.isArray(responseData)) {
                 state.pagination.totalWords = responseData.total_count || state.words.length;
-                state.pagination.hasMore = responseData.has_more !== undefined ? responseData.has_more : (responseData.words?.length === state.pagination.pageSize);
+
+                // Use state.words.length for current loaded count
+                const currentLoaded = state.words.length;
+
+                state.pagination.hasMore = responseData.has_more !== undefined
+                    ? responseData.has_more
+                    : currentLoaded < (responseData.total_count || 0);
+
+                console.log('🔍 Category hasMore Calculation:', {
+                    currentLoaded: state.words.length,
+                    totalCount: responseData.total_count,
+                    backendHasMore: responseData.has_more,
+                    finalHasMore: state.pagination.hasMore
+                });
+
                 state.pagination.currentPage = skip / state.pagination.pageSize;
             }
         });
+
         builder.addCase(WordService.getWordsByCategoryId.rejected, (state, action) => {
             state.words_pending = false;
             state.loading = false;
@@ -295,50 +327,51 @@ export const wordSlice = createSlice({
                 state.pagination.isLoadingMore = true;
             }
         });
-builder.addCase(WordService.getWordsByPosName.fulfilled, (state, action) => {
-    const { skip = 0 } = action.meta.arg || {};
-    const responseData = action.payload?.payload || action.payload;
+        builder.addCase(WordService.getWordsByPosName.fulfilled, (state, action) => {
+            const { skip = 0 } = action.meta.arg || {};
+            const responseData = action.payload?.payload || action.payload;
 
- 
+            if (skip === 0) {
+                // First page - replace words
+                state.words = Array.isArray(responseData) ? responseData : (responseData.words || []);
+                state.words_pending = false;
+                state.loading = false;
+            } else {
+                // Subsequent pages - append words
+                const newWords = Array.isArray(responseData) ? responseData : (responseData.words || []);
 
-    if (skip === 0) {
-        // First page - replace words
-        state.words = Array.isArray(responseData) ? responseData : (responseData.words || []);
-        state.words_pending = false;
-        state.loading = false;
-    } else {
-        // Subsequent pages - append words
-        const newWords = Array.isArray(responseData) ? responseData : (responseData.words || []);
-        
-        // If no new words received, stop pagination
-        if (newWords.length === 0) {
-            state.pagination.hasMore = false;
-            state.pagination.isLoadingMore = false;
-            return;
-        }
+                const existingIds = new Set(state.words.map(w => w.id));
+                const uniqueNewWords = newWords.filter(word => !existingIds.has(word.id));
 
-        state.words = [...state.words, ...newWords];
-        state.pagination.isLoadingMore = false;
-    }
+                // If no new words received, stop pagination
+                if (uniqueNewWords.length === 0) {
+                    state.pagination.hasMore = false;
+                    state.pagination.isLoadingMore = false;
+                    return;
+                }
 
-    // Update pagination state
-    if (responseData && typeof responseData === 'object' && !Array.isArray(responseData)) {
-        state.pagination.totalWords = responseData.total_count || state.words.length;
+                state.words = [...state.words, ...uniqueNewWords];
+                state.pagination.isLoadingMore = false;
+            }
 
-        // Calculate hasMore based on actual data
-        const currentLoaded = state.words.length;
-        const totalCount = responseData.total_count || 0;
+            // Update pagination state
+            if (responseData && typeof responseData === 'object' && !Array.isArray(responseData)) {
+                state.pagination.totalWords = responseData.total_count || state.words.length;
 
-        // Use backend's has_more if provided, otherwise calculate
-        if (responseData.has_more !== undefined) {
-            state.pagination.hasMore = responseData.has_more;
-        } else {
-            state.pagination.hasMore = currentLoaded < totalCount;
-        }
+                // Calculate hasMore based on actual data
+                const currentLoaded = state.words.length;
+                const totalCount = responseData.total_count || 0;
 
-        state.pagination.currentPage = skip / state.pagination.pageSize;
-    }
-});
+                // Use backend's has_more if provided, otherwise calculate
+                if (responseData.has_more !== undefined) {
+                    state.pagination.hasMore = responseData.has_more;
+                } else {
+                    state.pagination.hasMore = currentLoaded < totalCount;
+                }
+
+                state.pagination.currentPage = skip / state.pagination.pageSize;
+            }
+        });
 
     },
 });

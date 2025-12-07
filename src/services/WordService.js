@@ -105,6 +105,7 @@ class WordService {
                         limit: limit
                     }
                 });
+                console.log('coming category response is ', response.data)
                 return {
                     payload: response.data,
                     status: response.status,
