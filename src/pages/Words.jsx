@@ -107,15 +107,15 @@ export default function WordScreen() {
     }, [is_auth, selectedLanguage, currentCategory.id, currentPosName.name, filter, unlearned_words.length, pagination.unlearned.pageSize, dispatch, isFetching]);
 
 
-    useEffect(() => {
-        if (is_auth && selectedLanguage) {
-            const currentContext = `${selectedLanguage}-${currentCategory.id}-${currentPosName.name || ''}-${filter}`;
-            if (currentContext !== lastScreenContext) {
-                setLastScreenContext(currentContext);
-                fetchWords(true);
-            }
-        }
-    }, [selectedLanguage, currentCategory.id, currentPosName.name, filter, is_auth, lastScreenContext, fetchWords]);
+    // useEffect(() => {
+    //     if (is_auth && selectedLanguage) {
+    //         const currentContext = `${selectedLanguage}-${currentCategory.id}-${currentPosName.name || ''}-${filter}`;
+    //         if (currentContext !== lastScreenContext) {
+    //             setLastScreenContext(currentContext);
+    //             fetchWords(true);
+    //         }
+    //     }
+    // }, [selectedLanguage, currentCategory.id, currentPosName.name, filter, is_auth, lastScreenContext, fetchWords]);
 
 
     const loadMoreWords = useCallback(() => {
@@ -151,7 +151,7 @@ export default function WordScreen() {
                     <button
                         onClick={loadMoreWords}
                         disabled={isFetching || words_pending}
-                        className="bg-indigo-600 text-white px-8 py-4 rounded-xl hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors font-medium flex items-center space-x-3 shadow-lg"
+                        className="bg-indigo-600 text-white px-8 py-4 rounded-xl hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors font-medium flex items-center space-x-3 shadow-lg cursor-pointer"
                     >
                         {isFetching ? (
                             <>

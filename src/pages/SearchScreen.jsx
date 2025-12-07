@@ -17,7 +17,7 @@ const AVAILABLE_LANGUAGES = [
     { name: 'Spanish', image: Spanish, code: 'es' },
     { name: 'Russian', image: Russian, code: 'ru' },
     { name: 'English', image: English, code: 'en' },
-    { name: 'Turkish', image: Turkish, code: 'tr' },
+    // { name: 'Turkish', image: Turkish, code: 'tr' },
 ];
 
 export default function SearchScreen() {
@@ -43,6 +43,12 @@ export default function SearchScreen() {
 
     const handleSearch = useCallback(() => {
         const controller = new AbortController();
+
+        // Set if target language is not specified, return message, please choose the language
+        console.log('target lang is ', targetLanguage)
+        if (targetLanguage === null) {
+            return;
+        }
 
         if (debouncedQuery.trim().length > 0) {
             const data = {
@@ -94,6 +100,7 @@ export default function SearchScreen() {
 
     const handleLanguageFilter = (languageCode='all') => {
         setTargetLanguage(languageCode);
+        console.log('language code is ', languageCode)
         const data = {
             native_language: AVAILABLE_LANGUAGES.find(lang => lang.name === nativeLang)?.code,
             target_language: languageCode,
@@ -185,7 +192,7 @@ export default function SearchScreen() {
 
             {/* Results Section */}
             <div className="flex-1 p-4">
-                {isLoading ? (
+                {targetLanguage && isLoading ? (
                     <div className="flex flex-col items-center justify-center py-16">
                         <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
                         <p className="text-gray-600 mt-4 text-lg">Searching vocabulary...</p>
@@ -204,10 +211,22 @@ export default function SearchScreen() {
                             </div>
                         ) : (
                             <div className="flex flex-col items-center justify-center py-16 text-center">
-                                <span className="text-gray-300 text-6xl mb-4">🔍</span>
-                                <p className="text-gray-600 text-lg font-semibold mb-2">
-                                    {debouncedQuery ? 'No matching words found' : 'Search for vocabulary'}
-                                </p>
+                                {
+                                    !targetLanguage ?
+                                    <div>
+                                        <span className="text-gray-300 text-6xl mb-4">🔍</span>
+                                        <p className="text-gray-600 text-lg font-semibold mb-2">
+                                            Please choose the language
+                                        </p>
+                                    </div>
+                                    :
+                                    <div>
+                                        <span className="text-gray-300 text-6xl mb-4">🔍</span>
+                                        <p className="text-gray-600 text-lg font-semibold mb-2">
+                                            {debouncedQuery ? 'No matching words found' : 'Search for vocabulary'}
+                                        </p>
+                                    </div>
+                                }
                                 {!debouncedQuery && (
                                     <p className="text-gray-500 text-sm max-w-md">
                                         Try searching for: "hello", "gracias", or "learned"
@@ -217,6 +236,7 @@ export default function SearchScreen() {
                         )}
                     </div>
                 )}
+                
             </div>
         </div>
     );

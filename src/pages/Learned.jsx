@@ -138,7 +138,7 @@ export default function LearnedScreen() {
         <button
           onClick={loadMoreWords}
           disabled={isFetching || words_pending}
-          className="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors font-medium flex items-center space-x-2"
+          className="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors font-medium flex items-center space-x-2 cursor-pointer"
         >
           {isFetching ? (
             <>

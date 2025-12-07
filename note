@@ -1,91 +1,16 @@
 Problems
 
-1 - Level must be checked.
 
-6 - if the  language is not selected in search_screen, return back to the wrong but need to set as, if not selected language, set the all  languages
+1 - Add the conversation to the some context, because after one message, text doesnt understand by ai.
 
-11 - Add the conversation to the some context, because after one message, text doesnt understand by ai.
+2 - Dont need to fecth the words over and over again after clicking the words and learneds. 
 
-13 - In the console l see the error: 'A props object containing a "key" prop is being spread into JSX:
-  let props = {key: someKey, currentWord: ..., nativeLang: ..., onOpenDirectChat: ...};
-  <AIScreenChat {...props} />
-React keys must be passed directly to JSX without using spread:
-  let props = {currentWord: ..., nativeLang: ..., onOpenDirectChat: ...};
-  <AIScreenChat key={someKey} {...props} />'
-
-14 - Need to fix pagination totalWord in 147 in word_store. 154 also, 175, 221, 385, 410
 
 Solving
 
 Today:
-    [2,6,13,1,11]
+    [2,1]
 
 
 DeepSeek:
-
-
-Do you know, this is my redux setLoadingMore action:
-
-// Create the action first, before the slice
-export const setLoadingMore = createAction('word/setLoadingMore');
-
-extraReducers: (builder) => {
-        // Handle the setLoadingMore action
-        builder.addCase(setLoadingMore, (state, action) => {
-            state.pagination.unlearned.isLoadingMore = action.payload !== undefined ? action.payload : true;
-            state.pagination.learned.isLoadingMore = action.payload !== undefined ? action.payload : true;
-        });
-
-This is words.jsx: The logic in LearnedScreen also.
-
-import { setSelectedLanguage, setLoadingMore } from '../store/word_store.js';
- // Fetch words function with pagination - FIXED
-    const fetchWords = useCallback(async (reset = true) => {
-        if (isFetching || !is_auth || !selectedLanguage) return;
-
-        setIsFetching(true);
-
-        const skip = reset ? 0 : unlearned_words.length;
-        const limit = pagination.unlearned.pageSize;
-
-
-        try {
-            if (currentCategory.id) {
-                await dispatch(WordService.getWordsByCategoryId({
-                    categoryId: currentCategory.id,
-                    langCode: selectedLanguage,
-                    only_starred: filter === 'starred',
-                    only_learned: filter === 'learned',
-                    skip: reset ? 0 : skip, // ✅ Use reset directly
-                    limit: limit
-                })).unwrap();
-            }
-            else if (currentPosName.name) {
-                await dispatch(WordService.getWordsByPosName({
-                    posName: currentPosName.name,
-                    langCode: selectedLanguage,
-                    only_starred: filter === 'starred',
-                    only_learned: filter === 'learned',
-                    skip: reset ? 0 : skip, // ✅ Use reset directly
-                    limit: limit
-                })).unwrap();
-            }
-            else {
-                await dispatch(WordService.handleLanguageSelect({
-                    filter,
-                    langCode: selectedLanguage,
-                    skip: reset ? 0 : skip, // ✅ Use reset directly
-                    limit: limit
-                })).unwrap();
-            }
-        } catch (error) {
-            // console.error('Error fetching words:', error);
-        } finally {
-            setIsFetching(false);
-            if (!reset) {
-                dispatch(setLoadingMore(false));
-            }
-        }
-    }, [is_auth, selectedLanguage, currentCategory.id, currentPosName.name, filter, unlearned_words.length, pagination.unlearned.pageSize, dispatch, isFetching]);
-
 

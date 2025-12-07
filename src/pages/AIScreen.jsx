@@ -37,7 +37,7 @@ export default function AIScreen({ route }) {
     currentWord,
     nativeLang,
     onOpenDirectChat: () => setShowDirectChat(true),
-    key: currentWord?.id || 'no-word'
+    // key: currentWord?.id || 'no-word'
   }), [currentWord, nativeLang]);
 
   // If Direct Chat is open
