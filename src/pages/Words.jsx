@@ -12,10 +12,10 @@ import { setCurrentCategory, setCurrentPosName } from '../store/word_store';
 import { IoClose, IoArrowDown } from "react-icons/io5";
 
 export default function WordScreen() {
+
     const dispatch = useDispatch();
 
     const {
-        words,
         unlearned_words,
         selectedLanguage,
         statistics,
@@ -28,8 +28,9 @@ export default function WordScreen() {
     const [filter, setFilter] = useState('all');
     const [showScrollToBottom, setShowScrollToBottom] = useState(false);
     const [isFetching, setIsFetching] = useState(false);
-    const [isScrollDebouncing, setIsScrollDebouncing] = useState(false);
-    const [lastScreenContext, setLastScreenContext] = useState('');
+
+    const hasFetchedInitial = useRef(false);
+    const prevFilter = useRef(filter);
 
     const { is_auth } = useSelector((state) => state.authSlice);
 
@@ -59,6 +60,7 @@ export default function WordScreen() {
 
     // Fetch words function with pagination - FIXED
     const fetchWords = useCallback(async (reset = true) => {
+        // console.log('the function working')
         if (isFetching || !is_auth || !selectedLanguage) return;
 
         setIsFetching(true);
@@ -107,17 +109,6 @@ export default function WordScreen() {
     }, [is_auth, selectedLanguage, currentCategory.id, currentPosName.name, filter, unlearned_words.length, pagination.unlearned.pageSize, dispatch, isFetching]);
 
 
-    // useEffect(() => {
-    //     if (is_auth && selectedLanguage) {
-    //         const currentContext = `${selectedLanguage}-${currentCategory.id}-${currentPosName.name || ''}-${filter}`;
-    //         if (currentContext !== lastScreenContext) {
-    //             setLastScreenContext(currentContext);
-    //             fetchWords(true);
-    //         }
-    //     }
-    // }, [selectedLanguage, currentCategory.id, currentPosName.name, filter, is_auth, lastScreenContext, fetchWords]);
-
-
     const loadMoreWords = useCallback(() => {
 
         if (!isFetching && pagination.unlearned.hasMore && !words_pending && unlearned_words.length > 0) {
@@ -142,6 +133,50 @@ export default function WordScreen() {
         }
     }, [statistics, dispatch, selectedLanguage]);
 
+
+   const isFetchingRef = useRef(false);
+
+
+    
+    useEffect(() => {
+        if (!is_auth || !selectedLanguage) return;
+
+        const shouldFetch = (() => {
+            // Case 1: Initial mount, no words loaded
+            if (!hasFetchedInitial.current && unlearned_words.length === 0) {
+                // console.log('🟢 Initial fetch');
+                hasFetchedInitial.current = true;
+                return true;
+            }
+            
+            // Case 2: Filter actually changed (not just initial render)
+            if (prevFilter.current !== filter && hasFetchedInitial.current) {
+                // console.log('🟡 Filter changed from', prevFilter.current, 'to', filter);
+                prevFilter.current = filter;
+                return true;
+            }
+
+            else if (prevFilter.current !== filter) {
+                // console.log('else is  worked')
+                prevFilter.current = filter;
+                return true;
+            }
+
+            
+            return false;
+        })();
+        
+        prevFilter.current = filter;
+
+        if (shouldFetch) {
+            fetchWords(true);
+        }
+        
+        // Update previous filter
+        prevFilter.current = filter;
+    }, [filter, is_auth, selectedLanguage, unlearned_words.length]);
+
+    
 
     const PaginationControls = () => (
         <div className="flex flex-col items-center justify-center mt-8 space-y-4 px-4">
@@ -181,6 +216,7 @@ export default function WordScreen() {
             )}
         </div>
     );
+
 
     return (
         <div className="min-h-screen bg-white flex flex-col pb-8 md:pb-0">

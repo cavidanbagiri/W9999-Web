@@ -92,7 +92,6 @@ export default function HeaderComponent({ username }) {
   useEffect(() => {
     const getTotalLearnedWords = async () => {
       try {
-        console.log('the dispatch function working and the result will be below')
         const result = await dispatch(AuthService.getTotalLearnedWords());
         setTotalLearnedWords(result.payload?.total_learned_words);
       } catch (error) { 

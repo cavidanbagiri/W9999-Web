@@ -5,6 +5,10 @@ Problems
 
 2 - Dont need to fecth the words over and over again after clicking the words and learneds. 
 
+3 - When the filter useEffect added, the words page always called itself again.
+
+4 - In the backend, need to add created_at words for learned pages especially when category and pos selected. Last learned words doesnt seem when cat or pos selected 
+
 
 Solving
 

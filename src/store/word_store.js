@@ -7,10 +7,9 @@ import WordService from '../services/WordService.js';
 axios.defaults.withCredentials = true;
 
 const initialState = {
-    // words: [],
+    
     unlearned_words: [],
     learned_words: [],
-    // wordsData: [],
     selectedLanguage: null,
     words_pending: false,
     is_words_error: false,
@@ -107,17 +106,37 @@ export const wordSlice = createSlice({
         setCurrentCategory: (state, action) => {
             state.currentCategory.id = action.payload.id;
             state.currentCategory.name = action.payload.name;
-            // console.log('current category is ', state.currentCategory.id)
         },
 
         setCurrentPosName: (state, action) => {
             state.currentPosName.name = action.payload.name;
         },
 
-        // NEW: Add pagination reducers
         resetPagination: (state) => {
             state.pagination = initialState.pagination;
         },
+
+        updateWordStatus: (state, action) => {
+            const { wordId } = action.payload;
+            const { is_starred, is_learned } = action.payload.updates;
+            
+            // Update in both arrays if word exists
+            const updateWordInArray = (array) => {
+                const index = array.findIndex(w => w.id === wordId);
+                if (index !== -1) {
+                    if (is_starred !== undefined) {
+                        array[index].is_starred = is_starred;
+                    }
+                    if (is_learned !== undefined) {
+                        array[index].is_learned = is_learned;
+                    }
+                }
+            };
+            
+            updateWordInArray(state.unlearned_words);
+            updateWordInArray(state.learned_words);
+        }
+
 
     },
     extraReducers: (builder) => {
@@ -125,21 +144,9 @@ export const wordSlice = createSlice({
         builder.addCase(setLoadingMore, (state, action) => {
             state.pagination.unlearned.isLoadingMore = action.payload !== undefined ? action.payload : true;
             state.pagination.learned.isLoadingMore = action.payload !== undefined ? action.payload : true;
-            // console.log('action.payload is ', action.payload)
-            // const page = action.payload;
-            // console.log('the page is ', page)
-            // if (page === 'unlearned') {
-            //     state.pagination.unlearned.isLoadingMore = false;
-            // } else if (page === 'learned') {
-            //     state.pagination.learned.isLoadingMore = false;
-            // } else {
-            //     state.pagination.unlearned.isLoadingMore = false;
-            //     state.pagination.learned.isLoadingMore = false;
-            // }
-            
         });
 
-        // WordService getStatisticsForDashboard
+
         builder.addCase(WordService.getStatisticsForDashboard.pending, (state, action) => {
             state.loading = true;
         });
@@ -151,7 +158,7 @@ export const wordSlice = createSlice({
             state.loading = false;
         });
 
-        // WordService handleLanguageSelect - UPDATED for pagination
+
         builder.addCase(WordService.handleLanguageSelect.pending, (state, action) => {
             const { skip = 0 } = action.meta.arg || {};
             if (skip === 0) {
@@ -207,13 +214,14 @@ export const wordSlice = createSlice({
             state.pagination.unlearned.isLoadingMore = false;
         });
 
-        // WordService setStatus
+
         builder.addCase(WordService.setStatus.fulfilled, (state, action) => {
             // Handle word status updates if needed
         });
         builder.addCase(WordService.setStatus.rejected, (state, action) => {
             // console.log('status payload error is ', action.payload);
         });
+
 
         // WordService getDetailWord
         builder.addCase(WordService.getDetailWord.pending, (state, action) => {
@@ -233,6 +241,7 @@ export const wordSlice = createSlice({
             state.loading = false;
         });
 
+
         // Search Words 
         builder.addCase(WordService.getSearchResults.pending, (state) => {
             state.isLoading = true;
@@ -247,6 +256,7 @@ export const wordSlice = createSlice({
             state.error = action.payload;
         });
 
+
         // Categories
         builder.addCase(WordService.getCategories.pending, (state, action) => {
             state.categories_pending = true;
@@ -259,6 +269,7 @@ export const wordSlice = createSlice({
             state.categories_pending = false;
         });
 
+
         // WordService getWordsByCategoryId - FIXED for pagination
         builder.addCase(WordService.getWordsByCategoryId.pending, (state, action) => {
             const { skip = 0 } = action.meta.arg || {};
@@ -270,7 +281,6 @@ export const wordSlice = createSlice({
                 state.pagination.learned.isLoadingMore = true;
             }
         });
-
         builder.addCase(WordService.getWordsByCategoryId.fulfilled, (state, action) => {
             const { skip = 0 } = action.meta.arg || {};
             const responseData = action.payload?.payload || action.payload;
@@ -370,7 +380,6 @@ export const wordSlice = createSlice({
 
 
         });
-
         builder.addCase(WordService.getWordsByCategoryId.rejected, (state, action) => {
             state.words_pending = false;
             state.loading = false;
@@ -392,6 +401,7 @@ export const wordSlice = createSlice({
         builder.addCase(WordService.getPosStatistics.rejected, (state, action) => {
             state.loading = false;
         });
+
 
         // WordService getWordsByPosName - UPDATED for pagination
         builder.addCase(WordService.getWordsByPosName.pending, (state, action) => {
@@ -520,7 +530,7 @@ export const {
     setCurrentCategory,
     setCurrentPosName,
     resetPagination,
-    // setPaginationTotal
+    updateWordStatus
 } = wordSlice.actions;
 
 export default wordSlice.reducer;

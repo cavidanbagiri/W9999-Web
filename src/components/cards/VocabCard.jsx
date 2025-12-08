@@ -7,6 +7,7 @@ import { IoVolumeMedium } from 'react-icons/io5';
 import WordService from '../../services/WordService';
 import VoiceButtonComponent from '../../layouts/VoiceButtonComponent';
 import { setCurrentWord } from '../../store/ai_store';
+import {updateWordStatus} from '../../store/word_store';
 
 export default function VocabCard({ word, language }) {
   const dispatch = useDispatch();
@@ -16,17 +17,47 @@ export default function VocabCard({ word, language }) {
   const [isLearned, setIsLearned] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
+  // const handleToggle = async (actionType, e) => {
+  //   e.stopPropagation();
+  //   try {
+
+  //     const res = await dispatch(WordService.setStatus({
+  //       word_id: word.id,
+  //       action: actionType,
+  //     })).unwrap();
+
+  //     setIsStarred(res.is_starred);
+  //     setIsLearned(res.is_learned);
+
+  //   } catch (error) {
+  //     console.error('Failed to update status:', error);
+  //   }
+  // };
+
   const handleToggle = async (actionType, e) => {
     e.stopPropagation();
     try {
-
       const res = await dispatch(WordService.setStatus({
         word_id: word.id,
         action: actionType,
       })).unwrap();
 
+      // Update local state
       setIsStarred(res.is_starred);
       setIsLearned(res.is_learned);
+
+      // Update Redux based on action type
+      if (actionType === 'star') {
+        dispatch(updateWordStatus({
+          wordId: word.id,
+          updates: { is_starred: res.is_starred }
+        }));
+      } else if (actionType === 'learned') {
+        dispatch(updateWordStatus({
+          wordId: word.id,
+          updates: { is_learned: res.is_learned }
+        }));
+      }
 
     } catch (error) {
       console.error('Failed to update status:', error);
