@@ -1,20 +1,12 @@
 Problems
 
+1 - Need to fix loading options for unlearned words in words screen
 
-1 - Add the conversation to the some context, because after one message, text doesnt understand by ai.
+2 - Add speach recognition for ai and direct chat.
 
-2 - Dont need to fecth the words over and over again after clicking the words and learneds. 
-
-3 - When the filter useEffect added, the words page always called itself again.
-
-4 - In the backend, need to add created_at words for learned pages especially when category and pos selected. Last learned words doesnt seem when cat or pos selected 
-
-
-Solving
 
 Today:
-    [2,1]
+    [2]
 
 
 DeepSeek:
-

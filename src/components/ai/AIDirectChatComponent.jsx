@@ -1,9 +1,11 @@
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, use } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { IoClose, IoSend, IoChatbubbleEllipses, IoArrowDown } from "react-icons/io5";
 import { API_URL } from '../../http/api';
 import ReactMarkdown from 'react-markdown';
+import AIService from '../../services/AIService';
+import MsgBox from '../../layouts/MsgBox';
 
 export default function AIDirectChatComponent({ onClose }) {
   const dispatch = useDispatch();
@@ -15,8 +17,11 @@ export default function AIDirectChatComponent({ onClose }) {
   const [abortController, setAbortController] = useState(null);
   const [showScrollToBottom, setShowScrollToBottom] = useState(false);
 
+
   const { currentWord } = useSelector((state) => state.aiSlice);
   const [nativeLang, setNativeLang] = useState(null);
+  const [clearChatVisible, setClearChatVisible] = useState(false);
+  const [clearChatMsg, setClearChatMsg] = useState('');
 
   // Sample initial messages for better UX
   const initialMessages = [
@@ -106,10 +111,6 @@ export default function AIDirectChatComponent({ onClose }) {
     try {
       // Get token from localStorage
       const token = localStorage.getItem('token');
-      console.log('first....', JSON.stringify({
-          message: inputMessage,
-          native_language: nativeLang,
-        }))
 
       const response = await fetch(`${API_URL}/words/ai_direct_chat_stream`, {
         method: 'POST',
@@ -125,6 +126,18 @@ export default function AIDirectChatComponent({ onClose }) {
       });
 
       if (!response.ok) {
+        if (response.status === 401) {
+          setMessages(prev => prev.map(msg =>
+            msg.id === aiMessageId
+              ? {
+                ...msg,
+                text: "Sorry, you need to login to use this feature.",
+                isStreaming: false
+              }
+              : msg
+          ));
+          return;
+        }
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
@@ -239,14 +252,27 @@ export default function AIDirectChatComponent({ onClose }) {
     }
   };
 
-  const clearChat = () => {
-    if (abortController) {
-      abortController.abort();
+  useEffect(() => {
+    if (clearChatVisible) {
+      setTimeout(() => {
+        setClearChatVisible(false);
+      }, 2000);
     }
-    setMessages(initialMessages);
-    setIsLoading(false);
-    setAbortController(null);
-  };
+  }, [clearChatVisible]);
+
+  const clearChat = async () => {
+
+    // const result = dispatch(AIService.clearDirectChatHistory())
+    const result = await dispatch(AIService.clearDirectChatHistory()).unwrap()
+
+    if (result) {
+      setClearChatVisible(true);
+      setClearChatMsg(result.message);
+      setMessages(initialMessages);
+      setIsLoading(false);
+      setAbortController(null);
+    }
+    };
 
   // Format message text with markdown
   const formatMessage = (text) => {
@@ -273,6 +299,12 @@ export default function AIDirectChatComponent({ onClose }) {
 
   return (
     <div className="fixed inset-0 z-50 bg-white flex flex-col">
+
+      <MsgBox
+      message={clearChatMsg}
+      visible={clearChatVisible}
+       />
+
       {/* Header */}
       <div className="flex items-center justify-between p-4 bg-gradient-to-r from-indigo-500 to-purple-600 text-white">
         <div className="flex items-center space-x-3">
@@ -312,8 +344,8 @@ export default function AIDirectChatComponent({ onClose }) {
             <div key={message.id} className={`flex ${message.isUser ? 'justify-end' : 'justify-start'}`}>
               <div className={`max-w-[95%] rounded-2xl p-4 ${
                 message.isUser
-                  ? 'bg-indigo-500 text-white'
-                  : 'bg-white text-gray-800 shadow-sm'
+                  ? 'bg-indigo-500 text-white text-lg'
+                  : ' text-gray-800 text-lg'
               } ${message.isStreaming ? 'streaming-cursor' : ''}`}>
                 <div className="font-sans">
                   {message.isUser ? (
@@ -382,24 +414,7 @@ export default function AIDirectChatComponent({ onClose }) {
             </button>
           </div>
 
-          {/* Quick Suggestions */}
-          {/* <div className="flex flex-wrap gap-2 mt-3">
-            {[
-              "Explain verb tenses",
-              "Practice conversation",
-              "Grammar help",
-              "Vocabulary building"
-            ].map((suggestion) => (
-              <button
-                key={suggestion}
-                onClick={() => setInputMessage(suggestion)}
-                disabled={isLoading}
-                className="text-xs bg-gray-100 cursor-pointer text-gray-700 px-3 py-1.5 rounded-full hover:bg-gray-200 transition-colors font-sans disabled:opacity-50"
-              >
-                {suggestion}
-              </button>
-            ))}
-          </div> */}
+         
         </div>
       </div>
     </div>

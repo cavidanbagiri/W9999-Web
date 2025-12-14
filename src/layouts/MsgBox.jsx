@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-export default function MsgBox({ message, type = 'success', visible, duration = 3000 }) {
+export default function MsgBox({ message, type = 'success', visible, duration = 2000 }) {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
@@ -32,7 +32,7 @@ export default function MsgBox({ message, type = 'success', visible, duration = 
         ${isVisible ? 'translate-y-12' : '-translate-y-16'}
       `}
     >
-      <span className="text-white font-bold text-sm text-center">
+      <span className="text-white font-bold text-lg text-center">
         {message}
       </span>
     </div>
