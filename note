@@ -1,12 +1,21 @@
 Problems
 
-1 - Need to fix loading options for unlearned words in words screen
+1 - Add speach recognition for ai and direct chat.
 
-2 - Add speach recognition for ai and direct chat.
+2 - Add textinput field to ai word base chat, when the user click, the ai component will open 
+
+3 - After entering the ai direct chat, need to check the if old context available, donwload it to the initial_message
+
+4 - After saying the words in ai speech component, also need to return back the saying words for checking by the user inm realtime.
 
 
 Today:
-    [2]
+    [1]
 
 
 DeepSeek:
+
+
+ File "C:\Users\cavidan\JetBrainsProjects\PyCharm\DuolingoPocket-Server\.venv\Lib\site-packages\fastapi\encoders.py", line 332, in jsonable_encoder
+    raise ValueError(errors) from e
+ValueError: [TypeError('cannot convert dictionary update sequence element #0 to a sequence'), TypeError('vars() argument must have __dict__ attribute')]

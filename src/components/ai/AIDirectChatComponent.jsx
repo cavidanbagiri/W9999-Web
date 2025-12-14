@@ -6,6 +6,7 @@ import { API_URL } from '../../http/api';
 import ReactMarkdown from 'react-markdown';
 import AIService from '../../services/AIService';
 import MsgBox from '../../layouts/MsgBox';
+import VoiceInputComponent from '../../layouts/VoiceInputComponent'
 
 export default function AIDirectChatComponent({ onClose }) {
   const dispatch = useDispatch();
@@ -387,7 +388,17 @@ export default function AIDirectChatComponent({ onClose }) {
       {/* Input Area */}
       <div className="border-t border-gray-200 bg-white p-4">
         <div className="max-w-3xl mx-auto">
-          <div className="flex space-x-3">
+
+           <VoiceInputComponent
+            onTranscript={(text) => console.log('Transcript:', text)}
+            onSend={handleSendMessage}
+            inputMessage={inputMessage}
+            setInputMessage={setInputMessage}
+            isLoading={isLoading}
+            language="en-US" // Or make this dynamic based on user's learning language
+          />
+
+          {/* <div className="flex space-x-3">
             <div className="flex-1">
               <textarea
                 value={inputMessage}
@@ -412,7 +423,7 @@ export default function AIDirectChatComponent({ onClose }) {
                 <IoSend className="text-lg" />
               )}
             </button>
-          </div>
+          </div> */}
 
          
         </div>
