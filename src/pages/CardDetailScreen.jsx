@@ -5,7 +5,7 @@ import { clearDetail, setDetail } from '../store/word_store';
 import WordService from '../services/WordService';
 import { setCurrentWord } from '../store/ai_store';
 import VoiceButtonComponent from '../layouts/VoiceButtonComponent';
-import { IoSparkles } from "react-icons/io5";
+import { IoSparkles, IoSend } from "react-icons/io5";
 
 
 import { IoCheckmark } from "react-icons/io5";
@@ -19,7 +19,7 @@ export default function CardDetailScreen() {
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
-  
+
   const { word } = location.state || {};
 
   const { selectedLanguage } = useSelector((state) => state.wordSlice);
@@ -86,21 +86,18 @@ export default function CardDetailScreen() {
           <div className="flex justify-around items-center">
             <button
               onClick={() => toggleStatus('is_starred')}
-              className={`flex flex-col items-center justify-center p-3 rounded-xl transition-colors cursor-pointer ${
-                detail?.is_starred ? 'bg-amber-50 hover:bg-amber-100' : 'bg-transparent hover:bg-gray-50'
-              }`}
+              className={`flex flex-col items-center justify-center p-3 rounded-xl transition-colors cursor-pointer ${detail?.is_starred ? 'bg-amber-50 hover:bg-amber-100' : 'bg-transparent hover:bg-gray-50'
+                }`}
             >
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors ${
-                detail?.is_starred ? 'bg-amber-100' : 'bg-gray-100'
-              }`}>
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors ${detail?.is_starred ? 'bg-amber-100' : 'bg-gray-100'
+                }`}>
                 <span className={`text-xl ${detail?.is_starred ? 'text-amber-500' : 'text-gray-500'}`}>
-                  {detail?.is_starred ? <FaStar className='text-yellow-500'/> : <CiStar/>}
+                  {detail?.is_starred ? <FaStar className='text-yellow-500' /> : <CiStar />}
                 </span>
               </div>
               <span
-                className={`mt-2 text-xs font-medium font-sans ${
-                  detail?.is_starred ? 'text-amber-700' : 'text-gray-600'
-                }`}
+                className={`mt-2 text-xs font-medium font-sans ${detail?.is_starred ? 'text-amber-700' : 'text-gray-600'
+                  }`}
               >
                 {detail?.is_starred ? 'Starred' : 'Star'}
               </span>
@@ -110,21 +107,18 @@ export default function CardDetailScreen() {
 
             <button
               onClick={() => toggleStatus('is_learned')}
-              className={`flex flex-col items-center justify-center p-3 rounded-xl transition-colors cursor-pointer ${
-                detail?.is_learned ? 'bg-emerald-50 hover:bg-emerald-100' : 'bg-transparent hover:bg-gray-50'
-              }`}
+              className={`flex flex-col items-center justify-center p-3 rounded-xl transition-colors cursor-pointer ${detail?.is_learned ? 'bg-emerald-50 hover:bg-emerald-100' : 'bg-transparent hover:bg-gray-50'
+                }`}
             >
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors ${
-                detail?.is_learned ? 'bg-emerald-100' : 'bg-gray-100'
-              }`}>
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors ${detail?.is_learned ? 'bg-emerald-100' : 'bg-gray-100'
+                }`}>
                 <span className={`text-xl ${detail?.is_learned ? 'text-emerald-500' : 'text-gray-500'}`}>
-                  {detail?.is_learned ? <IoCheckmarkDoneOutline className='text-green-500' /> : <IoCheckmark/>}
+                  {detail?.is_learned ? <IoCheckmarkDoneOutline className='text-green-500' /> : <IoCheckmark />}
                 </span>
               </div>
               <span
-                className={`mt-2 text-xs font-medium font-sans ${
-                  detail?.is_learned ? 'text-emerald-700' : 'text-gray-600'
-                }`}
+                className={`mt-2 text-xs font-medium font-sans ${detail?.is_learned ? 'text-emerald-700' : 'text-gray-600'
+                  }`}
               >
                 {detail?.is_learned ? 'Learned' : 'Learn'}
               </span>
@@ -323,8 +317,22 @@ export default function CardDetailScreen() {
           </div>
         )}
 
+        {/* Add text input field to ai word base chat, when the user click, the ai component will open */}
+        <div
+          onClick={() => {
+            dispatch(setCurrentWord(word));
+            navigate('/ai-chat');
+          }}
+          className="flex sticky bottom-28 md:bottom-12 left-0 right-0 z-10 bg-white p-4 rounded-lg shadow-lg border border-gray-100">
+          <input text="Enter your question here..." className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-gray-900 placeholder-gray-500 text-base focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" placeholder="Ask from AI" type="text" onChange={(e) => console.log('text input changed', e.target.value)}>
+          </input>
+          <button className='flex items-center justify-center ml-2 bg-indigo-500 text-white w-16 cursor-pointer text-center rounded-lg hover:bg-indigo-600 transition-colors' onClick={() => console.log('clicked')}>
+            <IoSend className="text-lg" />
+          </button>
+        </div>
+
         {/* Bottom Spacer */}
-        <div className="h-6" />
+        <div className="h-6 md-0" />
       </div>
     </div>
   );
