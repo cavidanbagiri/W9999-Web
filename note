@@ -8,6 +8,9 @@ Problems
 
 4 - Change the language as native lang from en-EN to native
 
+5 - In the translate page, when l click the word ai, doesnt open the aicomponennt exactly, instaead open screen for choosing
+
+
 
 Today:
     [1]
@@ -16,6 +19,3 @@ Today:
 DeepSeek:
 
 
- File "C:\Users\cavidan\JetBrainsProjects\PyCharm\DuolingoPocket-Server\.venv\Lib\site-packages\fastapi\encoders.py", line 332, in jsonable_encoder
-    raise ValueError(errors) from e
-ValueError: [TypeError('cannot convert dictionary update sequence element #0 to a sequence'), TypeError('vars() argument must have __dict__ attribute')]
