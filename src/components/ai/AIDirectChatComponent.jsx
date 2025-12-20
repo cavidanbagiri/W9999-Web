@@ -52,7 +52,6 @@ export default function AIDirectChatComponent({ onClose }) {
     };
   }, []);
 
-  // Check if user has scrolled up to show "scroll to bottom" button
   useEffect(() => {
     const checkScrollPosition = () => {
       if (messagesContainerRef.current) {
@@ -238,21 +237,6 @@ export default function AIDirectChatComponent({ onClose }) {
     }
   };
 
-  // const cancelStream = () => {
-  //   if (abortController) {
-  //     abortController.abort();
-  //     setIsLoading(false);
-  //     setAbortController(null);
-  //   }
-  // };
-
-  // const handleKeyPress = (e) => {
-  //   if (e.key === 'Enter' && !e.shiftKey) {
-  //     e.preventDefault();
-  //     handleSendMessage();
-  //   }
-  // };
-
   useEffect(() => {
     if (clearChatVisible) {
       setTimeout(() => {
@@ -273,7 +257,7 @@ export default function AIDirectChatComponent({ onClose }) {
       setIsLoading(false);
       setAbortController(null);
     }
-    };
+  };
 
   // Format message text with markdown
   const formatMessage = (text) => {
@@ -281,16 +265,16 @@ export default function AIDirectChatComponent({ onClose }) {
       <ReactMarkdown
         components={{
           // Customize how markdown elements are rendered
-          strong: ({children}) => <strong className="font-bold text-gray-900">{children}</strong>,
-          em: ({children}) => <em className="italic text-gray-800">{children}</em>,
-          h1: ({children}) => <h1 className="text-xl font-bold text-gray-900 mt-4 mb-2">{children}</h1>,
-          h2: ({children}) => <h2 className="text-lg font-bold text-gray-900 mt-3 mb-2">{children}</h2>,
-          h3: ({children}) => <h3 className="text-base font-bold text-gray-900 mt-2 mb-1">{children}</h3>,
-          p: ({children}) => <p className="mb-2 leading-relaxed">{children}</p>,
-          ul: ({children}) => <ul className="list-disc list-inside mb-2 space-y-1">{children}</ul>,
-          ol: ({children}) => <ol className="list-decimal list-inside mb-2 space-y-1">{children}</ol>,
-          li: ({children}) => <li className="leading-relaxed">{children}</li>,
-          blockquote: ({children}) => <blockquote className="border-l-4 border-gray-300 pl-3 italic text-gray-700 my-2">{children}</blockquote>,
+          strong: ({ children }) => <strong className="font-bold text-gray-900">{children}</strong>,
+          em: ({ children }) => <em className="italic text-gray-800">{children}</em>,
+          h1: ({ children }) => <h1 className="text-xl font-bold text-gray-900 mt-4 mb-2">{children}</h1>,
+          h2: ({ children }) => <h2 className="text-lg font-bold text-gray-900 mt-3 mb-2">{children}</h2>,
+          h3: ({ children }) => <h3 className="text-base font-bold text-gray-900 mt-2 mb-1">{children}</h3>,
+          p: ({ children }) => <p className="mb-2 leading-relaxed">{children}</p>,
+          ul: ({ children }) => <ul className="list-disc list-inside mb-2 space-y-1">{children}</ul>,
+          ol: ({ children }) => <ol className="list-decimal list-inside mb-2 space-y-1">{children}</ol>,
+          li: ({ children }) => <li className="leading-relaxed">{children}</li>,
+          blockquote: ({ children }) => <blockquote className="border-l-4 border-gray-300 pl-3 italic text-gray-700 my-2">{children}</blockquote>,
         }}
       >
         {text}
@@ -302,9 +286,9 @@ export default function AIDirectChatComponent({ onClose }) {
     <div className="fixed inset-0 z-50 bg-white flex flex-col">
 
       <MsgBox
-      message={clearChatMsg}
-      visible={clearChatVisible}
-       />
+        message={clearChatMsg}
+        visible={clearChatVisible}
+      />
 
       {/* Header */}
       <div className="flex items-center justify-between p-4 bg-gradient-to-r from-indigo-500 to-purple-600 text-white">
@@ -336,18 +320,17 @@ export default function AIDirectChatComponent({ onClose }) {
       </div>
 
       {/* Messages Container */}
-      <div 
+      <div
         ref={messagesContainerRef}
         className="flex-1 overflow-y-auto bg-gray-50 p-4 relative"
       >
         <div className="max-w-3xl mx-auto space-y-4">
           {messages.map((message) => (
             <div key={message.id} className={`flex ${message.isUser ? 'justify-end' : 'justify-start'}`}>
-              <div className={`max-w-[95%] rounded-2xl p-4 ${
-                message.isUser
+              <div className={`max-w-[95%] rounded-2xl p-4 ${message.isUser
                   ? 'bg-indigo-500 text-white text-lg'
                   : ' text-gray-800 text-lg'
-              } ${message.isStreaming ? 'streaming-cursor' : ''}`}>
+                } ${message.isStreaming ? 'streaming-cursor' : ''}`}>
                 <div className="font-sans">
                   {message.isUser ? (
                     <div className="whitespace-pre-wrap">{message.text}</div>
@@ -389,7 +372,7 @@ export default function AIDirectChatComponent({ onClose }) {
       <div className="border-t border-gray-200 bg-white p-4">
         <div className="max-w-3xl mx-auto">
 
-           <VoiceInputComponent
+          <VoiceInputComponent
             onTranscript={(text) => console.log('Transcript:', text)}
             onSend={handleSendMessage}
             inputMessage={inputMessage}
@@ -398,34 +381,6 @@ export default function AIDirectChatComponent({ onClose }) {
             language="en-US" // Or make this dynamic based on user's learning language
           />
 
-          {/* <div className="flex space-x-3">
-            <div className="flex-1">
-              <textarea
-                value={inputMessage}
-                onChange={(e) => setInputMessage(e.target.value)}
-                onKeyPress={handleKeyPress}
-                placeholder="Ask me about languages"
-                className="w-full border border-gray-300 rounded-2xl px-4 py-3 resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent font-sans"
-                rows="1"
-                disabled={isLoading}
-                style={{ minHeight: '56px', maxHeight: '120px' }}
-              />
-            </div>
-            <button
-              onClick={handleSendMessage}
-              disabled={!inputMessage.trim() || isLoading}
-              className="bg-indigo-500 text-white rounded-2xl cursor-pointer px-4 py-3 hover:bg-indigo-600 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors flex items-center justify-center min-w-[56px]"
-              title="Send message"
-            >
-              {isLoading ? (
-                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-              ) : (
-                <IoSend className="text-lg" />
-              )}
-            </button>
-          </div> */}
-
-         
         </div>
       </div>
     </div>

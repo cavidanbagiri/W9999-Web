@@ -11,13 +11,12 @@ import { setCurrentWord } from '../store/ai_store';
 import { clearTranslatedText } from '../store/translate_store';
 import FavoritesService from '../services/FavoritesService';
 
+import MsgBox from '../layouts/MsgBox';
+
 import { BiTransfer } from "react-icons/bi";
 import { FaHeart } from "react-icons/fa";
 import { FaRegHeart } from "react-icons/fa";
-import { FaRegClipboard } from "react-icons/fa";
-import { CiMedicalClipboard } from "react-icons/ci";
 import { IoSparklesOutline } from "react-icons/io5";
-import { PiCopyThin } from "react-icons/pi";
 import { PiCopySimpleLight } from "react-icons/pi";
 
 
@@ -56,6 +55,8 @@ export default function TranslateComponent({ onClose }) {
   const [isFavorite, setIsFavorite] = useState(false);
   const [showLangModal, setShowLangModal] = useState(null);
   const [visible, setVisible] = useState(false)
+
+  const [showMsg, setShowMsg] = useState(false);
 
   const handleSwapLanguages = () => {
     const currentFromLang = fromLang;
@@ -144,6 +145,14 @@ export default function TranslateComponent({ onClose }) {
     }
   }, [selectedLanguage]);
 
+  useEffect(() => {
+    if (showMsg) {
+      setTimeout(() => {
+        setShowMsg(false);
+      }, 2000);
+    }
+  },[showMsg])
+
   const copyToClipboard = async (text) => {
     try {
       await navigator.clipboard.writeText(text);
@@ -167,6 +176,8 @@ export default function TranslateComponent({ onClose }) {
 
   return (
     <div className="flex flex-col  bg-gray-50 p-1 h-[calc(100vh-100px)]">
+
+      <MsgBox message="Please select language" visible={showMsg} type="error" />
 
       {/* Copied Message */}
       {
@@ -375,11 +386,16 @@ export default function TranslateComponent({ onClose }) {
 
         <button
           onClick={() => {
-            dispatch(TranslateService.translateText({
-              text: inputText,
-              from_lang: fromLang,
-              to_lang: toLang,
-            })).unwrap();
+            if (fromLang && toLang) {
+                dispatch(TranslateService.translateText({
+                text: inputText,
+                from_lang: fromLang,
+                to_lang: toLang,
+              })).unwrap();
+            }
+            else{
+              setShowMsg(true);
+            }
           }}
           disabled={inputText.length === 0}
           className={`flex-1 py-4 rounded-full cursor-pointer text-center font-semibold font-sans transition-colors ${inputText.length === 0

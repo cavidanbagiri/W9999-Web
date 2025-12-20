@@ -84,6 +84,7 @@ export default function CardDetailScreen() {
         {/* Action Buttons - Floating Bar */}
         <div className="bg-white rounded-2xl p-3 mb-8 shadow-lg border border-gray-100">
           <div className="flex justify-around items-center">
+
             <button
               onClick={() => toggleStatus('is_starred')}
               className={`flex flex-col items-center justify-center p-3 rounded-xl transition-colors cursor-pointer ${detail?.is_starred ? 'bg-amber-50 hover:bg-amber-100' : 'bg-transparent hover:bg-gray-50'
@@ -144,6 +145,7 @@ export default function CardDetailScreen() {
                 AI Tutor
               </span>
             </button>
+            
           </div>
         </div>
 

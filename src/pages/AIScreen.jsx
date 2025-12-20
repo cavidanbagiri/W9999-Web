@@ -13,7 +13,7 @@ import {
   IoSparklesOutline 
 } from 'react-icons/io5';
 
-export default function AIScreen({ route }) {
+export default function AIScreen({ route, come_from }) {
   const navigate = useNavigate();
   const { currentWord } = useSelector((state) => state.aiSlice);
   const [showDirectChat, setShowDirectChat] = useState(false);
@@ -48,9 +48,13 @@ export default function AIScreen({ route }) {
   }
 
   // If a word is selected
-  if (currentWord?.id) {
+  if (currentWord?.text) {
     return <AIScreenChat {...aiScreenChatProps} />;
   }
+
+  // useEffect(() => {
+  //   console.log('...the current word is changed as -> ', currentWord)
+  // },[currentWord])
 
   // Onboarding experience - No word selected
   return (
@@ -203,142 +207,3 @@ export default function AIScreen({ route }) {
 }
 
 
-
-
-
-
-
-
-// import React, { useState, useEffect, useMemo } from 'react';
-// import { useSelector } from 'react-redux';
-// import AIDirectChatComponent from '../components/ai/AIDirectChatComponent';
-// import AIScreenChat from '../components/ai/AIScreenChat';
-
-
-// export default function AIScreen({ route }) {
-//   const { currentWord } = useSelector((state) => state.aiSlice);
-//   const [showDirectChat, setShowDirectChat] = useState(false);
-//   const [nativeLang, setNativeLang] = useState(null);
-
-//   // Load native language once - don't reload on every word change
-//   useEffect(() => {
-//     const getNativeLang = () => {
-//       try {
-//         const native = localStorage.getItem('native');
-//         setNativeLang(native);
-//       } catch (error) {
-//         console.error('Failed to load native language', error);
-//       }
-//     };
-//     getNativeLang();
-//   }, []); // ✅ Fixed: Empty dependency array - run once
-
-//   // Memoize props to prevent unnecessary re-renders of AIScreenChat
-//   const aiScreenChatProps = useMemo(() => ({
-//     currentWord,
-//     nativeLang,
-//     onOpenDirectChat: () => setShowDirectChat(true), // Pass direct chat opener
-//     key: currentWord?.id || 'no-word' // ✅ KEY FIX: Force re-render on word change
-//   }), [currentWord, nativeLang]);
-
-//   // Render Direct Chat or Word Chat based on state
-//   return (
-//     <div className="bg-white flex flex-col sm:h-[calc(100vh-125px)]">
-//       {showDirectChat ? (
-//         <AIDirectChatComponent onClose={() => setShowDirectChat(false)} />
-//       ) : 
-        
-//           currentWord?.id
-//             ? <AIScreenChat {...aiScreenChatProps} />
-//             : 
-//             <div>
-//               <h2 className="text-2xl font-bold text-gray-900 mb-3 font-sans">
-//                 Select a word to start learning
-//               </h2>
-//               <p className="text-gray-600 max-w-md">
-//                 Choose a word to start learning and track your progress.
-//               </p>
-//             </div>
-//         }
-      
-//     </div>
-//   );
-// }
-
-
-
-
-
-
-
-
-
-
-
-
-
-// import React, { useState, useEffect } from 'react';
-// import { useSelector } from 'react-redux';
-// import AIComponent from '../components/ai/AIComponent';
-// import AIDirectChatComponent from '../components/ai/AIDirectChatComponent';
-// import AIScreenChat from '../components/ai/AIScreenChat';
-
-// export default function AIScreen({ route }) {
-
-//   const { currentWord, aiResponse, isLoading, error, cache } = useSelector((state) => state.aiSlice);
-
-//   const [showDirectChat, setShowDirectChat] = useState(false);
-//   const [nativeLang, setNativeLang] = useState(null);
-//   const [isChatOpen, setIsChatOpen] = useState(false);
-
-//   useEffect(() => {
-//     const getNativeLang = async () => {
-//       try {
-//         // const native = await getFromStorage('native');
-//         const native = localStorage.getItem('native');
-//         setNativeLang(native);
-//       } catch (error) {
-//         console.error('Failed to load native language', error);
-//       }
-//     };
-//     getNativeLang();
-//   }, [currentWord]);
-
-//   return (
-//     <div className=" bg-white flex flex-col sm:h-[calc(100vh-125px)] ">
-//       {showDirectChat ? (
-//         <AIDirectChatComponent onClose={() => setShowDirectChat(false)} />
-//       ) : (
-//         <>
-//           {/* <AIComponent onOpenDirectChat={() => setShowDirectChat(true)} /> */}
-//           <AIScreenChat currentWord={currentWord} nativeLang={nativeLang} onClose={() => setIsChatOpen(false)} />
-//         </>
-//       )}
-//     </div>
-//   );
-// }
-
-
-// export default function AIScreen({ route }) {
-//   const { currentWord } = useSelector((state) => state.aiSlice);
-//   const [nativeLang, setNativeLang] = useState(null);
-
-//   // Memoize to prevent unnecessary re-renders
-//   const aiScreenChatProps = useMemo(() => ({
-//     currentWord,
-//     nativeLang,
-//     key: currentWord?.id || 'no-word' // 🔑 KEY FIX: Force re-render on word change
-//   }), [currentWord, nativeLang]);
-
-//   useEffect(() => {
-//     // Load native language once
-//     const native = localStorage.getItem('native');
-//     setNativeLang(native);
-//   }, []); // Empty dependency array - run once
-
-//   return (
-//     <div className="bg-white flex flex-col sm:h-[calc(100vh-125px)]">
-//       <AIScreenChat {...aiScreenChatProps} />
-//     </div>
-//   );
-// }

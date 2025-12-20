@@ -40,22 +40,21 @@ export default function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat
   const textInputRef = useRef();
   const messagesContainerRef = useRef();
 
-  // 🔥 CRITICAL: Reset everything when word changes
   useEffect(() => {
     // Cancel any ongoing stream
     if (streamController) {
       streamController.abort();
       setStreamController(null);
     }
-    
+
     // Reset local state
     setMessage('');
     setIsStreaming(false);
     setShowScrollToBottom(false);
-    
+
     // Clear input focus
     textInputRef.current?.blur();
-    
+
     // Scroll to top for new word
     if (messagesContainerRef.current) {
       messagesContainerRef.current.scrollTop = 0;
@@ -102,13 +101,13 @@ export default function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat
     if (!message.trim() || isStreaming || !currentWord) return;
 
     const wordId = currentWord.id;
-    
+
     // Add user message with unique ID
     const userMessageId = generateUniqueId();
-    dispatch(addChatMessage(wordId, { 
-      role: 'user', 
+    dispatch(addChatMessage(wordId, {
+      role: 'user',
       content: message.trim(),
-      id: userMessageId 
+      id: userMessageId
     }));
 
     let target_language = LANGUAGES.find(lang => lang.code === currentWord.language_code)?.name;
@@ -241,21 +240,6 @@ export default function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat
     setTimeout(() => textInputRef.current?.focus(), 100);
   };
 
-  const cancelStream = () => {
-    if (streamController) {
-      streamController.abort();
-      setIsStreaming(false);
-      setStreamController(null);
-    }
-  };
-
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSubmit();
-    }
-  };
-
   // Generate quick prompts based on current word
   const quickPrompts = useMemo(() => {
     if (!currentWord) return [];
@@ -297,7 +281,7 @@ export default function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat
 
   return (
     <div className="flex flex-col sm:pb-20 md:pb-0 h-[calc(100vh-100px)] bg-gray-50">
-      
+
       {/* Header with Direct Chat button */}
       <div className="border-b border-gray-200 bg-white px-4 py-3 flex justify-between items-center">
         <div>
@@ -315,7 +299,7 @@ export default function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat
       </div>
 
       {/* Chat Messages */}
-      <div 
+      <div
         ref={messagesContainerRef}
         className="flex-1 overflow-y-auto p-4 relative"
       >
@@ -356,11 +340,10 @@ export default function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat
                 className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 <div
-                  className={`max-w-[95%] rounded-2xl px-4 py-3 ${
-                    msg.role === 'user'
+                  className={`max-w-[95%] rounded-2xl px-4 py-3 ${msg.role === 'user'
                       ? 'bg-purple-600 text-white'
                       : 'text-gray-900'
-                  } ${msg.isStreaming ? 'streaming-cursor' : ''}`}
+                    } ${msg.isStreaming ? 'streaming-cursor' : ''}`}
                 >
                   <div className="text-lg leading-relaxed font-sans"> {/* Changed from text-sm to text-lg */}
                     {msg.role === 'user' ? (
@@ -401,45 +384,16 @@ export default function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat
         <div className="max-w-3xl mx-auto">
 
           <VoiceInputComponent
-              onTranscript={(text) => console.log('Transcript:', text)}
-              onSend={handleSubmit}
-              inputMessage={message}
-              setInputMessage={setMessage}
-              isLoading={isLoading}
-              language="en-US" // Or make this dynamic based on user's learning language
-            />
-        
+            onTranscript={(text) => console.log('Transcript:', text)}
+            onSend={handleSubmit}
+            inputMessage={message}
+            setInputMessage={setMessage}
+            isLoading={isLoading}
+            language="en-US" // Or make this dynamic based on user's learning language
+          />
+
         </div>
 
-
-        {/* <div className="flex gap-2">
-          <input
-            ref={textInputRef}
-            type="text"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder={`Ask about "${currentWord?.text}"...`}
-            disabled={isStreaming}
-            className="flex-1 bg-gray-50 border border-gray-200 rounded-full px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent font-sans disabled:opacity-50 hover:border-gray-300 transition-colors"
-          />
-          <button
-            onClick={handleSubmit}
-            disabled={!message.trim() || isStreaming}
-            className={`w-12 h-12 rounded-full flex items-center justify-center transition-all ${
-              message.trim() && !isStreaming
-                ? 'bg-purple-600 hover:bg-purple-700 cursor-pointer hover:scale-105 active:scale-95'
-                : 'bg-gray-300 cursor-not-allowed'
-            }`}
-            title="Send message"
-          >
-            {isStreaming ? (
-              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-            ) : (
-              <span className="text-white text-lg">➤</span>
-            )}
-          </button>
-        </div> */}
       </div>
     </div>
   );

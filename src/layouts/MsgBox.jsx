@@ -32,7 +32,7 @@ export default function MsgBox({ message, type = 'success', visible, duration = 
         ${isVisible ? 'translate-y-12' : '-translate-y-16'}
       `}
     >
-      <span className="text-white font-bold text-lg text-center">
+      <span className="text-white  text-lg text-center">
         {message}
       </span>
     </div>
