@@ -238,20 +238,20 @@ export default function AIDirectChatComponent({ onClose }) {
     }
   };
 
-  const cancelStream = () => {
-    if (abortController) {
-      abortController.abort();
-      setIsLoading(false);
-      setAbortController(null);
-    }
-  };
+  // const cancelStream = () => {
+  //   if (abortController) {
+  //     abortController.abort();
+  //     setIsLoading(false);
+  //     setAbortController(null);
+  //   }
+  // };
 
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSendMessage();
-    }
-  };
+  // const handleKeyPress = (e) => {
+  //   if (e.key === 'Enter' && !e.shiftKey) {
+  //     e.preventDefault();
+  //     handleSendMessage();
+  //   }
+  // };
 
   useEffect(() => {
     if (clearChatVisible) {

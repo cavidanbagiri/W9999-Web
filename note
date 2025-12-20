@@ -1,19 +1,19 @@
 Problems
 
-1 - Add speach recognition for ai and direct chat and word base chat.
+1 - After entering the ai direct chat, need to check the if old context available, download it to the initial_message
 
-2 - After entering the ai direct chat, need to check the if old context available, download it to the initial_message
+2 - Change the browser api with animation vawe
 
-3 - After saying the words in ai speech component, also need to return back the saying words for checking by the user in realtime.
+3 - Change the language as native lang from en-EN to native
 
-4 - Change the language as native lang from en-EN to native
+4 - In the translate page, when l click the word ai, doesnt open the aicomponennt exactly, instaead open screen for choosing
 
-5 - In the translate page, when l click the word ai, doesnt open the aicomponennt exactly, instaead open screen for choosing
+5 - Change the design to input text section
 
-
+6 - If not speaking, the backend return back the error
 
 Today:
-    [1]
+    [4, 5]
 
 
 DeepSeek:

@@ -402,7 +402,7 @@ export default function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat
 
           <VoiceInputComponent
               onTranscript={(text) => console.log('Transcript:', text)}
-              onSend={handleKeyPress}
+              onSend={handleSubmit}
               inputMessage={message}
               setInputMessage={setMessage}
               isLoading={isLoading}
