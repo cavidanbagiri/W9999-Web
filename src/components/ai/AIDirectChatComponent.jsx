@@ -441,7 +441,7 @@ useEffect(() => {
       </div>
 
       {/* Input Area */}
-      <div className="border-t border-gray-200 bg-white p-4">
+      <div className="border-t border-gray-200  px-4 py-2 bg-white">
         <div className="max-w-3xl mx-auto">
 
           <VoiceInputComponent

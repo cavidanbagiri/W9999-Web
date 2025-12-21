@@ -117,7 +117,7 @@ export default function HeaderComponent({ username }) {
           </div>
 
           {/* Stats Section */}
-          <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex flex-row md:flex-col w-full justify-between md:w-auto md:justify-start  gap-4">
             {/* Daily Words Card */}
             <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-4 min-w-[120px] text-center border border-white/30">
               {loading ? (

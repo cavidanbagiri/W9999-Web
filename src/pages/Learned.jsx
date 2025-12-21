@@ -375,7 +375,7 @@ export default function LearnedScreen() {
 
               {/* Words List */}
               {selectedLanguage && learned_words?.length > 0 && (
-                <div className="p-4 lg:p-6">
+                <div className="p-2 lg:p-6">
                   {/* Mobile Progress Header */}
                   <div className="lg:hidden mb-6 bg-gradient-to-r from-blue-50 to-green-50 rounded-xl p-4 border border-blue-100">
                     <div className="flex items-center justify-between">

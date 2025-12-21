@@ -16,6 +16,8 @@ const VoiceInputComponent = ({
   const [volume, setVolume] = useState(0);
   const [interimTranscript, setInterimTranscript] = useState('');
   const [stopping, setStopping] = useState(false);
+  const [textareaHeight, setTextareaHeight] = useState('56px'); // Default height
+
   
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
@@ -330,6 +332,31 @@ const VoiceInputComponent = ({
     };
   }, [cleanupAll]);
 
+  // Dynamic textarea height calculation
+useEffect(() => {
+  const calculateHeight = () => {
+    // Get the combined text (input + interim)
+    const fullText = inputMessage + (isListening && !stopping ? ' ' + interimTranscript : '');
+    
+    // Calculate approximate number of lines
+    // Average 30-40 characters per line for typical textarea width
+    const charsPerLine = 35;
+    const lineCount = Math.ceil(fullText.length / charsPerLine);
+    
+    // Clamp between 1 and 8 lines
+    const clampedLines = Math.min(Math.max(lineCount, 1), 8);
+    
+    // Calculate height (56px for first line + 24px for each additional line)
+    const baseHeight = 56;
+    const lineHeight = 24;
+    const newHeight = baseHeight + (clampedLines - 1) * lineHeight;
+    
+    setTextareaHeight(`${newHeight}px`);
+  };
+  
+  calculateHeight();
+}, [inputMessage, interimTranscript, isListening, stopping]);
+
   return (
     <div className="w-full max-w-3xl mx-auto space-y-3">
       {/* Error Display */}
@@ -349,7 +376,24 @@ const VoiceInputComponent = ({
       <div className="flex flex-row items-center gap-3">
         {/* Text Area */}
         <div className="flex w-full relative">
-          <textarea
+          
+        <textarea
+  value={inputMessage + ((isListening && !stopping) ? ' ' + interimTranscript : '')}
+  onChange={(e) => setInputMessage(e.target.value)}
+  onKeyPress={handleKeyPress}
+  placeholder="Type or speak ..."
+  className="w-full border border-gray-300 rounded-2xl px-4 py-3 pr-24 resize-none outline-none bg-white disabled:bg-gray-50"
+  rows="1"
+  disabled={isLoading || isProcessing}
+  style={{ 
+    minHeight: '56px', 
+    maxHeight: '200px', // ~8 lines * 25px each
+    height: textareaHeight, // Dynamic height from state
+    overflowY: 'auto' // Show scrollbar if exceeds max height
+  }}
+/>
+
+          {/* <textarea
             value={inputMessage + ((isListening && !stopping) ? ' ' + interimTranscript : '')}
             onChange={(e) => setInputMessage(e.target.value)}
             onKeyPress={handleKeyPress}
@@ -358,7 +402,17 @@ const VoiceInputComponent = ({
             rows="1"
             disabled={isLoading || isProcessing}
             style={{ minHeight: '56px', maxHeight: '120px' }}
-          />
+          /> */}
+
+          {/* <textarea
+            value={inputMessage + ((isListening && !stopping) ? ' ' + interimTranscript : '')}
+            onChange={(e) => setInputMessage(e.target.value)}
+            onKeyPress={handleKeyPress}
+            placeholder="Type or speak ..."
+            className="w-full border border-gray-300 rounded-2xl px-4 py-3 pr-24 resize-y outline-none bg-white disabled:bg-gray-50"
+            rows={Math.min(Math.max(inputMessage.split('\n').length, 1), 8)} // Dynamic rows
+            disabled={isLoading || isProcessing}
+          /> */}
           
           {/* Voice Button */}
           <div className="absolute right-1 bottom-1">
