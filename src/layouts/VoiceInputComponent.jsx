@@ -212,7 +212,6 @@ const VoiceInputComponent = ({
       });
 
       const data = await response.json();
-      console.log('coming data is ', data)
       
       if (data.success && data.transcript) {
         const transcript = data.transcript.trim();

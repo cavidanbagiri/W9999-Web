@@ -53,10 +53,6 @@ export default function AIDirectChatComponent({ onClose }) {
     const native = localStorage.getItem('native');
     setNativeLang(native);
     setMessages(initialMessages);
-
-    console.log('native is ', native)
-    console.log('native is ', STT_LANGUAGES[native])
-
     return () => {
       if (abortController) {
         abortController.abort();
@@ -271,7 +267,6 @@ export default function AIDirectChatComponent({ onClose }) {
     }
   };
 
-  // Format message text with markdown
   const formatMessage = (text) => {
     return (
       <ReactMarkdown
@@ -293,6 +288,71 @@ export default function AIDirectChatComponent({ onClose }) {
       </ReactMarkdown>
     );
   };
+
+  const convertBackendToFrontendFormat = (backendMessages) => {
+  return backendMessages.map((msg, index) => ({
+    id: Date.now() + index, // Generate unique ID
+    text: msg.content || msg.text || '', // Use content or text
+    isUser: msg.role === 'user', // Convert role to isUser boolean
+    timestamp: new Date(msg.timestamp),
+    isStreaming: false // Add this property if not present
+  }));
+};
+
+  // Add this useEffect to fetch chat context
+useEffect(() => {
+    const fetchChatContext = async () => {
+    try {
+        setIsLoading(true);
+        const token = localStorage.getItem('token');
+        
+        const response = await fetch(`${API_URL}/words/ai_direct/fetch`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            if (response.status === 401) {
+                console.error("Unauthorized - Please login");
+                setMessages(initialMessages);
+                return;
+            }
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        
+        // If backend returns null/undefined (no context exists yet)
+        if (!data) {
+            console.log("No chat context found - using initial messages");
+            setMessages(initialMessages);
+            return;
+        }
+        
+        // If we have messages in the context
+        if (data.messages && data.messages.length > 0) {
+            // CONVERT BACKEND FORMAT TO FRONTEND FORMAT
+            const formattedMessages = convertBackendToFrontendFormat(data.messages);
+            setMessages(formattedMessages);
+        } else {
+            // Context exists but has no messages
+            console.log("Chat context exists but empty - using initial messages");
+            setMessages(initialMessages);
+        }
+    } catch (error) {
+        console.error("Failed to fetch chat context:", error);
+        // Fallback to initial messages
+        setMessages(initialMessages);
+    } finally {
+        setIsLoading(false);
+    }
+};
+
+    fetchChatContext();
+}, []); // Empty dependency array - runs once on mount
 
   return (
     <div className="fixed inset-0 z-50 bg-white flex flex-col">
@@ -390,7 +450,6 @@ export default function AIDirectChatComponent({ onClose }) {
             inputMessage={inputMessage}
             setInputMessage={setInputMessage}
             isLoading={isLoading}
-            // language={STT_LANGUAGES.get(nativeLang) || 'en-US'} // Or make this dynamic based on user's learning language
             language={STT_LANGUAGES[nativeLang] || 'en-US'} // Or make this dynamic based on user's learning language
           />
 
