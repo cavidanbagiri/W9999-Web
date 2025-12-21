@@ -1,9 +1,6 @@
-
-
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { IoSend, IoMic, IoMicOff, IoClose } from 'react-icons/io5';
 import { RiSendPlane2Fill } from "react-icons/ri";
-
 import { API_URL } from '../http/api';
 
 const VoiceInputComponent = ({ 
@@ -17,14 +14,16 @@ const VoiceInputComponent = ({
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState('');
   const [volume, setVolume] = useState(0);
-  const [interimTranscript, setInterimTranscript] = useState(''); // 🔥 LIVE PREVIEW
+  const [interimTranscript, setInterimTranscript] = useState('');
+  const [stopping, setStopping] = useState(false);
   
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
   const streamRef = useRef(null);
   const analyserRef = useRef(null);
   const animationRef = useRef(null);
-  const recognitionRef = useRef(null); // 🔥 BROWSER SPEECH API
+  const recognitionRef = useRef(null);
+  const dataArrayRef = useRef(null);
 
   // 🔥 BROWSER SPEECH API SETUP (LIVE PREVIEW)
   useEffect(() => {
@@ -52,21 +51,43 @@ const VoiceInputComponent = ({
       
       recognitionRef.current.onerror = (event) => {
         console.log('Browser speech error:', event.error);
-        // Don't show error - REST backend is fallback
       };
     }
   }, [language]);
 
-  // Check microphone permission
-  const checkMicrophonePermission = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      stream.getTracks().forEach(track => track.stop());
-      return true;
-    } catch (err) {
-      return false;
+  const cleanupAll = useCallback(() => {
+    // Stop ALL tracks with double-check (mobile fix)
+    if (streamRef.current) {
+      const tracks = streamRef.current.getTracks();
+      tracks.forEach(track => {
+        track.enabled = false;
+        track.stop();
+      });
+      streamRef.current = null;
     }
-  };
+    
+    // Cancel animation safely
+    if (animationRef.current) {
+      cancelAnimationFrame(animationRef.current);
+      animationRef.current = null;
+    }
+    
+    // Stop speech recognition (Safari mobile fix)
+    if (recognitionRef.current) {
+      try {
+        recognitionRef.current.stop();
+      } catch (e) {
+        console.log('Speech recognition already stopped');
+      }
+      recognitionRef.current = null;
+    }
+    
+    analyserRef.current = null;
+    setIsListening(false);
+    setStopping(false);
+    setVolume(0);
+    setInterimTranscript('');
+  }, []);
 
   // Start recording
   const startRecording = async () => {
@@ -92,21 +113,21 @@ const VoiceInputComponent = ({
       const source = audioContext.createMediaStreamSource(stream);
       source.connect(analyser);
       
-      const dataArray = new Uint8Array(analyser.frequencyBinCount);
+      dataArrayRef.current = new Uint8Array(analyser.frequencyBinCount);
       
       const updateVolume = () => {
-        if (!analyserRef.current) return;
+        if (!analyserRef.current || !dataArrayRef.current) return;
         
-        analyserRef.current.getByteFrequencyData(dataArray);
+        analyserRef.current.getByteFrequencyData(dataArrayRef.current);
         let sum = 0;
-        for (const value of dataArray) {
+        for (const value of dataArrayRef.current) {
           sum += value;
         }
         
-        const average = sum / dataArray.length;
+        const average = sum / dataArrayRef.current.length;
         setVolume(Math.min(average / 128, 1));
         
-        if (isListening) {
+        if (isListening && !stopping) {
           animationRef.current = requestAnimationFrame(updateVolume);
         }
       };
@@ -128,64 +149,66 @@ const VoiceInputComponent = ({
       };
       
       mediaRecorder.onstop = async () => {
-        if (audioChunksRef.current.length === 0) {
-          setError('No audio recorded');
-          return;
+        try {
+          if (audioChunksRef.current.length === 0) {
+            setError('No audio recorded');
+            return;
+          }
+          
+          const audioBlob = new Blob(audioChunksRef.current, { 
+            type: 'audio/webm;codecs=opus' 
+          });
+          
+          await sendToBackendSTT(audioBlob);
+        } finally {
+          audioChunksRef.current = [];
+          cleanupAll();
         }
-        
-        const audioBlob = new Blob(audioChunksRef.current, { 
-          type: 'audio/webm;codecs=opus' 
-        });
-        
-        await sendToBackendSTT(audioBlob);
-        audioChunksRef.current = [];
       };
       
       mediaRecorder.start(100);
       
       // 🔥 START LIVE PREVIEW
       if (recognitionRef.current) {
-        recognitionRef.current.start();
+        try {
+          recognitionRef.current.start();
+        } catch (e) {
+          console.log('Speech recognition start failed:', e);
+        }
       }
       
       setIsListening(true);
       
     } catch (err) {
-      console.error('Recording error:', err);
-      if (err.name === 'NotAllowedError') {
-        setError('Microphone permission denied. Please allow access.');
+      console.error('Recording error:', err.name, err.message);
+      
+      if (err.name === 'NotAllowedError' || err.name === 'NotFoundError') {
+        setError('Microphone access failed. Tap site settings > Microphone > Allow, then refresh.');
+      } else if (err.name === 'AbortError') {
+        setError('Microphone in use elsewhere. Close other apps/tabs.');
       } else {
-        setError('Failed to access microphone');
+        setError('Microphone unavailable. Try desktop or check permissions.');
       }
-      setIsListening(false);
+      cleanupAll();
     }
   };
 
-  // Stop recording
   const stopRecording = () => {
-    if (mediaRecorderRef.current && isListening) {
+    if (stopping || !isListening) return;
+    
+    setStopping(true);
+    
+    // Stop MediaRecorder (async)
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
       mediaRecorderRef.current.stop();
-      
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach(track => track.stop());
-      }
-      
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-      }
-      
-      // 🔥 STOP LIVE PREVIEW
-      if (recognitionRef.current) {
-        recognitionRef.current.stop();
-      }
-      
-      setIsListening(false);
-      setVolume(0);
-      setInterimTranscript(''); // Clear live preview
+      return; // Wait for onstop
     }
+    
+    // Fallback cleanup
+    cleanupAll();
   };
 
-  // Send audio to backend for STT (YOUR PERFECT REST!)
+  // Send audio to backend for STT
   const sendToBackendSTT = async (audioBlob) => {
     setIsProcessing(true);
     
@@ -223,14 +246,11 @@ const VoiceInputComponent = ({
             return prev + transcript;
           });
         }
-      } 
-      else if(data.success && data.transcript.length === 0){
+      } else if (data.success && data.transcript?.length === 0) {
         setError('No speech detected');
-      }
-      else {
+      } else {
         setError('Speech recognition failed');
       }
-      
     } catch (err) {
       console.error('STT error:', err);
       setError('Failed to process speech');
@@ -239,16 +259,40 @@ const VoiceInputComponent = ({
     }
   };
 
-  // Toggle recording
+  const checkMicrophonePermission = async () => {
+    try {
+      if (navigator.permissions) {
+        const permission = await navigator.permissions.query({ name: 'microphone' });
+        if (permission.state === 'denied') return false;
+      }
+      
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        audio: { 
+          echoCancellation: true, 
+          noiseSuppression: true, 
+          autoGainControl: true 
+        } 
+      });
+      stream.getTracks().forEach(track => track.stop());
+      return true;
+    } catch (err) {
+      return false;
+    }
+  };
+
   const toggleRecording = async () => {
-    if (isListening) {
+    if (isListening || stopping) {
       stopRecording();
     } else {
+      // Full reset before start
+      cleanupAll();
+      await new Promise(resolve => setTimeout(resolve, 200));
+      
       const hasPermission = await checkMicrophonePermission();
       if (hasPermission) {
-        await startRecording();
+        startRecording();
       } else {
-        setError('Microphone access required. Please allow microphone permission.');
+        setError('Microphone permission required');
       }
     }
   };
@@ -265,7 +309,7 @@ const VoiceInputComponent = ({
     const finalText = inputMessage + (interimTranscript ? ' ' + interimTranscript.trim() : '');
     if (finalText.trim() && onSend) {
       onSend(finalText.trim());
-      if (isListening) {
+      if (isListening || stopping) {
         stopRecording();
       }
     }
@@ -282,9 +326,9 @@ const VoiceInputComponent = ({
   // Cleanup
   useEffect(() => {
     return () => {
-      stopRecording();
+      cleanupAll();
     };
-  }, []);
+  }, [cleanupAll]);
 
   return (
     <div className="w-full max-w-3xl mx-auto space-y-3">
@@ -306,7 +350,7 @@ const VoiceInputComponent = ({
         {/* Text Area */}
         <div className="flex w-full relative">
           <textarea
-            value={inputMessage + (isListening ? ' ' + interimTranscript : '')} // 🔥 SHOW LIVE!
+            value={inputMessage + ((isListening && !stopping) ? ' ' + interimTranscript : '')}
             onChange={(e) => setInputMessage(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder="Type or speak ..."
@@ -320,20 +364,22 @@ const VoiceInputComponent = ({
           <div className="absolute right-1 bottom-1">
             <button
               onClick={toggleRecording}
-              disabled={isLoading || isProcessing}
+              disabled={isLoading || isProcessing || stopping}
               className={`p-3 px-1 rounded-full transition-all cursor-pointer ${
-                isListening
+                isListening && !stopping
                   ? 'bg-red-500 hover:bg-red-600 animate-pulse'
                   : ''
-              } ${(isLoading || isProcessing) ? 'opacity-50 cursor-not-allowed' : ''}`}
-              title={isListening ? 'Stop recording' : 'Start recording'}
+              } ${(isLoading || isProcessing || stopping) ? 'opacity-50 cursor-not-allowed' : ''}`}
+              title={stopping ? 'Stopping...' : (isListening ? 'Stop recording' : 'Start recording')}
             >
-              {isListening ? (
+              {stopping ? (
+                <div className="w-6 h-6 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
+              ) : isListening ? (
                 <div className="relative">
-                  <IoMicOff className="w-6 h-6 text-black" />
+                  <IoMicOff className="w-6 h-6 text-white" />
                   {volume > 0.1 && (
                     <div 
-                      className="absolute inset-0 bg-red-500 rounded-full opacity-30"
+                      className="absolute inset-0 bg-red-400 rounded-full opacity-30"
                       style={{
                         transform: `scale(${1 + volume})`,
                         transition: 'transform 0.1s'
@@ -352,32 +398,26 @@ const VoiceInputComponent = ({
         <button
           onClick={handleSend}
           disabled={!inputMessage.trim() || isLoading || isProcessing}
-          className="text-black rounded-2xl cursor-pointer  disabled:text-gray-400 disabled:cursor-not-allowed transition-colors flex items-center justify-center min-w-[30px] h-[56px]"
+          className="text-black rounded-2xl cursor-pointer disabled:text-gray-400 disabled:cursor-not-allowed transition-colors flex items-center justify-center min-w-[30px] h-[56px]"
         >
           {isLoading || isProcessing ? (
             <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
           ) : (
-            <RiSendPlane2Fill className="w-6 h-6 " />
+            <RiSendPlane2Fill className="w-6 h-6" />
           )}
         </button>
       </div>
 
       {/* Status Indicator */}
-      {isListening && (
-        <div className="flex items-center gap-2 p-3 bg-blue-50 border border-blue-200 rounded-xl">
-          <div className="flex items-center gap-2 flex-1">
-            <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
-            <span className="text-sm font-medium text-blue-800">
-              Listening... Speak now {interimTranscript && `(Live: ${interimTranscript})`}
-            </span>
-            <div className="flex-1 h-2 bg-blue-100 rounded-full overflow-hidden">
-              <div 
-                className="h-full bg-blue-500 transition-all"
-                style={{ width: `${volume * 100}%` }}
-              />
-            </div>
-          </div>
-          <span className="text-xs text-gray-500">
+      {(isListening || stopping) && (
+        <div className={`flex items-center gap-2 p-3 border rounded-xl ${
+          stopping ? 'bg-yellow-50 border-yellow-200' : 'bg-blue-50 border-blue-200'
+        }`}>
+          <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+          <span className={`text-sm font-medium ${stopping ? 'text-yellow-800' : 'text-blue-800'}`}>
+            {stopping ? 'Stopping...' : `Listening... Speak now ${interimTranscript && `(Live: ${interimTranscript})`}`}
+          </span>
+          <span className="text-xs text-gray-500 ml-auto">
             {language.toUpperCase()}
           </span>
         </div>
@@ -396,6 +436,3 @@ const VoiceInputComponent = ({
 };
 
 export default VoiceInputComponent;
-
-
-
