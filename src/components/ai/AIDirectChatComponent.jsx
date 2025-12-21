@@ -9,6 +9,15 @@ import MsgBox from '../../layouts/MsgBox';
 import VoiceInputComponent from '../../layouts/VoiceInputComponent'
 
 export default function AIDirectChatComponent({ onClose }) {
+
+  const STT_LANGUAGES = {
+    'English': 'en-US',
+    'Spanish': 'es-ES',
+    'Russian': 'ru-RU',
+    'Turkish': 'tr-TR',
+  }
+
+
   const dispatch = useDispatch();
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState('');
@@ -44,6 +53,9 @@ export default function AIDirectChatComponent({ onClose }) {
     const native = localStorage.getItem('native');
     setNativeLang(native);
     setMessages(initialMessages);
+
+    console.log('native is ', native)
+    console.log('native is ', STT_LANGUAGES[native])
 
     return () => {
       if (abortController) {
@@ -378,7 +390,8 @@ export default function AIDirectChatComponent({ onClose }) {
             inputMessage={inputMessage}
             setInputMessage={setInputMessage}
             isLoading={isLoading}
-            language="en-US" // Or make this dynamic based on user's learning language
+            // language={STT_LANGUAGES.get(nativeLang) || 'en-US'} // Or make this dynamic based on user's learning language
+            language={STT_LANGUAGES[nativeLang] || 'en-US'} // Or make this dynamic based on user's learning language
           />
 
         </div>

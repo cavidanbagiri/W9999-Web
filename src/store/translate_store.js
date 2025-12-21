@@ -49,7 +49,6 @@ export const translateSlice = createSlice({
         builder.addCase(TranslateService.translateText.fulfilled, (state, action) => {
             state.loading = false;
             state.translatedText = action.payload;
-            console.log('coming translated text is ', action.payload);
         }); 
         builder.addCase(TranslateService.translateText.rejected, (state, action) => {
             state.loading = false;

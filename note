@@ -4,30 +4,10 @@ Problems
 
 2 - Change the browser api with animation vawe
 
-3 - Change the language as native lang from en-EN to native
-
-4 - If not speaking, the backend return back the error
 
 
 Today:
-    [4]
+    [3, 1]
 
 
 DeepSeek:
-
-# AIScreen.jsx, route is '/ai-chat'
-export default function AIScreen({ route, come_from }) {...}
-
-Translate.jsx
-
-const handleAIChat = (text, languageCode) => {
-    if (languageCode) {
-      const payload = {
-        text: text,
-        language_code: languageCode,
-        native: nativeLang,
-      };
-      dispatch(setCurrentWord(payload));
-      navigate('/ai-chat', { state: { initialQuery: text } });
-    }
-  };

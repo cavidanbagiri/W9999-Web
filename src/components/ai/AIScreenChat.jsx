@@ -20,6 +20,16 @@ const generateUniqueId = () => {
 };
 
 export default function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat }) {
+
+  
+  const STT_LANGUAGES = {
+    'English': 'en-US',
+    'Spanish': 'es-ES',
+    'Russian': 'ru-RU',
+    'Turkish': 'tr-TR',
+  }
+
+
   const dispatch = useDispatch();
   const [message, setMessage] = useState('');
   const [isStreaming, setIsStreaming] = useState(false);
@@ -389,7 +399,8 @@ export default function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat
             inputMessage={message}
             setInputMessage={setMessage}
             isLoading={isLoading}
-            language="en-US" // Or make this dynamic based on user's learning language
+            // language="en-US" // Or make this dynamic based on user's learning language
+            language={STT_LANGUAGES[nativeLang] || 'en-US'}
           />
 
         </div>
