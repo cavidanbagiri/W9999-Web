@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { clearDetail, setDetail } from '../store/word_store';
+import { clearDetail, setDetail, updateWordStatus } from '../store/word_store';
 import WordService from '../services/WordService';
 import { setCurrentWord } from '../store/ai_store';
 import VoiceButtonComponent from '../layouts/VoiceButtonComponent';
@@ -35,16 +35,48 @@ export default function CardDetailScreen() {
     };
   }, [word?.id, dispatch]);
 
-  const toggleStatus = (actionKey) => {
+  const toggleStatus = async (actionKey) => {
     const actionType = actionKey === 'is_starred' ? 'star' : 'learned';
     const value = !detail[actionKey];
     dispatch(setDetail({ actionType, value }));
-    dispatch(
-      WordService.setStatus({
-        word_id: detail?.id,
-        action: actionType,
-      })
-    );
+
+    try{
+      const res = await dispatch(
+          WordService.setStatus({
+          word_id: detail?.id,
+          action: actionType,
+        })
+      ).unwrap();
+
+      if (actionType === 'star') {
+              dispatch(updateWordStatus({
+                wordId: word.id,
+                updates: { is_starred: res.is_starred }
+              }));
+            } else if (actionType === 'learned') {
+              dispatch(updateWordStatus({
+                wordId: word.id,
+                updates: { is_learned: res.is_learned }
+      }));
+      }
+    }
+    catch (error) {
+      console.error('Failed to update status:', error);
+    }
+
+
+
+
+
+
+
+    // dispatch(
+    //   WordService.setStatus({
+    //     word_id: detail?.id,
+    //     action: actionType,
+    //   })
+    // );
+
   };
 
   if (loading || !detail || !Array.isArray(detail.meanings)) {
