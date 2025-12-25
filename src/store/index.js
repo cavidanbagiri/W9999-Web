@@ -6,6 +6,7 @@ import aiSlice from './ai_store.js'
 import translateSlice from './translate_store.js'
 import favoritesSlice from './favorites_store.js'
 import categoryWordsSlice from './category_words_store.js'
+import notesSlice from './note_store.js'
 
 const store = configureStore({
   reducer: {
@@ -15,6 +16,7 @@ const store = configureStore({
     translateSlice: translateSlice,
     favoritesSlice: favoritesSlice,
     categoryWordsSlice: categoryWordsSlice,
+    notesSlice: notesSlice,
   },
 })
 

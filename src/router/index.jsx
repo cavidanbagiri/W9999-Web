@@ -19,6 +19,10 @@ import SearchScreen from "../pages/SearchScreen";
 import Privacy from "../pages/Privacy";
 import ForgotPasswordScreen from "../pages/ForgetPasswordScreen";
 import ResetPasswordConfirmScreen from "../pages/ResetPasswordConfirmScreen";
+import NotesScreen from "../pages/Notes";
+import EditNoteComponent from "../components/notes/EditNoteComponent";
+import CreateNoteComponent from "../components/notes/CreateNoteComponent";
+import NoteDetailScreen from "../components/notes/NoteDetailScreen";
 
 
 const router = createBrowserRouter([
@@ -73,6 +77,22 @@ const router = createBrowserRouter([
             {
                 path: "/profile",
                 element: <Profile/>
+            },
+            {
+                path: "/notes",
+                element: <NotesScreen/>
+            },
+            {
+                path: "/notes/create",
+                element: <CreateNoteComponent/>
+            },
+            {
+                path: "/notes/edit/:id",
+                element: <EditNoteComponent/>
+            },
+            {
+                path: "/notes/detail/:id",
+                element: <NoteDetailScreen/>
             },
             {
                 path: "/privacy",

@@ -113,13 +113,14 @@ function Navbar() {
             </div>
 
             {/* User Status Badge */}
-            <div className={`px-4 py-2 rounded-full text-sm font-medium font-sans ${
+            <div></div>
+            {/* <div className={`px-4 py-2 rounded-full text-sm font-medium font-sans ${
               is_auth 
                 ? 'bg-green-100 text-green-700' 
                 : 'bg-blue-100 text-blue-700'
             }`}>
               {is_auth ? '🎯 Learning' : '👋 Welcome!'}
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

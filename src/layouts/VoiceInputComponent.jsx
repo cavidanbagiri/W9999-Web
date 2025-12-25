@@ -3,9 +3,9 @@ import { IoSend, IoMic, IoMicOff, IoClose } from 'react-icons/io5';
 import { RiSendPlane2Fill } from "react-icons/ri";
 import { API_URL } from '../http/api';
 
-const VoiceInputComponent = ({ 
-  onSend, 
-  inputMessage, 
+const VoiceInputComponent = ({
+  onSend,
+  inputMessage,
   setInputMessage,
   isLoading,
   language = 'en-US'
@@ -18,7 +18,7 @@ const VoiceInputComponent = ({
   const [stopping, setStopping] = useState(false);
   const [textareaHeight, setTextareaHeight] = useState('56px'); // Default height
 
-  
+
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
   const streamRef = useRef(null);
@@ -35,11 +35,11 @@ const VoiceInputComponent = ({
       recognitionRef.current.continuous = true;
       recognitionRef.current.interimResults = true;
       recognitionRef.current.lang = language;
-      
+
       recognitionRef.current.onresult = (event) => {
         let interim = '';
         let final = '';
-        
+
         for (let i = event.resultIndex; i < event.results.length; i++) {
           const transcript = event.results[i][0].transcript;
           if (event.results[i].isFinal) {
@@ -50,7 +50,7 @@ const VoiceInputComponent = ({
         }
         setInterimTranscript(interim);
       };
-      
+
       recognitionRef.current.onerror = (event) => {
         console.log('Browser speech error:', event.error);
       };
@@ -67,13 +67,13 @@ const VoiceInputComponent = ({
       });
       streamRef.current = null;
     }
-    
+
     // Cancel animation safely
     if (animationRef.current) {
       cancelAnimationFrame(animationRef.current);
       animationRef.current = null;
     }
-    
+
     // Stop speech recognition (Safari mobile fix)
     if (recognitionRef.current) {
       try {
@@ -83,7 +83,7 @@ const VoiceInputComponent = ({
       }
       recognitionRef.current = null;
     }
-    
+
     analyserRef.current = null;
     setIsListening(false);
     setStopping(false);
@@ -95,81 +95,81 @@ const VoiceInputComponent = ({
   const startRecording = async () => {
     try {
       setError('');
-      
-      const stream = await navigator.mediaDevices.getUserMedia({ 
+
+      const stream = await navigator.mediaDevices.getUserMedia({
         audio: {
           echoCancellation: true,
           noiseSuppression: true,
           autoGainControl: true
         }
       });
-      
+
       streamRef.current = stream;
-      
+
       // Setup volume visualization
       const audioContext = new (window.AudioContext || window.webkitAudioContext)();
       const analyser = audioContext.createAnalyser();
       analyserRef.current = analyser;
       analyser.fftSize = 256;
-      
+
       const source = audioContext.createMediaStreamSource(stream);
       source.connect(analyser);
-      
+
       dataArrayRef.current = new Uint8Array(analyser.frequencyBinCount);
-      
+
       const updateVolume = () => {
         if (!analyserRef.current || !dataArrayRef.current) return;
-        
+
         analyserRef.current.getByteFrequencyData(dataArrayRef.current);
         let sum = 0;
         for (const value of dataArrayRef.current) {
           sum += value;
         }
-        
+
         const average = sum / dataArrayRef.current.length;
         setVolume(Math.min(average / 128, 1));
-        
+
         if (isListening && !stopping) {
           animationRef.current = requestAnimationFrame(updateVolume);
         }
       };
-      
+
       animationRef.current = requestAnimationFrame(updateVolume);
-      
+
       // Setup media recorder
       const mediaRecorder = new MediaRecorder(stream, {
         mimeType: 'audio/webm;codecs=opus'
       });
-      
+
       mediaRecorderRef.current = mediaRecorder;
       audioChunksRef.current = [];
-      
+
       mediaRecorder.ondataavailable = (event) => {
         if (event.data.size > 0) {
           audioChunksRef.current.push(event.data);
         }
       };
-      
+
       mediaRecorder.onstop = async () => {
         try {
           if (audioChunksRef.current.length === 0) {
             setError('No audio recorded');
             return;
           }
-          
-          const audioBlob = new Blob(audioChunksRef.current, { 
-            type: 'audio/webm;codecs=opus' 
+
+          const audioBlob = new Blob(audioChunksRef.current, {
+            type: 'audio/webm;codecs=opus'
           });
-          
+
           await sendToBackendSTT(audioBlob);
         } finally {
           audioChunksRef.current = [];
           cleanupAll();
         }
       };
-      
+
       mediaRecorder.start(100);
-      
+
       // 🔥 START LIVE PREVIEW
       if (recognitionRef.current) {
         try {
@@ -178,12 +178,12 @@ const VoiceInputComponent = ({
           console.log('Speech recognition start failed:', e);
         }
       }
-      
+
       setIsListening(true);
-      
+
     } catch (err) {
       console.error('Recording error:', err.name, err.message);
-      
+
       if (err.name === 'NotAllowedError' || err.name === 'NotFoundError') {
         setError('Microphone access failed. Tap site settings > Microphone > Allow, then refresh.');
       } else if (err.name === 'AbortError') {
@@ -197,15 +197,15 @@ const VoiceInputComponent = ({
 
   const stopRecording = () => {
     if (stopping || !isListening) return;
-    
+
     setStopping(true);
-    
+
     // Stop MediaRecorder (async)
     if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
       mediaRecorderRef.current.stop();
       return; // Wait for onstop
     }
-    
+
     // Fallback cleanup
     cleanupAll();
   };
@@ -213,7 +213,7 @@ const VoiceInputComponent = ({
   // Send audio to backend for STT
   const sendToBackendSTT = async (audioBlob) => {
     setIsProcessing(true);
-    
+
     try {
       const reader = new FileReader();
       const base64Audio = await new Promise((resolve, reject) => {
@@ -237,7 +237,7 @@ const VoiceInputComponent = ({
       });
 
       const data = await response.json();
-      
+
       if (data.success && data.transcript) {
         const transcript = data.transcript.trim();
         if (transcript) {
@@ -267,13 +267,13 @@ const VoiceInputComponent = ({
         const permission = await navigator.permissions.query({ name: 'microphone' });
         if (permission.state === 'denied') return false;
       }
-      
-      const stream = await navigator.mediaDevices.getUserMedia({ 
-        audio: { 
-          echoCancellation: true, 
-          noiseSuppression: true, 
-          autoGainControl: true 
-        } 
+
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true
+        }
       });
       stream.getTracks().forEach(track => track.stop());
       return true;
@@ -289,7 +289,7 @@ const VoiceInputComponent = ({
       // Full reset before start
       cleanupAll();
       await new Promise(resolve => setTimeout(resolve, 200));
-      
+
       const hasPermission = await checkMicrophonePermission();
       if (hasPermission) {
         startRecording();
@@ -333,29 +333,29 @@ const VoiceInputComponent = ({
   }, [cleanupAll]);
 
   // Dynamic textarea height calculation
-useEffect(() => {
-  const calculateHeight = () => {
-    // Get the combined text (input + interim)
-    const fullText = inputMessage + (isListening && !stopping ? ' ' + interimTranscript : '');
-    
-    // Calculate approximate number of lines
-    // Average 30-40 characters per line for typical textarea width
-    const charsPerLine = 35;
-    const lineCount = Math.ceil(fullText.length / charsPerLine);
-    
-    // Clamp between 1 and 8 lines
-    const clampedLines = Math.min(Math.max(lineCount, 1), 8);
-    
-    // Calculate height (56px for first line + 24px for each additional line)
-    const baseHeight = 56;
-    const lineHeight = 24;
-    const newHeight = baseHeight + (clampedLines - 1) * lineHeight;
-    
-    setTextareaHeight(`${newHeight}px`);
-  };
-  
-  calculateHeight();
-}, [inputMessage, interimTranscript, isListening, stopping]);
+  useEffect(() => {
+    const calculateHeight = () => {
+      // Get the combined text (input + interim)
+      const fullText = inputMessage + (isListening && !stopping ? ' ' + interimTranscript : '');
+
+      // Calculate approximate number of lines
+      // Average 30-40 characters per line for typical textarea width
+      const charsPerLine = 35;
+      const lineCount = Math.ceil(fullText.length / charsPerLine);
+
+      // Clamp between 1 and 8 lines
+      const clampedLines = Math.min(Math.max(lineCount, 1), 8);
+
+      // Calculate height (56px for first line + 24px for each additional line)
+      const baseHeight = 56;
+      const lineHeight = 24;
+      const newHeight = baseHeight + (clampedLines - 1) * lineHeight;
+
+      setTextareaHeight(`${newHeight}px`);
+    };
+
+    calculateHeight();
+  }, [inputMessage, interimTranscript, isListening, stopping]);
 
   return (
     <div className="w-full max-w-3xl mx-auto space-y-3">
@@ -376,24 +376,8 @@ useEffect(() => {
       <div className="flex flex-row items-center gap-3">
         {/* Text Area */}
         <div className="flex w-full relative">
-          
-        <textarea
-  value={inputMessage + ((isListening && !stopping) ? ' ' + interimTranscript : '')}
-  onChange={(e) => setInputMessage(e.target.value)}
-  onKeyPress={handleKeyPress}
-  placeholder="Type or speak ..."
-  className="w-full border border-gray-300 rounded-2xl px-4 py-3 pr-24 resize-none outline-none bg-white disabled:bg-gray-50"
-  rows="1"
-  disabled={isLoading || isProcessing}
-  style={{ 
-    minHeight: '56px', 
-    maxHeight: '200px', // ~8 lines * 25px each
-    height: textareaHeight, // Dynamic height from state
-    overflowY: 'auto' // Show scrollbar if exceeds max height
-  }}
-/>
 
-          {/* <textarea
+          <textarea
             value={inputMessage + ((isListening && !stopping) ? ' ' + interimTranscript : '')}
             onChange={(e) => setInputMessage(e.target.value)}
             onKeyPress={handleKeyPress}
@@ -401,29 +385,23 @@ useEffect(() => {
             className="w-full border border-gray-300 rounded-2xl px-4 py-3 pr-24 resize-none outline-none bg-white disabled:bg-gray-50"
             rows="1"
             disabled={isLoading || isProcessing}
-            style={{ minHeight: '56px', maxHeight: '120px' }}
-          /> */}
+            style={{
+              minHeight: '56px',
+              maxHeight: '200px', // ~8 lines * 25px each
+              height: textareaHeight, // Dynamic height from state
+              overflowY: 'auto' // Show scrollbar if exceeds max height
+            }}
+          />
 
-          {/* <textarea
-            value={inputMessage + ((isListening && !stopping) ? ' ' + interimTranscript : '')}
-            onChange={(e) => setInputMessage(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder="Type or speak ..."
-            className="w-full border border-gray-300 rounded-2xl px-4 py-3 pr-24 resize-y outline-none bg-white disabled:bg-gray-50"
-            rows={Math.min(Math.max(inputMessage.split('\n').length, 1), 8)} // Dynamic rows
-            disabled={isLoading || isProcessing}
-          /> */}
-          
           {/* Voice Button */}
           <div className="absolute right-1 bottom-1">
             <button
               onClick={toggleRecording}
               disabled={isLoading || isProcessing || stopping}
-              className={`p-3 px-1 rounded-full transition-all cursor-pointer ${
-                isListening && !stopping
+              className={`p-3 px-1 rounded-full transition-all cursor-pointer ${isListening && !stopping
                   ? 'bg-red-500 hover:bg-red-600 animate-pulse'
                   : ''
-              } ${(isLoading || isProcessing || stopping) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                } ${(isLoading || isProcessing || stopping) ? 'opacity-50 cursor-not-allowed' : ''}`}
               title={stopping ? 'Stopping...' : (isListening ? 'Stop recording' : 'Start recording')}
             >
               {stopping ? (
@@ -432,7 +410,7 @@ useEffect(() => {
                 <div className="relative">
                   <IoMicOff className="w-6 h-6 text-white" />
                   {volume > 0.1 && (
-                    <div 
+                    <div
                       className="absolute inset-0 bg-red-400 rounded-full opacity-30"
                       style={{
                         transform: `scale(${1 + volume})`,
@@ -464,9 +442,8 @@ useEffect(() => {
 
       {/* Status Indicator */}
       {(isListening || stopping) && (
-        <div className={`flex items-center gap-2 p-3 border rounded-xl ${
-          stopping ? 'bg-yellow-50 border-yellow-200' : 'bg-blue-50 border-blue-200'
-        }`}>
+        <div className={`flex items-center gap-2 p-3 border rounded-xl ${stopping ? 'bg-yellow-50 border-yellow-200' : 'bg-blue-50 border-blue-200'
+          }`}>
           <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
           <span className={`text-sm font-medium ${stopping ? 'text-yellow-800' : 'text-blue-800'}`}>
             {stopping ? 'Stopping...' : `Listening... Speak now ${interimTranscript && `(Live: ${interimTranscript})`}`}
