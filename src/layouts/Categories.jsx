@@ -15,6 +15,16 @@ import {
   FaChartLine, FaCheckCircle, FaLock, FaCrown
 } from 'react-icons/fa';
 import { GiClothes } from "react-icons/gi";
+import { IoBodySharp } from "react-icons/io5";
+import { FaRegCalendarDays } from "react-icons/fa6";
+import { MdFamilyRestroom } from "react-icons/md";
+import { TiWeatherPartlySunny } from "react-icons/ti";
+import { IoCalendarNumber } from "react-icons/io5";
+import { FaRegHandshake } from "react-icons/fa";
+
+
+
+
 
 const Categories = ({ isVisible, onClose, screen }) => {
     const dispatch = useDispatch();
@@ -30,12 +40,6 @@ const Categories = ({ isVisible, onClose, screen }) => {
         const isInProgress = progress > 0 && progress < 100;
         
         const styleMap = {
-            'Numbers': { 
-                icon: <FaHashtag />, 
-                gradient: 'from-purple-500 to-indigo-600',
-                bgGradient: 'from-purple-50 to-indigo-50',
-                textColor: 'text-purple-700'
-            },
             'Цифры': { 
                 icon: <FaHashtag />, 
                 gradient: 'from-purple-500 to-indigo-600',
@@ -152,6 +156,42 @@ const Categories = ({ isVisible, onClose, screen }) => {
             },
             'Science': { 
                 icon: <FaFlask />, 
+                gradient: 'from-emerald-500 to-teal-600',
+                bgGradient: 'from-emerald-50 to-teal-50',
+                textColor: 'text-emerald-700'
+            },
+            'Days of the Week': { 
+                icon: <FaRegCalendarDays />, 
+                gradient: 'from-emerald-500 to-teal-600',
+                bgGradient: 'from-emerald-50 to-teal-50',
+                textColor: 'text-emerald-700'
+            },
+            'Family Members': { 
+                icon: <MdFamilyRestroom />, 
+                gradient: 'from-emerald-500 to-teal-600',
+                bgGradient: 'from-emerald-50 to-teal-50',
+                textColor: 'text-emerald-700'
+            },
+            'Weather': { 
+                icon: <TiWeatherPartlySunny  />, 
+                gradient: 'from-emerald-500 to-teal-600',
+                bgGradient: 'from-emerald-50 to-teal-50',
+                textColor: 'text-emerald-700'
+            },
+            'Numbers': { 
+                icon: <IoCalendarNumber   />, 
+                gradient: 'from-emerald-500 to-teal-600',
+                bgGradient: 'from-emerald-50 to-teal-50',
+                textColor: 'text-emerald-700'
+            },
+            'Greetings & Polite Phrases': { 
+                icon: <FaRegHandshake   />, 
+                gradient: 'from-emerald-500 to-teal-600',
+                bgGradient: 'from-emerald-50 to-teal-50',
+                textColor: 'text-emerald-700'
+            },
+            'Body Parts': { 
+                icon: <IoBodySharp />, 
                 gradient: 'from-emerald-500 to-teal-600',
                 bgGradient: 'from-emerald-50 to-teal-50',
                 textColor: 'text-emerald-700'

@@ -39,8 +39,10 @@ export default function LanguagesStatisticsComponents() {
   };
 
   const handleLanguageSelect = (languageCode) => {
-    navigate('/words');
+    localStorage.setItem('selected_language', languageCode);
+    localStorage.setItem('language_changed_manually', 'true'); // Add this flag
     dispatch(setSelectedLanguage(languageCode));
+    navigate('/words');
   };
 
   if (!statistics || statistics.length === 0) {

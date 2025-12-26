@@ -4,6 +4,7 @@ import { RouterProvider } from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux';
 import LanguageModalComponent from './components/home/LanguageModalComponent.jsx';
 import AuthService from './services/AuthService.js';
+import {setSelectedLanguage} from './store/word_store';
 import './App.css'
 import router from "./router";
 
@@ -57,8 +58,7 @@ function App() {
     checkNativeLanguage();
   }, [is_auth, dispatch]);
 
-
-    useEffect(() => {
+  useEffect(() => {
       const setNativeToBackend = async () => {
         if (is_auth && nativeLang) {
           setIsSettingNativeLang(true);
@@ -86,7 +86,19 @@ function App() {
     setNativeToBackend();
   }, [nativeLang, is_auth, dispatch]);
 
-
+  useEffect(() => {
+    const getSelectedLanguage = async () => {
+      let selectedLanguage = localStorage.getItem('selected_language');
+      if (is_auth === false) {
+        setSelectedLanguage('');
+        selectedLanguage = '';
+      }
+      if (selectedLanguage && is_auth) {
+        dispatch(setSelectedLanguage(selectedLanguage || ''));
+      }
+    };
+    getSelectedLanguage();
+  }, [is_auth]);
 
 
   // Show loading states

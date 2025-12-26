@@ -136,7 +136,7 @@ const FilterComponent = ({ filter, setFilter, screen }) => {
         {/* Filter Toggle: Starred vs All */}
         
           
-           {available_lang_toggle && (
+           {/* {available_lang_toggle && (
           <div className="flex items-center mr-1  w-full">
             <span style={{fontFamily: 'Sour Gummy'}}
              className="hidden md:inline text-md font-medium text-gray-700 mr-1">
@@ -144,7 +144,7 @@ const FilterComponent = ({ filter, setFilter, screen }) => {
             </span>
             <LanguageSelected screen={'WordScreen'} />
           </div>
-          )}
+          )} */}
             
           
         {/* If Screen is Learned flex will be around */}

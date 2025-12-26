@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSelectedLanguage, setLoadingMore } from '../store/word_store.js';
 import WordService from '../services/WordService.js';
@@ -24,6 +25,12 @@ export default function WordScreen() {
         words_pending,
         pagination
     } = useSelector((state) => state.wordSlice);
+
+
+
+    const location = useLocation();
+    const prevLocationRef = useRef(location.pathname);
+    const prevSelectedLangRef = useRef(null);
 
     const [filter, setFilter] = useState('all');
     const [showScrollToBottom, setShowScrollToBottom] = useState(false);
@@ -61,6 +68,7 @@ export default function WordScreen() {
     // Fetch words function with pagination - FIXED
     const fetchWords = useCallback(async (reset = true) => {
         // console.log('the function working')
+
         if (isFetching || !is_auth || !selectedLanguage) return;
 
         setIsFetching(true);
@@ -134,11 +142,12 @@ export default function WordScreen() {
     }, [statistics, dispatch, selectedLanguage]);
 
 
-   const isFetchingRef = useRef(false);
+    //    const isFetchingRef = useRef(false);
 
 
-    
+
     useEffect(() => {
+
         if (!is_auth || !selectedLanguage) return;
 
         const shouldFetch = (() => {
@@ -148,7 +157,7 @@ export default function WordScreen() {
                 hasFetchedInitial.current = true;
                 return true;
             }
-            
+
             // Case 2: Filter actually changed (not just initial render)
             if (prevFilter.current !== filter && hasFetchedInitial.current) {
                 // console.log('🟡 Filter changed from', prevFilter.current, 'to', filter);
@@ -162,21 +171,52 @@ export default function WordScreen() {
                 return true;
             }
 
-            
+            // Case 3: Selected language when changed
+
+
             return false;
         })();
-        
+
         prevFilter.current = filter;
 
         if (shouldFetch) {
             fetchWords(true);
         }
-        
+
         // Update previous filter
         prevFilter.current = filter;
     }, [filter, is_auth, selectedLanguage, unlearned_words.length]);
 
-    
+
+
+
+
+
+
+    useEffect(() => {
+        if (!is_auth || !selectedLanguage) return;
+
+        // Check if language was changed manually
+        const languageChangedManually = localStorage.getItem('language_changed_manually') === 'true';
+
+        if (languageChangedManually) {
+            console.log('🌍 Language changed manually, fetching new words');
+            fetchWords(true);
+            localStorage.removeItem('language_changed_manually'); // Clear the flag
+        }
+        // Only do initial fetch if no words loaded
+        else if (unlearned_words.length === 0) {
+            console.log('🟢 Initial fetch');
+            fetchWords(true);
+        }
+        else {
+            console.log('🔵 Preserving loaded words');
+        }
+    }, [selectedLanguage, is_auth]);
+
+
+
+
 
     const PaginationControls = () => (
         <div className="flex flex-col items-center justify-center mt-8 space-y-4 px-4">
