@@ -17,7 +17,7 @@ const AVAILABLE_LANGUAGES = [
     { name: 'Spanish', image: Spanish, code: 'es' },
     { name: 'Russian', image: Russian, code: 'ru' },
     { name: 'English', image: English, code: 'en' },
-    // { name: 'Turkish', image: Turkish, code: 'tr' },
+    { name: 'Turkish', image: Turkish, code: 'tr' },
 ];
 
 export default function SearchScreen() {
