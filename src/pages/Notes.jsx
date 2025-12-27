@@ -266,15 +266,15 @@ function NotesScreen() {
           </div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
           {notes.map((note, index) => {
             const noteColors = [
-              'bg-yellow-50 border-l-6 border-yellow-500',
-              'bg-blue-50 border-l-6 border-blue-500',
-              'bg-purple-50 border-l-6 border-purple-500',
-              'bg-green-50 border-l-6 border-green-500',
-              'bg-pink-50 border-l-6 border-pink-500',
-              'bg-gray-50 border-l-6 border-gray-500',
+              'bg-yellow-200 border-l-6 border-yellow-500',
+              'bg-blue-200 border-l-6 border-blue-500',
+              'bg-purple-200 border-l-6 border-purple-500',
+              'bg-green-200 border-l-6 border-green-500',
+              'bg-pink-200 border-l-6 border-pink-500',
+              'bg-gray-200 border-l-6 border-gray-500',
             ];
             
             const colorClass = noteColors[index % noteColors.length];
@@ -283,7 +283,7 @@ function NotesScreen() {
               <div 
                 key={note.id} 
                 onClick={() => handleViewNote(note.id)}
-                className={`${colorClass} p-4 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-200 min-h-[200px] flex flex-col`}
+                className={`${colorClass} p-4 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-200 min-h-[150px] flex flex-col`}
               >
                 {/* Note Header */}
                 <div className="mb-3">
@@ -306,7 +306,7 @@ function NotesScreen() {
 
                 {/* Note Content Preview */}
                 <div className="flex-grow mb-3">
-                  <p className="text-gray-600 text-sm line-clamp-4 leading-relaxed">
+                  <p className="text-gray-600 text-sm line-clamp-2 leading-relaxed">
                     {note.content.substring(0, 200)}
                     {note.content.length > 200 ? '...' : ''}
                   </p>
