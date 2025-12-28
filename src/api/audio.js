@@ -1,7 +1,6 @@
 import $api from "../http/api";
 
 export const generateSpeech = async (data) => {
-  console.log('data is ', data);
   if (!data.text) {
     return null;
   }

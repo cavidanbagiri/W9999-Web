@@ -207,9 +207,9 @@ export default function WordScreen() {
         else if (unlearned_words.length === 0) {
             fetchWords(true);
         }
-        else {
-            console.log('🔵 Preserving loaded words');
-        }
+        // else {
+        //     console.log('🔵 Preserving loaded words');
+        // }
     }, [selectedLanguage, is_auth]);
 
 

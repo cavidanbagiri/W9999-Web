@@ -2,12 +2,16 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { FaStar, FaRegStar, FaChartLine, FaCheck, FaCheckCircle } from 'react-icons/fa';
 import { IoVolumeMedium } from 'react-icons/io5';
 import WordService from '../../services/WordService';
 import VoiceButtonComponent from '../../layouts/VoiceButtonComponent';
 import { setCurrentWord } from '../../store/ai_store';
 import {updateWordStatus} from '../../store/word_store';
+
+import { FaStar, FaRegStar, FaChartLine, FaCheck, FaCheckCircle } from 'react-icons/fa';
+import { FaRegNoteSticky } from "react-icons/fa6";
+import { IoSparklesOutline } from "react-icons/io5";
+
 
 export default function VocabCard({ word, language }) {
   const dispatch = useDispatch();
@@ -16,23 +20,6 @@ export default function VocabCard({ word, language }) {
   const [isStarred, setIsStarred] = useState(false);
   const [isLearned, setIsLearned] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
-
-  // const handleToggle = async (actionType, e) => {
-  //   e.stopPropagation();
-  //   try {
-
-  //     const res = await dispatch(WordService.setStatus({
-  //       word_id: word.id,
-  //       action: actionType,
-  //     })).unwrap();
-
-  //     setIsStarred(res.is_starred);
-  //     setIsLearned(res.is_learned);
-
-  //   } catch (error) {
-  //     console.error('Failed to update status:', error);
-  //   }
-  // };
 
   const handleToggle = async (actionType, e) => {
     e.stopPropagation();
@@ -77,11 +64,12 @@ export default function VocabCard({ word, language }) {
   // Get level color based on word level
   const getLevelColor = (level) => {
     const levels = {
-      1: 'from-green-500 to-emerald-500',
-      2: 'from-blue-500 to-cyan-500',
-      3: 'from-purple-500 to-pink-500',
-      4: 'from-orange-500 to-red-500',
-      5: 'from-gray-600 to-gray-700'
+      'A1': 'from-green-400 to-emerald-400',
+      'A2': 'from-blue-400 to-cyan-400',
+      'B1': 'from-purple-400 to-pink-400',
+      'B2': 'from-orange-400 to-red-400',
+      'C1': 'from-gray-500 to-gray-600',
+      'C2': 'from-slate-500 to-gray-600'
     };
     return levels[level] || 'from-gray-500 to-gray-600';
   };
@@ -95,8 +83,9 @@ export default function VocabCard({ word, language }) {
     >
       {/* Header: Word + Level Badge */}
       <div className="flex items-start justify-between mb-4">
-        <div className="flex-1 max-w-[80%]">
-          <h3 className="text-3xl overflow-hidden font-bold text-gray-900 font-sans group-hover:text-purple-700 transition-colors">
+
+        <div className="flex-1 max-w-[80%] ">
+          <h3 className="text-3xl overflow-hidden font-bold text-gray-900 font-sans  transition-colors">
             {word.text}
           </h3>
           {word.pos && (
@@ -106,12 +95,26 @@ export default function VocabCard({ word, language }) {
           )}
         </div>
 
-        {/* Level Badge */}
-        <div className={`bg-gradient-to-r ${getLevelColor(word.level)} text-white px-3 py-1.5 rounded-2xl shadow-sm ml-3`}>
-          <span className="text-sm font-bold font-sans">
-            Lvl {word.level ?? '1'}
-          </span>
+        <div className='flex flex-col items-center max-w-[25%]'>
+        
+          {/* Level Badge */}
+          <div className={`bg-linear-to-r ${getLevelColor(word.level)} text-white py-1.5 px-2 rounded-xl shadow-sm   `}>
+            <span className="text-sm font-bold font-sans">
+              Lvl {word.level ?? '1'}
+            </span>
+          </div>
+        
+          {/* Frequency Rank */}
+          <div className="flex items-center space-x-2  rounded-2xl px-2 py-1.5 mt-2">
+            <FaChartLine className="text-gray-500 text-sm" />
+            <span className="text-sm font-semibold text-gray-700 font-sans">
+              {word.frequency_rank ?? '–'}
+            </span>
+          </div>
+        
         </div>
+
+
       </div>
 
       {/* Translation */}
@@ -125,13 +128,13 @@ export default function VocabCard({ word, language }) {
       <div className="flex items-center justify-between">
         {/* Left: Frequency & Voice */}
         <div className="flex items-center space-x-4">
-          {/* Frequency Rank */}
-          <div className="flex items-center space-x-2 bg-gray-50 rounded-2xl px-3 py-2">
-            <FaChartLine className="text-gray-500 text-sm" />
-            <span className="text-sm font-semibold text-gray-700 font-sans">
-              #{word.frequency_rank ?? '–'}
-            </span>
-          </div>
+          
+
+          
+        </div>
+
+        {/* Right: Action Buttons */}
+        <div className="flex items-center space-x-2">
 
           {/* Voice Button */}
           <div className={`transform transition-transform ${isHovered ? 'scale-110' : 'scale-100'}`}>
@@ -141,10 +144,34 @@ export default function VocabCard({ word, language }) {
               className="p-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-2xl hover:shadow-lg transition-all"
             />
           </div>
-        </div>
 
-        {/* Right: Action Buttons */}
-        <div className="flex items-center space-x-2">
+          {/* Notes Button */}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              dispatch(setCurrentWord(word));
+              navigate('/notes/create');
+            }}
+            className={`p-3 rounded-2xl transition-all duration-200  cursor-pointer bg-gray-100 text-gray-600 hover:text-indigo-500`}
+            title='Create note'
+          >
+              <FaRegNoteSticky  className="text-lg" />
+           </button>
+
+          {/* Select AI Button */}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              dispatch(setCurrentWord(word));
+              navigate('/ai-chat');
+            }}
+            className={`p-3 rounded-2xl transition-all duration-200  cursor-pointer bg-gray-100 text-gray-600 hover:text-purple-500`}
+            title='Generate AI'
+          >
+            < IoSparklesOutline  className="text-lg" />
+          </button>
+
+
           {/* Star Button */}
           <button
             onClick={(e) => handleToggle('star', e)}
