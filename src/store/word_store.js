@@ -18,6 +18,10 @@ const initialState = {
     detail: {},
     loading: false,
 
+
+    daily_streak: null,
+
+
     statistics: [],
 
     pos_statistics: null,

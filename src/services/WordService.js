@@ -247,11 +247,33 @@ class WordService {
     )
 
 
+    static getDailyStatistics = createAsyncThunk(
+        '/words/user/daily_streak',
+        async (data, thunkAPI) => {
+            try {
+                const response = await $api.get(`/words/user/daily_statistics`);
+                // console.log('the daily streak is working and the result is ', response)
+                return response.data;
+            } catch (error) {
+                // Extract error details
+                const errorData = error.response?.data || { message: error.message };
+                const statusCode = error.response?.status || 500;
+                // Pass custom error payload
+                return thunkAPI.rejectWithValue({
+                    payload: errorData,
+                    status: statusCode,
+                });
+            }
+        }
+    )
+
+
     static getDailyStreak = createAsyncThunk(
         '/words/user/daily_streak',
         async (data, thunkAPI) => {
             try {
-                const response = await $api.get(`/words/user/daily_streak`);
+                const response = await $api.get(`/words/user/statistics/daily_streak`);
+                console.log('the daily streak is working and the result is ', response)
                 return response.data;
             } catch (error) {
                 // Extract error details

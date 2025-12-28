@@ -42,6 +42,7 @@ export default function HeaderComponent({ username }) {
 
   const [nativeLangCode, setNativeLangCode] = useState(null);
   const [isStatsExpanded, setIsStatsExpanded] = useState(false);
+  const [dailyStatistics, setDailyStatistics] = useState(null);
   const [dailyStreak, setDailyStreak] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -52,6 +53,27 @@ export default function HeaderComponent({ username }) {
     if (hour < 12) return 'Good morning';
     if (hour < 18) return 'Good afternoon';
     return 'Good evening';
+  };
+
+  const fetchDailyStatistics = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const token = localStorage.getItem('token');
+      if (token) {
+        const result = await dispatch(WordService.getDailyStatistics());    
+        if (result && result.payload) {
+          console.log('daiyl stat => ', result.payload)
+          setDailyStatistics(result.payload);
+        } else {
+          setError('Failed to load daily streak');
+        }
+      }
+    } catch (err) {
+      setError('Error fetching daily streak');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const fetchDailyStreak = async () => {
@@ -69,13 +91,13 @@ export default function HeaderComponent({ username }) {
       }
     } catch (err) {
       setError('Error fetching daily streak');
-      console.error('Daily streak error:', err);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
+    fetchDailyStatistics();
     fetchDailyStreak();
     const getNativeLang = async () => {
       try {
@@ -88,12 +110,12 @@ export default function HeaderComponent({ username }) {
     getNativeLang();
   }, []);
 
-  const progressWidth = dailyStreak?.daily_learned_words 
-    ? `${Math.min((dailyStreak.daily_learned_words / 20) * 100, 100)}%` 
+  const progressWidth = dailyStatistics?.daily_learned_words 
+    ? `${Math.min((dailyStatistics.daily_learned_words / 20) * 100, 100)}%` 
     : '0%';
 
   const getMotivationMessage = () => {
-    const wordsToday = dailyStreak?.daily_learned_words || 0;
+    const wordsToday = dailyStatistics?.daily_learned_words || 0;
     if (wordsToday === 0) return "Start your learning journey today! 🌟";
     if (wordsToday < 5) return "Great start! Every word counts 💪";
     if (wordsToday < 10) return "Building momentum! Keep going 🚀";
@@ -119,7 +141,7 @@ export default function HeaderComponent({ username }) {
   return (
   <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-100">
     {/* Main Header with Gradient */}
-    <div className="bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700 p-6 md:p-8 relative overflow-hidden">
+    <div className="bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700 p-6 md:py-4 md:px-6 relative overflow-hidden">
       {/* Decorative elements */}
       <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-32 translate-x-16 blur-3xl"></div>
       <div className="absolute bottom-0 left-0 w-48 h-48 bg-purple-500/20 rounded-full translate-y-24 -translate-x-12 blur-3xl"></div>
@@ -165,33 +187,12 @@ export default function HeaderComponent({ username }) {
             </button>
           </div>
 
-          {/* Profile Card - Desktop */}
-          {/* <div className="hidden lg:block min-w-[280px] ml-8">
-            <div className="bg-white/15 backdrop-blur-sm rounded-2xl p-4 border border-white/30">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-12 h-12 bg-gradient-to-br from-white/30 to-white/10 rounded-xl flex items-center justify-center">
-                  <IoPerson className="text-white text-2xl" />
-                </div>
-                <div>
-                  <h3 className="text-white font-semibold">{username || 'Guest'}</h3>
-                  <p className="text-blue-100 text-sm">Language Learner</p>
-                </div>
-              </div>
-              <Link 
-                to="/profile"
-                className="w-full flex items-center justify-center gap-2 py-2.5 bg-white text-blue-600 hover:bg-blue-50 rounded-xl font-medium transition-all hover:scale-[1.02]"
-              >
-                <IoPerson className="text-lg" />
-                View Profile
-              </Link>
-            </div>
-          </div> */}
         </div>
 
         {/* Stats Section - Always visible on desktop, toggleable on mobile */}
         <div className={`${isStatsExpanded ? 'block' : 'hidden lg:flex'} flex-col lg:flex-row gap-6 mb-6`}>
           {/* Daily Words Card */}
-          <div className="bg-white/15 backdrop-blur-sm rounded-2xl p-5 border border-white/30 flex-1">
+          <div className="bg-white/15 backdrop-blur-sm rounded-2xl px-5 py-4 border border-white/30 flex-1">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-white font-semibold flex items-center gap-2">
                 <IoFlash className="text-yellow-400" />
@@ -201,7 +202,7 @@ export default function HeaderComponent({ username }) {
                 <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
               )}
               {error && (
-                <button onClick={fetchDailyStreak} className="text-white hover:text-blue-200">
+                <button onClick={fetchDailyStatistics} className="text-white hover:text-blue-200">
                   <IoRefresh />
                 </button>
               )}
@@ -210,14 +211,14 @@ export default function HeaderComponent({ username }) {
             <div className="flex items-center justify-between">
               <div>
                 <div className="text-3xl font-bold text-white mb-1">
-                  {dailyStreak?.daily_learned_words || 0}
+                  {dailyStatistics?.daily_learned_words || 0}
                   <span className="text-lg text-blue-100 ml-1">/20</span>
                 </div>
                 <p className="text-blue-100 text-sm">Words learned today</p>
               </div>
               <div className="text-right">
                 <div className="text-2xl font-bold text-white">
-                  {dailyStreak?.current_streak || 0}
+                  {dailyStatistics?.current_streak || 0}
                 </div>
                 <p className="text-blue-100 text-sm">Day streak</p>
               </div>
@@ -246,7 +247,7 @@ export default function HeaderComponent({ username }) {
               
               <div className="flex justify-between text-sm">
                 <span className="text-blue-100">Start of day</span>
-                <span className="text-white font-medium">{dailyStreak?.daily_learned_words || 0}/20 words</span>
+                <span className="text-white font-medium">{dailyStatistics?.daily_learned_words || 0}/20 words</span>
                 <span className="text-blue-100">Daily goal</span>
               </div>
             </div>
@@ -254,49 +255,46 @@ export default function HeaderComponent({ username }) {
         </div>
 
         {/* Progress Bar - Simplified for mobile */}
-        <div className="lg:hidden mt-4">
+        <div className={`${!isStatsExpanded ? 'block' : 'hidden'} lg:hidden mt-4`}>
           <div className="flex justify-between items-center mb-2">
             <span className="text-blue-100 text-sm font-medium">Daily Progress</span>
             <span className="text-white font-semibold">
-              {dailyStreak?.daily_learned_words || 0}/20
+              {dailyStatistics?.daily_learned_words || 0}/20
             </span>
           </div>
           <div className="h-2.5 bg-white/20 rounded-full overflow-hidden">
-            {/* <div 
+            <div 
               className="h-full bg-gradient-to-r from-emerald-400 to-green-500 rounded-full transition-all duration-1000 ease-out"
               style={{ width: progressWidth }}
-            /> */}
+            />
           </div>
         </div>
       </div>
     </div>
 
     {/* Quick Stats Row - Hidden on mobile when collapsed */}
-    <div className={`${isStatsExpanded ? 'grid' : 'hidden lg:grid'} grid-cols-1 sm:grid-cols-3 gap-4 p-6 bg-gradient-to-r from-gray-50 to-blue-50/30`}>
+    <div className={`${isStatsExpanded ? 'grid' : 'hidden lg:grid'} grid-cols-1 sm:grid-cols-3 gap-4 py-5 px-4 bg-gradient-to-r from-gray-50 to-blue-50/30`}>
       {[
         { 
-          icon: <IoBook className="text-xl"/>, 
+          icon: <IoBook className="text-2xl text-white"/>, 
           label: 'Total Learned', 
           value: totalLearnedWords || '0',
-          // valueText: 'words',
           color: 'from-blue-500 to-blue-600',
-          bgColor: 'bg-gradient-to-br from-blue-50 to-blue-100'
+          bgColor: 'bg-gradient-to-br from-blue-300 to-blue-400'
         },
         { 
-          icon: <IoGlobe className="text-xl"/>, 
+          icon: <IoGlobe className="text-2xl text-white"/>, 
           label: 'Active Languages', 
-          value: dailyStreak?.active_languages || '1',
-          // valueText: 'languages',
+          value: dailyStatistics?.active_languages || '1',
           color: 'from-emerald-500 to-green-600',
-          bgColor: 'bg-gradient-to-br from-emerald-50 to-green-100'
+          bgColor: 'bg-gradient-to-br from-emerald-300 to-green-400'
         },
         { 
-          icon: <IoTime className="text-xl"/>, 
+          icon: <IoTime className="text-2xl text-white"/>, 
           label: 'Daily Streak', 
-          value: '0',
-          // valueText: 'hours today',
+          value: dailyStreak?.daily_streak,
           color: 'from-purple-500 to-purple-600',
-          bgColor: 'bg-gradient-to-br from-purple-50 to-purple-100'
+          bgColor: 'bg-gradient-to-br from-purple-300 to-purple-400'
         },
       ].map((stat, index) => (
         <div key={index} className="group">
@@ -312,13 +310,6 @@ export default function HeaderComponent({ username }) {
                 <div className="text-2xl font-bold text-gray-900">{stat.value}</div>
               </div>
             </div>
-            {/* <div className="text-sm text-gray-600">{stat.valueText}</div> */}
-            {/* <div className="mt-3 pt-3 border-t border-gray-100">
-              <div className="text-xs text-gray-500 flex items-center gap-1">
-                <IoTrendingUp className="text-green-500" />
-                <span>+2% from yesterday</span>
-              </div>
-            </div> */}
           </div>
         </div>
       ))}
