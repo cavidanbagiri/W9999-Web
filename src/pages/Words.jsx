@@ -200,13 +200,11 @@ export default function WordScreen() {
         const languageChangedManually = localStorage.getItem('language_changed_manually') === 'true';
 
         if (languageChangedManually) {
-            console.log('🌍 Language changed manually, fetching new words');
             fetchWords(true);
             localStorage.removeItem('language_changed_manually'); // Clear the flag
         }
         // Only do initial fetch if no words loaded
         else if (unlearned_words.length === 0) {
-            console.log('🟢 Initial fetch');
             fetchWords(true);
         }
         else {

@@ -27,9 +27,14 @@ const initialState = {
 
     available_lang_toggle: true,
 
+    
+    // Search query and results
+    search_query: "",
     searchResults: null,
     isLoading: false,
     error: null,
+
+    
 
     categories: [],
     categories_pending: false,
@@ -55,15 +60,19 @@ const initialState = {
             isLoadingMore: false
         }
     },
+
+
+
 };
 
-// Create the action first, before the slice
+
 export const setLoadingMore = createAction('word/setLoadingMore');
 
 export const wordSlice = createSlice({
     name: 'words',
     initialState,
     reducers: {
+
         setWordsPendingFalse: (state) => {
             state.words_pending = false;
         },
@@ -135,8 +144,19 @@ export const wordSlice = createSlice({
             
             updateWordInArray(state.unlearned_words);
             updateWordInArray(state.learned_words);
-        }
+        },
 
+        setSearchQuery: (state, action) => {
+            state.search_query = action.payload;
+        },
+
+        clearSearchQuery: (state) => {
+            state.search_query = '';
+        },
+        
+        clearSearchResults: (state) => {
+            state.searchResults = null;
+        }
 
     },
     extraReducers: (builder) => {
@@ -519,7 +539,6 @@ export const wordSlice = createSlice({
     },
 });
 
-// Export actions - remove the duplicate createAction line from here
 export const {
     setWordsPendingFalse,
     clearDetail,
@@ -530,7 +549,10 @@ export const {
     setCurrentCategory,
     setCurrentPosName,
     resetPagination,
-    updateWordStatus
+    updateWordStatus,
+    setSearchQuery,
+    clearSearchQuery,
+    clearSearchResults
 } = wordSlice.actions;
 
 export default wordSlice.reducer;

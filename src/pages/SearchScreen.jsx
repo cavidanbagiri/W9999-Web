@@ -4,14 +4,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import WordService from '../services/WordService';
 import RenderWordComponent from '../components/search/RenderWordComponent';
-// import VoiceButtonComponent from '../components/layouts/VoiceButtonComponent';
-// import RenderWordComponent from '../components/search/RenderWordComponent';
-// import { getFromStorage } from '../utils/storage';
+import { setSearchQuery, clearSearchQuery, clearSearchResults } from '../store/word_store';
 
 import English from '../assets/flags/england.png';
 import Spanish from '../assets/flags/spanish.png';
 import Russian from '../assets/flags/russian.png';
 import Turkish from '../assets/flags/turkish.png';
+import { set } from 'lodash';
 
 const AVAILABLE_LANGUAGES = [
     { name: 'Spanish', image: Spanish, code: 'es' },
@@ -24,28 +23,25 @@ export default function SearchScreen() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
-    const { searchResults, isLoading, error } = useSelector((state) => state.wordSlice);
+    const { searchResults, isLoading, error, search_query } = useSelector((state) => state.wordSlice);
     const { selectedLanguage } = useSelector((state) => state.wordSlice);
 
     const [nativeLang, setNativeLang] = useState(null);
     const [targetLanguage, setTargetLanguage] = useState(selectedLanguage);
-    const [query, setQuery] = useState('');
     const [debouncedQuery, setDebouncedQuery] = useState('');
 
     // Debounce search
     useEffect(() => {
         const timer = setTimeout(() => {
-            setDebouncedQuery(query);
+            setDebouncedQuery(search_query);
         }, 800);
 
         return () => clearTimeout(timer);
-    }, [query]);
+    }, [search_query]);
 
     const handleSearch = useCallback(() => {
         const controller = new AbortController();
 
-        // Set if target language is not specified, return message, please choose the language
-        console.log('target lang is ', targetLanguage)
         if (targetLanguage === null) {
             return;
         }
@@ -68,7 +64,6 @@ export default function SearchScreen() {
     useEffect(() => {
         const getNativeLang = async () => {
             try {
-                // const native = await getFromStorage('native');
                 const native = localStorage.getItem('native');
                 setNativeLang(native);
             } catch (error) {
@@ -77,6 +72,12 @@ export default function SearchScreen() {
         };
         getNativeLang();
     }, []);
+
+    useEffect(() => {
+        if (search_query.trim().length === 0) {
+            dispatch(clearSearchResults());
+        }
+    },[search_query])
 
     useEffect(() => {
         if (selectedLanguage) {
@@ -90,7 +91,7 @@ export default function SearchScreen() {
     };
 
     const renderWordItem = useCallback((item) => (
-        <RenderWordComponent 
+        <RenderWordComponent
             key={item.id}
             item={item}
             selectedLanguage={selectedLanguage}
@@ -100,7 +101,6 @@ export default function SearchScreen() {
 
     const handleLanguageFilter = (languageCode='all') => {
         setTargetLanguage(languageCode);
-        console.log('language code is ', languageCode)
         const data = {
             native_language: AVAILABLE_LANGUAGES.find(lang => lang.name === nativeLang)?.code,
             target_language: languageCode,
@@ -120,16 +120,19 @@ export default function SearchScreen() {
                             <span className="text-gray-500 text-lg">🔍</span>
                             <input
                                 type="text"
-                                value={query}
-                                onChange={(e) => setQuery(e.target.value)}
+                                value={search_query}
+                                onChange={(e) => dispatch(setSearchQuery(e.target.value))}
                                 placeholder="Search words or translations..."
                                 className="flex-1 ml-3 bg-transparent border-none outline-none text-gray-900 placeholder-gray-500 text-base"
                                 autoFocus
                                 onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
                             />
-                            {query.length > 0 && (
+                            {search_query.length > 0 && (
                                 <button
-                                    onClick={() => setQuery('')}
+                                    onClick={() => {
+                                        dispatch(clearSearchQuery())
+                                        dispatch(clearSearchResults())
+                                    }}
                                     className="p-1 hover:bg-gray-200 rounded-lg transition-colors"
                                 >
                                     <span className="text-gray-500 text-lg">×</span>
@@ -141,53 +144,36 @@ export default function SearchScreen() {
                     {/* Cancel Button */}
                     <button
                         onClick={() => navigate(-1)}
-                        className="px-4 py-2 text-blue-600 font-medium cursor-pointer hover:bg-blue-50 rounded-lg transition-colors whitespace-nowrap"
+                        className="px-4 py-2 text-blue-600 font-medium cursor-pointer hover:bg-blue-50 rounded-lg transition-colors whitespace-nowrap outline-none"
                     >
                         Cancel
                     </button>
+
                 </div>
 
                 {/* Language Filter Section */}
-                <div className="mt-4">
-                    <p className="text-sm font-semibold text-gray-700 mb-3">Filter by language</p>
-                    <div className="flex overflow-x-auto gap-2 pb-2 scrollbar-hide">
-                        {/* All Languages */}
-                        <button
-                            onClick={() => handleLanguageFilter('all')}
-                            className={`
-                                flex items-center cursor-pointer gap-2 px-4 py-2 rounded-full border transition-all duration-200 whitespace-nowrap
-                                ${targetLanguage === 'all' 
-                                    ? 'bg-blue-600 border-blue-600 text-white shadow-sm' 
-                                    : 'bg-white border-gray-300 text-gray-700 hover:border-gray-400'
-                                }
-                            `}
-                        >
-                            <span className="text-sm font-medium">All Languages</span>
-                        </button>
-
-                        {/* Language Pills */}
-                        {AVAILABLE_LANGUAGES.filter(lang => lang.name !== nativeLang).map((language) => (
-                            <button
+                <div className="mt-4 flex items-center ">
+                    {/* <span className="text-sm font-semibold text-gray-700">Selected Language</span> */}
+                    {AVAILABLE_LANGUAGES.filter(lang => lang.name !== nativeLang && lang.code === targetLanguage).map((language) => (
+                            <span
                                 key={language.code}
-                                onClick={() => handleLanguageFilter(language.code)}
-                                className={`
-                                    flex items-center gap-2 px-6 py-2 rounded-full border cursor-pointer transition-all duration-200 whitespace-nowrap
-                                    ${targetLanguage === language.code 
-                                        ? 'bg-blue-600 border-blue-600 text-white shadow-sm' 
-                                        : 'bg-white border-gray-300 text-gray-700 hover:border-gray-400'
-                                    }
-                                `}
+                                className= 'flex items-center gap-1  rounded-full bg-gray-100 p-2'
+                                    
+                                
                             >
+                                
+                                <span className="text-sm font-medium">{language.name}</span>
                                 <img 
                                     src={language.image} 
                                     alt={language.name}
                                     className="w-5 h-5 rounded object-cover "
                                 />
-                                <span className="text-sm font-medium">{language.name}</span>
-                            </button>
+                            </span>
                         ))}
                     </div>
-                </div>
+                    
+
+                
             </div>
 
             {/* Results Section */}
@@ -216,7 +202,13 @@ export default function SearchScreen() {
                                     <div>
                                         <span className="text-gray-300 text-6xl mb-4">🔍</span>
                                         <p className="text-gray-600 text-lg font-semibold mb-2">
-                                            Please choose the language
+                                            Please choose the language 
+                                        </p>
+                                        <p onClick={()=>{
+                                            navigate('/')
+                                        }}
+                                        className="text-blue-600 text-lg font-semibold mb-2 underline cursor-pointer">
+                                            Dashboard 
                                         </p>
                                     </div>
                                     :
@@ -236,7 +228,7 @@ export default function SearchScreen() {
                         )}
                     </div>
                 )}
-                
+
             </div>
         </div>
     );
