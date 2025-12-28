@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { 
-  FaSave, 
-  FaTimes, 
-  FaTag, 
-  FaGlobeAmericas, 
+
+import UserNotAuth from '../../components/notes/UserNotAuth';
+
+import {
+  FaSave,
+  FaTimes,
+  FaTag,
+  FaGlobeAmericas,
   FaBook,
   FaBold,
   FaItalic,
@@ -20,11 +23,11 @@ function EditNoteComponent() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { id } = useParams();
-  
+
   // Get state from Redux
   const { currentNote, loading: notesLoading, error: notesError } = useSelector((state) => state.notesSlice);
-  const { user } = useSelector((state) => state.authSlice);
-  
+  const { user, is_auth } = useSelector((state) => state.authSlice);
+
   // Form state
   const [formData, setFormData] = useState({
     note_name: '',
@@ -33,19 +36,19 @@ function EditNoteComponent() {
     content: '',
     tags: [],
   });
-  
+
   const [tagInput, setTagInput] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [showPreview, setShowPreview] = useState(false);
-  
+
   // Fetch note data when component mounts
   useEffect(() => {
     if (id) {
       dispatch(NoteService.getNoteById(parseInt(id)));
     }
   }, [dispatch, id]);
-  
+
   // Populate form when note data is loaded
   useEffect(() => {
     if (currentNote) {
@@ -58,7 +61,7 @@ function EditNoteComponent() {
       });
     }
   }, [currentNote]);
-  
+
   // Available languages
   const languages = [
     { value: null, label: 'No specific language' },
@@ -67,14 +70,14 @@ function EditNoteComponent() {
     { value: 'ru', label: 'Russian (RU)' },
     { value: 'tr', label: 'Turkish (TR)' },
   ];
-  
+
   // Note types
   const noteTypes = [
     { value: 'vocabulary', label: 'Vocabulary', color: 'bg-blue-100 text-blue-800 border-blue-300' },
     { value: 'grammar', label: 'Grammar', color: 'bg-green-100 text-green-800 border-green-300' },
     { value: 'general', label: 'General', color: 'bg-purple-100 text-purple-800 border-purple-300' },
   ];
-  
+
   // Handle form input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -83,7 +86,7 @@ function EditNoteComponent() {
       [name]: value
     }));
   };
-  
+
   // Handle content change
   const handleContentChange = (e) => {
     setFormData(prev => ({
@@ -91,7 +94,7 @@ function EditNoteComponent() {
       content: e.target.value
     }));
   };
-  
+
   // Add a tag
   const handleAddTag = () => {
     if (tagInput.trim() && formData.tags.length < 20) {
@@ -105,7 +108,7 @@ function EditNoteComponent() {
       setTagInput('');
     }
   };
-  
+
   // Remove a tag
   const handleRemoveTag = (tagToRemove) => {
     setFormData(prev => ({
@@ -113,7 +116,7 @@ function EditNoteComponent() {
       tags: prev.tags.filter(tag => tag !== tagToRemove)
     }));
   };
-  
+
   // Handle tag input key press
   const handleTagKeyPress = (e) => {
     if (e.key === 'Enter') {
@@ -121,19 +124,19 @@ function EditNoteComponent() {
       handleAddTag();
     }
   };
-  
+
   // Formatting helpers for markdown
   const applyFormatting = (format) => {
     const textarea = document.getElementById('content-textarea');
     if (!textarea) return;
-    
+
     const start = textarea.selectionStart;
     const end = textarea.selectionEnd;
     const selectedText = formData.content.substring(start, end);
-    
+
     let formattedText = '';
     let cursorOffset = 0;
-    
+
     switch (format) {
       case 'bold':
         formattedText = `**${selectedText}**`;
@@ -154,17 +157,17 @@ function EditNoteComponent() {
       default:
         formattedText = selectedText;
     }
-    
-    const newContent = 
-      formData.content.substring(0, start) + 
-      formattedText + 
+
+    const newContent =
+      formData.content.substring(0, start) +
+      formattedText +
       formData.content.substring(end);
-    
+
     setFormData(prev => ({
       ...prev,
       content: newContent
     }));
-    
+
     // Set cursor position after formatting
     setTimeout(() => {
       textarea.focus();
@@ -172,46 +175,46 @@ function EditNoteComponent() {
       textarea.setSelectionRange(newCursorPos, newCursorPos);
     }, 0);
   };
-  
+
   // Validate form
   const validateForm = () => {
     if (!formData.note_name.trim()) {
       setError('Note title is required');
       return false;
     }
-    
+
     if (formData.note_name.length > 200) {
       setError('Note title cannot exceed 200 characters');
       return false;
     }
-    
+
     if (!formData.content.trim()) {
       setError('Content is required');
       return false;
     }
-    
+
     if (formData.content.length > 50000) {
       setError('Content is too long (max 50,000 characters)');
       return false;
     }
-    
+
     if (formData.tags.length > 20) {
       setError('Maximum 20 tags allowed');
       return false;
     }
-    
+
     return true;
   };
-  
+
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    
+
     if (!validateForm()) return;
-    
+
     setIsSubmitting(true);
-    
+
     try {
       // Prepare data - convert empty string to null for target_lang
       const dataToSend = {
@@ -219,47 +222,54 @@ function EditNoteComponent() {
         target_lang: formData.target_lang || null,
         tags: formData.tags || []
       };
-      
+
       console.log('Updating note with data:', dataToSend);
-      
+
       // Dispatch update note action
       const result = await dispatch(NoteService.updateNote({
         noteId: parseInt(id),
         noteData: dataToSend
       })).unwrap();
-      
+
       // Navigate back to notes screen on success
       navigate(`/notes/detail/${id}`);
-      
+
     } catch (err) {
       // Handle error from Redux
-      const errorMessage = err?.payload?.detail || 
-                          err?.payload?.message || 
-                          err?.message || 
-                          'Failed to update note';
+      const errorMessage = err?.payload?.detail ||
+        err?.payload?.message ||
+        err?.message ||
+        'Failed to update note';
       setError(errorMessage);
       console.error('Update note error:', err);
     } finally {
       setIsSubmitting(false);
     }
   };
-  
+
   // Handle cancel
   const handleCancel = () => {
     if (window.confirm('Are you sure? Your changes will be lost.')) {
       navigate(`/notes/detail/${id}`);
     }
   };
-  
+
   // Handle back to detail view
   const handleBack = () => {
     navigate(`/notes/detail/${id}`);
   };
-  
+
   // Character count
   const charCount = formData.content.length;
   const charLimit = 50000;
+
   
+    // User Not Authenticated
+    if (!is_auth) {
+     return <UserNotAuth />
+    }
+  
+
   // Loading state
   if (notesLoading && !currentNote) {
     return (
@@ -269,7 +279,7 @@ function EditNoteComponent() {
       </div>
     );
   }
-  
+
   // Error state
   if (notesError && !currentNote) {
     return (
@@ -285,7 +295,7 @@ function EditNoteComponent() {
       </div>
     );
   }
-  
+
   return (
     <div className="container mx-auto px-4 py-6 max-w-4xl">
       {/* Header */}
@@ -297,7 +307,7 @@ function EditNoteComponent() {
           <FaArrowLeft className="mr-2" />
           Back to Note
         </button>
-        
+
         <div className="flex justify-between items-start">
           <div>
             <h1 className="text-3xl font-bold text-blue-700 mb-2">
@@ -312,7 +322,7 @@ function EditNoteComponent() {
               )}
             </p>
           </div>
-          
+
           {currentNote && (
             <div className="text-sm text-gray-500">
               <div className="flex items-center">
@@ -323,7 +333,7 @@ function EditNoteComponent() {
           )}
         </div>
       </div>
-      
+
       {/* Error Display */}
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6">
@@ -336,7 +346,7 @@ function EditNoteComponent() {
           </button>
         </div>
       )}
-      
+
       {/* Main Form */}
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Note Name */}
@@ -359,7 +369,7 @@ function EditNoteComponent() {
             <span>{formData.note_name ? '✓ Title is set' : 'Title is required'}</span>
           </div>
         </div>
-        
+
         {/* Language and Type Selection */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Language Selection */}
@@ -387,7 +397,7 @@ function EditNoteComponent() {
               Select the language this note is about
             </div>
           </div>
-          
+
           {/* Note Type Selection */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -400,11 +410,10 @@ function EditNoteComponent() {
                   key={type.value}
                   type="button"
                   onClick={() => setFormData(prev => ({ ...prev, note_type: type.value }))}
-                  className={`flex-1 px-4 py-3 rounded-lg border transition-all ${
-                    formData.note_type === type.value 
-                      ? `${type.color} border-2` 
+                  className={`flex-1 px-4 py-3 rounded-lg border transition-all ${formData.note_type === type.value
+                      ? `${type.color} border-2`
                       : 'bg-white border-gray-300 hover:bg-gray-50'
-                  }`}
+                    }`}
                 >
                   {type.label}
                 </button>
@@ -415,7 +424,7 @@ function EditNoteComponent() {
             </div>
           </div>
         </div>
-        
+
         {/* Tags Input */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -441,7 +450,7 @@ function EditNoteComponent() {
               Add
             </button>
           </div>
-          
+
           {/* Tags Display */}
           {formData.tags.length > 0 && (
             <div className="mt-3">
@@ -469,7 +478,7 @@ function EditNoteComponent() {
             </div>
           )}
         </div>
-        
+
         {/* Content Editor */}
         <div>
           <div className="flex justify-between items-center mb-2">
@@ -485,7 +494,7 @@ function EditNoteComponent() {
               </span>
             </div>
           </div>
-          
+
           {/* Formatting Toolbar */}
           <div className="flex flex-wrap items-center gap-2 mb-2 p-3 bg-gray-100 rounded-lg">
             <span className="text-sm text-gray-600 font-medium">Formatting:</span>
@@ -523,7 +532,7 @@ function EditNoteComponent() {
                 <FaLink />
               </button>
             </div>
-            
+
             <div className="ml-auto">
               <button
                 type="button"
@@ -534,7 +543,7 @@ function EditNoteComponent() {
               </button>
             </div>
           </div>
-          
+
           {/* Content Editor and Preview */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {/* Editor */}
@@ -555,7 +564,7 @@ Tip: Select text and use the formatting buttons above."
                 required
               />
             </div>
-            
+
             {/* Preview */}
             {showPreview && (
               <div className="lg:col-span-1">
@@ -593,7 +602,7 @@ Tip: Select text and use the formatting buttons above."
               </div>
             )}
           </div>
-          
+
           {/* Formatting Help */}
           <div className="mt-2 text-xs text-gray-500">
             <details>
@@ -611,7 +620,7 @@ Tip: Select text and use the formatting buttons above."
             </details>
           </div>
         </div>
-        
+
         {/* Form Actions */}
         <div className="flex justify-between pt-6 border-t ">
           <div className=''>
@@ -625,9 +634,9 @@ Tip: Select text and use the formatting buttons above."
               Cancel
             </button>
           </div>
-          
+
           <div className="flex gap-4 "
-          
+
           >
             <button
               type="button"
@@ -637,7 +646,7 @@ Tip: Select text and use the formatting buttons above."
             >
               View Note
             </button>
-            
+
             <button
               type="submit"
               disabled={isSubmitting || !formData.note_name || !formData.content}
@@ -658,7 +667,7 @@ Tip: Select text and use the formatting buttons above."
           </div>
         </div>
       </form>
-      
+
       {/* Stats Section */}
       <div className="mt-8 p-4 bg-gray-50 rounded-lg">
         <h3 className="font-medium text-gray-700 mb-2">Note Statistics</h3>

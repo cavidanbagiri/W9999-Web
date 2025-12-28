@@ -2,11 +2,14 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { 
-  FaSave, 
-  FaTimes, 
-  FaTag, 
-  FaGlobeAmericas, 
+
+import UserNotAuth from '../../components/notes/UserNotAuth';
+
+import {
+  FaSave,
+  FaTimes,
+  FaTag,
+  FaGlobeAmericas,
   FaBook,
   FaBold,
   FaItalic,
@@ -20,8 +23,8 @@ import NoteService from '../../services/NoteService';
 function CreateNoteComponent() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { user } = useSelector((state) => state.authSlice);
-  
+  const { user, is_auth } = useSelector((state) => state.authSlice);
+
   // Form state
   const [formData, setFormData] = useState({
     note_name: '',
@@ -30,11 +33,11 @@ function CreateNoteComponent() {
     content: '',
     tags: [],
   });
-  
+
   const [tagInput, setTagInput] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
-  
+
   // Available languages
   const languages = [
     { value: '', label: 'No specific language' },
@@ -43,14 +46,21 @@ function CreateNoteComponent() {
     { value: 'ru', label: 'Russian (RU)' },
     { value: 'tr', label: 'Turkish (TR)' },
   ];
-  
+
   // Note types
   const noteTypes = [
     { value: 'vocabulary', label: 'Vocabulary', color: 'bg-blue-100 text-blue-800' },
     { value: 'grammar', label: 'Grammar', color: 'bg-green-100 text-green-800' },
     { value: 'general', label: 'General', color: 'bg-purple-100 text-purple-800' },
   ];
-  
+
+
+  // User Not Authenticated
+  if (!is_auth) {
+    return <UserNotAuth />
+  }
+
+
   // Handle form input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -59,7 +69,7 @@ function CreateNoteComponent() {
       [name]: value
     }));
   };
-  
+
   // Handle content change (for markdown editor)
   const handleContentChange = (e) => {
     setFormData(prev => ({
@@ -67,7 +77,7 @@ function CreateNoteComponent() {
       content: e.target.value
     }));
   };
-  
+
   // Add a tag
   const handleAddTag = () => {
     if (tagInput.trim() && formData.tags.length < 20) {
@@ -81,7 +91,7 @@ function CreateNoteComponent() {
       setTagInput('');
     }
   };
-  
+
   // Remove a tag
   const handleRemoveTag = (tagToRemove) => {
     setFormData(prev => ({
@@ -89,7 +99,7 @@ function CreateNoteComponent() {
       tags: prev.tags.filter(tag => tag !== tagToRemove)
     }));
   };
-  
+
   // Handle tag input key press
   const handleTagKeyPress = (e) => {
     if (e.key === 'Enter') {
@@ -97,17 +107,17 @@ function CreateNoteComponent() {
       handleAddTag();
     }
   };
-  
+
   // Formatting helpers for markdown
   const applyFormatting = (format) => {
     const textarea = document.getElementById('content-textarea');
     const start = textarea.selectionStart;
     const end = textarea.selectionEnd;
     const selectedText = formData.content.substring(start, end);
-    
+
     let formattedText = '';
     let cursorOffset = 0;
-    
+
     switch (format) {
       case 'bold':
         formattedText = `**${selectedText}**`;
@@ -128,82 +138,82 @@ function CreateNoteComponent() {
       default:
         formattedText = selectedText;
     }
-    
-    const newContent = 
-      formData.content.substring(0, start) + 
-      formattedText + 
+
+    const newContent =
+      formData.content.substring(0, start) +
+      formattedText +
       formData.content.substring(end);
-    
+
     setFormData(prev => ({
       ...prev,
       content: newContent
     }));
-    
+
     // Set cursor position after formatting
     setTimeout(() => {
       textarea.focus();
       textarea.setSelectionRange(start + cursorOffset, start + cursorOffset);
     }, 0);
   };
-  
+
   // Validate form
   const validateForm = () => {
     if (!formData.note_name.trim()) {
       setError('Note name is required');
       return false;
     }
-    
+
     if (!formData.content.trim()) {
       setError('Content is required');
       return false;
     }
-    
+
     if (formData.content.length > 50000) {
       setError('Content is too long (max 50,000 characters)');
       return false;
     }
-    
+
     return true;
   };
-  
-  
+
+
 
   // Handle create note
-// In CreateNoteComponent.jsx, update the form submission:
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  setError('');
-  
-  if (!validateForm()) return;
-  
-  setIsSubmitting(true);
-  
-  try {
-    // Prepare data - convert empty string to null for target_lang
-    const dataToSend = {
-      ...formData,
-      target_lang: formData.target_lang || null, // Convert "" to null
-      tags: formData.tags || [] // Ensure tags is always an array
-    };
-    
-    console.log('Sending data:', dataToSend);
-    
-    // Dispatch create note action
-    const result = await dispatch(NoteService.createNote(dataToSend)).unwrap();
-    
-    // Navigate back to notes screen on success
-    navigate('/notes');
-    
-  } catch (err) {
-    const errorMessage = err?.payload?.detail || 
-                        err?.payload?.message || 
-                        err?.message || 
-                        'Failed to create note';
-    setError(errorMessage);
-  } finally {
-    setIsSubmitting(false);
-  }
-};
+  // In CreateNoteComponent.jsx, update the form submission:
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+
+    if (!validateForm()) return;
+
+    setIsSubmitting(true);
+
+    try {
+      // Prepare data - convert empty string to null for target_lang
+      const dataToSend = {
+        ...formData,
+        target_lang: formData.target_lang || null, // Convert "" to null
+        tags: formData.tags || [] // Ensure tags is always an array
+      };
+
+      console.log('Sending data:', dataToSend);
+
+      // Dispatch create note action
+      const result = await dispatch(NoteService.createNote(dataToSend)).unwrap();
+
+      // Navigate back to notes screen on success
+      navigate('/notes');
+
+    } catch (err) {
+      const errorMessage = err?.payload?.detail ||
+        err?.payload?.message ||
+        err?.message ||
+        'Failed to create note';
+      setError(errorMessage);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
 
   // Handle cancel
@@ -216,11 +226,11 @@ const handleSubmit = async (e) => {
       navigate('/notes');
     }
   };
-  
+
   // Character count
   const charCount = formData.content.length;
   const charLimit = 50000;
-  
+
   return (
     <div className="container mx-auto px-8 md:px-4 py-6 max-w-4xl">
       {/* Header */}
@@ -232,14 +242,14 @@ const handleSubmit = async (e) => {
           Add a new learning note for vocabulary, grammar, or general insights.
         </p>
       </div>
-      
+
       {/* Error Display */}
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6">
           {error}
         </div>
       )}
-      
+
       {/* Main Form */}
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Note Name */}
@@ -261,7 +271,7 @@ const handleSubmit = async (e) => {
             {formData.note_name.length}/200 characters
           </div>
         </div>
-        
+
         {/* Language and Type Selection */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Language Selection */}
@@ -286,7 +296,7 @@ const handleSubmit = async (e) => {
               Select the language this note is about
             </div>
           </div>
-          
+
           {/* Note Type Selection */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -299,11 +309,10 @@ const handleSubmit = async (e) => {
                   key={type.value}
                   type="button"
                   onClick={() => setFormData(prev => ({ ...prev, note_type: type.value }))}
-                  className={`flex-1 px-4 py-3 rounded-lg border transition ${
-                    formData.note_type === type.value 
-                      ? `${type.color} border-blue-500` 
+                  className={`flex-1 px-4 py-3 rounded-lg border transition ${formData.note_type === type.value
+                      ? `${type.color} border-blue-500`
                       : 'bg-gray-100 border-gray-300 hover:bg-gray-200'
-                  }`}
+                    }`}
                 >
                   {type.label}
                 </button>
@@ -311,7 +320,7 @@ const handleSubmit = async (e) => {
             </div>
           </div>
         </div>
-        
+
         {/* Tags Input */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -336,7 +345,7 @@ const handleSubmit = async (e) => {
               Add
             </button>
           </div>
-          
+
           {/* Tags Display */}
           {formData.tags.length > 0 && (
             <div className="flex flex-wrap gap-2 mt-2">
@@ -361,7 +370,7 @@ const handleSubmit = async (e) => {
             </div>
           )}
         </div>
-        
+
         {/* Content Editor */}
         <div>
           <div className="flex justify-between items-center mb-2">
@@ -372,7 +381,7 @@ const handleSubmit = async (e) => {
               {charCount}/{charLimit} characters
             </div>
           </div>
-          
+
           {/* Formatting Toolbar */}
           <div className="flex items-center gap-2 mb-2 p-2 bg-gray-100 rounded-lg">
             <span className="text-sm text-gray-600 mr-2">Format:</span>
@@ -412,7 +421,7 @@ const handleSubmit = async (e) => {
               Use **bold**, *italic*, - lists, [links](url)
             </div>
           </div>
-          
+
           {/* Content Textarea */}
           <textarea
             id="content-textarea"
@@ -428,7 +437,7 @@ const handleSubmit = async (e) => {
             className="w-full h-64 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
             required
           />
-          
+
           {/* Preview Toggle */}
           <div className="mt-4">
             <details className="border border-gray-300 rounded-lg">
@@ -462,7 +471,7 @@ const handleSubmit = async (e) => {
             </details>
           </div>
         </div>
-        
+
         {/* Form Actions */}
         <div className="flex justify-end space-x-4 pt-6 border-t">
           <button
@@ -493,7 +502,7 @@ const handleSubmit = async (e) => {
           </button>
         </div>
       </form>
-      
+
       {/* Quick Tips */}
       {/* <div className="mt-12 p-6 bg-blue-50 rounded-xl">
         <h3 className="text-lg font-semibold text-blue-800 mb-3">

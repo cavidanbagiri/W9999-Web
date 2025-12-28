@@ -20,6 +20,10 @@ import {
   IoBookOutline
 } from 'react-icons/io5';
 
+import { FaRegNoteSticky } from "react-icons/fa6";
+import { FaNoteSticky } from "react-icons/fa6";
+
+
 
 import NavIcon from '../components/navbar/NavIcon';
 
@@ -54,6 +58,13 @@ function Navbar() {
       outlineIcon: IoSparklesOutline, 
       label: "AI Tutor",
       color: "text-pink-600"
+    },
+    { 
+      to: "/notes", 
+      icon: FaNoteSticky, 
+      outlineIcon: FaRegNoteSticky, 
+      label: "Notes",
+      color: "text-indigo-600"
     },
     { 
       to: "/translate", 
@@ -114,13 +125,7 @@ function Navbar() {
 
             {/* User Status Badge */}
             <div></div>
-            {/* <div className={`px-4 py-2 rounded-full text-sm font-medium font-sans ${
-              is_auth 
-                ? 'bg-green-100 text-green-700' 
-                : 'bg-blue-100 text-blue-700'
-            }`}>
-              {is_auth ? '🎯 Learning' : '👋 Welcome!'}
-            </div> */}
+            
           </div>
         </div>
       </div>
@@ -133,7 +138,13 @@ function Navbar() {
       {/* MOBILE BOTTOM NAVBAR */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-gray-200/60 shadow-2xl z-40">
         <div className="flex justify-around items-center py-3 px-2">
-          {navItems.map((item, index) => (
+
+          {
+            is_auth
+            ?
+            navItems
+          .filter(item => item.label !== "Profile")
+          .map((item, index) => (
             <NavIcon 
               key={index}
               to={item.to}
@@ -144,19 +155,30 @@ function Navbar() {
               isActive={location.pathname === item.to}
               isMobile={true}
             />
-          ))}
+          ))
+          :
+          navItems
+          .filter(item => item.label !== "Notes")
+          .map((item, index) => (
+            <NavIcon 
+              key={index}
+              to={item.to}
+              icon={item.icon}
+              outlineIcon={item.outlineIcon}
+              label={item.label}
+              color={item.color}
+              isActive={location.pathname === item.to}
+              isMobile={true}
+            />
+          ))
+          }
+
+          
         </div>
         
         {/* Safe area spacer for iOS */}
         <div className="h-4 bg-white/95 backdrop-blur-md" />
       </nav>
-
-      {/* Add padding to main content for mobile navbar */}
-      {/* <style jsx>{`
-        main {
-          padding-bottom: ${window.innerWidth < 768 ? '80px' : '0'};
-        }
-      `}</style> */}
 
         <main className='main-content'>
 

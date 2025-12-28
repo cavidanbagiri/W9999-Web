@@ -1,10 +1,12 @@
 
+
 // NotesScreen.jsx
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import NoteService from '../services/NoteService';
-import { 
+import UserNotAuth from '../components/notes/UserNotAuth';
+import {
   FaSearch,
   FaPlus,
   FaFilter,
@@ -13,17 +15,24 @@ import {
   FaGlobeAmericas,
   FaBook,
   FaStickyNote,
-  FaSync
+  FaSync,
+  FaLock,
+  FaSignInAlt,
+  FaShieldAlt,
+  FaMobileAlt,
+  FaClock,
+  FaExclamationCircle
 } from 'react-icons/fa';
+
 
 function NotesScreen() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  
+
   // Get state from Redux store
   const { notes, loading, error } = useSelector((state) => state.notesSlice);
-  const { user } = useSelector((state) => state.authSlice);
-  
+  const { user, is_auth } = useSelector((state) => state.authSlice);
+
   // Local state for filters
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedLanguage, setSelectedLanguage] = useState('all');
@@ -32,7 +41,10 @@ function NotesScreen() {
 
   // Fetch notes on component mount and when filters change
   useEffect(() => {
-    fetchNotes();
+    if (is_auth) {
+      fetchNotes();
+    }
+    // fetchNotes();
   }, [selectedLanguage, selectedType]);
 
   // Fetch notes function
@@ -40,19 +52,19 @@ function NotesScreen() {
     try {
       // Build filters object
       const filters = {};
-      
+
       if (selectedLanguage !== 'all') {
         filters.target_lang = selectedLanguage === 'none' ? null : selectedLanguage;
       }
-      
+
       if (selectedType !== 'all') {
         filters.note_type = selectedType;
       }
-      
+
       if (searchTerm) {
         filters.search = searchTerm;
       }
-      
+
       await dispatch(NoteService.getNotes(filters)).unwrap();
     } catch (error) {
       console.error('Failed to fetch notes:', error);
@@ -61,13 +73,15 @@ function NotesScreen() {
 
   // Handle search with debounce
   useEffect(() => {
-    const delayDebounceFn = setTimeout(() => {
-      if (searchTerm !== undefined) {
-        fetchNotes();
-      }
-    }, 500); // 500ms delay
+    if (is_auth) {
+      const delayDebounceFn = setTimeout(() => {
+        if (searchTerm !== undefined) {
+          fetchNotes();
+        }
+      }, 500); // 500ms delay
 
-    return () => clearTimeout(delayDebounceFn);
+      return () => clearTimeout(delayDebounceFn);
+    }
   }, [searchTerm]);
 
   // Handle refresh
@@ -116,261 +130,363 @@ function NotesScreen() {
     );
   }
 
+  // User Not Authenticated
+  if (!is_auth) {
+   return <UserNotAuth />
+  }
 
-// Function to view note detail
-    const handleViewNote = (noteId) => {
-        navigate(`/notes/detail/${noteId}`);
-    };
+
+  // Function to view note detail
+  const handleViewNote = (noteId) => {
+    navigate(`/notes/detail/${noteId}`);
+  };
 
 
 
 
   return (
-    <div className="container mx-auto px-4 py-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
       {/* Header Section */}
-      <div className="mb-8">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-4">
-          <h1 className="text-2xl md:text-3xl font-bold text-blue-700">
-            <FaStickyNote className="inline mr-2" />
-            My Learning Notes
-            {notes.length > 0 && (
-              <span className="ml-2 text-lg font-normal text-gray-600">
-                ({notes.length} notes)
-              </span>
-            )}
-          </h1>
-          
-          <div className="flex gap-2">
-            <button
-              onClick={handleRefresh}
-              disabled={isRefreshing}
-              className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg flex items-center transition disabled:opacity-50"
-              title="Refresh notes"
-            >
-              <FaSync className={`mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
-              Refresh
-            </button>
-            
-            <button
-              onClick={handleCreateNote}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center shadow-md transition"
-            >
-              <FaPlus className="mr-2" />
-              New Note
-            </button>
-          </div>
-        </div>
-        
-        <p className="text-gray-600 mb-2">
-          Keep track of your language learning insights, grammar rules, and vocabulary notes.
-        </p>
-      </div>
+      <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-gray-200 shadow-sm">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-lg">
+                <FaStickyNote className="text-white text-xl" />
+              </div>
+              <div>
+                <h1 className="text-xl sm:text-2xl font-bold text-gray-800">
+                  My Learning Notes
+                </h1>
+                <p className="text-sm text-gray-600">
+                  {notes.length} note{notes.length !== 1 ? 's' : ''} • Language learning insights
+                </p>
+              </div>
+            </div>
 
-      {/* Search and Filter Bar */}
-      <div className="bg-white p-4 rounded-xl shadow-md mb-6">
-        <div className="flex flex-col md:flex-row gap-4">
-           
-          {/* Search Input */}
-          <div className="flex-1">
-             <div className="flex items-center mb-1">
-              <FaGlobeAmericas className="mr-2 text-gray-500" />
-              <label className="text-sm text-gray-600">Search</label>
-            </div>
-            <div className="relative">
-              <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search notes by title or content..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-          </div>
-          
-          {/* Language Filter */}
-          <div className="w-full md:w-48">
-            <div className="flex items-center mb-1">
-              <FaGlobeAmericas className="mr-2 text-gray-500" />
-              <label className="text-sm text-gray-600">Language</label>
-            </div>
-            <select
-              value={selectedLanguage}
-              onChange={(e) => setSelectedLanguage(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="all">All Languages</option>
-              <option value="none">No Language</option>
-              <option value="es">Spanish (ES)</option>
-              <option value="en">English (EN)</option>
-              <option value="ru">Russian (RU)</option>
-              <option value="tr">Turkish (TR)</option>
-            </select>
-          </div>
-          
-          {/* Type Filter */}
-          <div className="w-full md:w-48">
-            <div className="flex items-center mb-1">
-              <FaBook className="mr-2 text-gray-500" />
-              <label className="text-sm text-gray-600">Note Type</label>
-            </div>
-            <select
-              value={selectedType}
-              onChange={(e) => setSelectedType(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="all">All Types</option>
-              <option value="vocabulary">Vocabulary</option>
-              <option value="grammar">Grammar</option>
-              <option value="general">General</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      {/* Error Display */}
-      {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-4">
-          {typeof error === 'string' ? error : 'An error occurred'}
-          <button
-            onClick={() => dispatch({ type: 'notes/clearError' })}
-            className="float-right text-red-700 hover:text-red-900"
-          >
-            ×
-          </button>
-        </div>
-      )}
-
-      {/* Notes Grid */}
-      {notes.length === 0 ? (
-        <div className="bg-gray-50 p-12 text-center rounded-xl">
-          <div className="text-gray-500 mb-4">
-            <FaStickyNote className="text-5xl mx-auto mb-4 opacity-50" />
-            <h3 className="text-xl font-semibold mb-2">
-              {searchTerm || selectedLanguage !== 'all' || selectedType !== 'all' 
-                ? 'No notes match your filters'
-                : 'No notes yet'}
-            </h3>
-            <p className="mb-4">
-              {searchTerm || selectedLanguage !== 'all' || selectedType !== 'all' 
-                ? 'Try changing your search or filters'
-                : 'Start by creating your first learning note!'}
-            </p>
-            <button
-              onClick={handleCreateNote}
-              className="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium"
-            >
-              <FaPlus className="mr-2" />
-              Create First Note
-            </button>
-          </div>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-          {notes.map((note, index) => {
-            const noteColors = [
-              'bg-yellow-200 border-l-6 border-yellow-500',
-              'bg-blue-200 border-l-6 border-blue-500',
-              'bg-purple-200 border-l-6 border-purple-500',
-              'bg-green-200 border-l-6 border-green-500',
-              'bg-pink-200 border-l-6 border-pink-500',
-              'bg-gray-200 border-l-6 border-gray-500',
-            ];
-            
-            const colorClass = noteColors[index % noteColors.length];
-            
-            return (
-              <div 
-                key={note.id} 
-                onClick={() => handleViewNote(note.id)}
-                className={`${colorClass} p-4 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-200 min-h-[150px] flex flex-col`}
+            <div className="flex flex-wrap gap-2 sm:gap-3 w-full sm:w-auto">
+              <button
+                onClick={handleRefresh}
+                disabled={isRefreshing}
+                className="flex-1 sm:flex-none px-4 py-2.5 bg-white border border-gray-300 hover:bg-gray-50 rounded-lg flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:shadow  cursor-pointer"
+                title="Refresh notes"
               >
-                {/* Note Header */}
-                <div className="mb-3">
-                  <h3 className="font-bold text-lg mb-1 line-clamp-2">
-                    {note.note_name}
-                  </h3>
-                  
-                  <div className="flex justify-between items-center">
-                    <span className={`inline-block px-2 py-1 text-xs rounded-full text-white ${getTypeBadgeClass(note.note_type)}`}>
-                      {note.note_type}
-                    </span>
-                    
-                    {note.target_lang && (
-                      <span className="text-xs px-2 py-1 border border-gray-300 rounded-full">
-                        {note.target_lang.toUpperCase()}
-                      </span>
-                    )}
-                  </div>
-                </div>
+                <FaSync className={`${isRefreshing ? 'animate-spin' : ''}`} />
+                <span className="hidden xs:inline">Refresh</span>
+              </button>
 
-                {/* Note Content Preview */}
-                <div className="flex-grow mb-3">
-                  <p className="text-gray-600 text-sm line-clamp-2 leading-relaxed">
-                    {note.content.substring(0, 200)}
-                    {note.content.length > 200 ? '...' : ''}
-                  </p>
-                </div>
+              <button
+                onClick={handleCreateNote}
+                className="flex-1 sm:flex-none px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700  cursor-pointer text-white rounded-lg flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5"
+              >
+                <FaPlus />
+                <span className="hidden xs:inline">New Note</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
 
-                {/* Tags */}
-                {note.tags && note.tags.length > 0 && (
-                  <div className="mb-3">
-                    <div className="flex flex-wrap gap-1">
-                      {note.tags.slice(0, 3).map((tag, idx) => (
-                        <span key={idx} className="text-xs bg-gray-200 px-2 py-1 rounded">
-                          {tag}
-                        </span>
-                      ))}
-                      {note.tags.length > 3 && (
-                        <span className="text-xs text-gray-500 px-2 py-1">
-                          +{note.tags.length - 3}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                {/* Note Footer with Actions */}
-                <div className="flex justify-between items-center mt-auto pt-2 border-t border-gray-200">
-                  <span className="text-xs text-gray-500">
-                    {new Date(note.updated_at).toLocaleDateString()}
-                  </span>
-                  
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => handleEditNote(note.id)}
-                      className="text-blue-600 hover:text-blue-800 p-1"
-                      title="Edit note"
-                    >
-                      <FaEdit />
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDeleteNote(note.id)
-                      }}
-                      className="text-red-600 hover:text-red-800 p-1"
-                      title="Delete note"
-                    >
-                      <FaTrash />
-                    </button>
-                  </div>
+      {/* Main Content */}
+      <main className="container mx-auto px-4 py-6">
+        {/* Search and Filter Section */}
+        <div className="mb-6">
+          <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 mb-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+              {/* Search Input */}
+              <div className="lg:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Search notes
+                </label>
+                <div className="relative">
+                  <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="Search by title, content, or tags..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                  />
                 </div>
               </div>
-            );
-          })}
-        </div>
-      )}
-      
-      {/* Loading overlay for refreshing */}
-      {(loading || isRefreshing) && notes.length > 0 && (
-        <div className="fixed inset-0 bg-black bg-black/10 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg">
-            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500 mx-auto mb-2"></div>
-            <p className="text-gray-600">Updating notes...</p>
+
+              {/* Filters Row */}
+              <div className="flex flex-col sm:flex-row lg:flex-col gap-4">
+                <div>
+                  <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                    <FaGlobeAmericas />
+                    Language
+                  </label>
+                  <select
+                    value={selectedLanguage}
+                    onChange={(e) => setSelectedLanguage(e.target.value)}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                  >
+                    <option value="all">All Languages</option>
+                    {/* <option value="none">No Language</option> */}
+                    <option value="es">Spanish (ES)</option>
+                    <option value="en">English (EN)</option>
+                    <option value="ru">Russian (RU)</option>
+                    <option value="tr">Turkish (TR)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                    <FaBook />
+                    Note Type
+                  </label>
+                  <select
+                    value={selectedType}
+                    onChange={(e) => setSelectedType(e.target.value)}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                  >
+                    <option value="all">All Types</option>
+                    <option value="vocabulary">Vocabulary</option>
+                    <option value="grammar">Grammar</option>
+                    <option value="general">General</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            {/* Active Filters Display */}
+            {(searchTerm || selectedLanguage !== 'all' || selectedType !== 'all') && (
+              <div className="flex flex-wrap items-center gap-2 mt-4 pt-4 border-t border-gray-100">
+                <span className="text-sm text-gray-600">Active filters:</span>
+                {searchTerm && (
+                  <span className="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-100 text-blue-800 text-sm rounded-full">
+                    Search: "{searchTerm}"
+                    <button onClick={() => setSearchTerm('')} className="ml-1 hover:text-blue-900  cursor-pointer">
+                      ×
+                    </button>
+                  </span>
+                )}
+                {selectedLanguage !== 'all' && (
+                  <span className="inline-flex items-center gap-1 px-3 py-1.5 bg-green-100 text-green-800 text-sm rounded-full">
+                    Language: {selectedLanguage === 'none' ? 'No Language' : selectedLanguage.toUpperCase()}
+                    <button onClick={() => setSelectedLanguage('all')} className="ml-1 hover:text-green-900  cursor-pointer">
+                      ×
+                    </button>
+                  </span>
+                )}
+                {selectedType !== 'all' && (
+                  <span className="inline-flex items-center gap-1 px-3 py-1.5 bg-purple-100 text-purple-800 text-sm rounded-full">
+                    Type: {selectedType}
+                    <button onClick={() => setSelectedType('all')} className="ml-1 hover:text-purple-900  cursor-pointer">
+                      ×
+                    </button>
+                  </span>
+                )}
+                <button
+                  onClick={() => {
+                    setSearchTerm('');
+                    setSelectedLanguage('all');
+                    setSelectedType('all');
+                  }}
+                  className="text-sm text-gray-600 hover:text-gray-800 underline  cursor-pointer"
+                >
+                  Clear all
+                </button>
+              </div>
+            )}
           </div>
         </div>
-      )}
+
+        {/* Error Display */}
+        {error && (
+          <div className="mb-6">
+            <div className="bg-gradient-to-r from-red-50 to-orange-50 border-l-4 border-red-500 p-4 rounded-r-lg shadow-sm">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <FaExclamationCircle className="text-red-500 text-xl" />
+                  <div>
+                    <h4 className="font-medium text-gray-800">Error Loading Notes</h4>
+                    <p className="text-gray-600 text-sm">
+                      {typeof error === 'string' ? error : 'An unexpected error occurred'}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => dispatch({ type: 'notes/clearError' })}
+                  className="text-gray-400 hover:text-gray-600 transition  cursor-pointer"
+                >
+                  <FaTimes />
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Notes Grid or Empty State */}
+        {notes.length === 0 ? (
+          <div className="bg-white rounded-2xl shadow-lg p-8 sm:p-12 text-center">
+            <div className="max-w-md mx-auto">
+              <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-r from-blue-100 to-indigo-100 rounded-full flex items-center justify-center">
+                <FaStickyNote className="text-4xl text-blue-500 opacity-80" />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-800 mb-3">
+                {searchTerm || selectedLanguage !== 'all' || selectedType !== 'all'
+                  ? 'No matching notes found'
+                  : 'No notes yet'}
+              </h3>
+              <p className="text-gray-600 mb-6">
+                {searchTerm || selectedLanguage !== 'all' || selectedType !== 'all'
+                  ? 'Try adjusting your search terms or filters to find what you\'re looking for.'
+                  : 'Start documenting your language learning journey with your first note!'}
+              </p>
+              <button
+                onClick={handleCreateNote}
+                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600  cursor-pointer to-indigo-600 text-white font-medium rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg hover:shadow-xl"
+              >
+                <FaPlus />
+                Create Your First Note
+              </button>
+            </div>
+          </div>
+        ) : (
+          <>
+            {/* Notes Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {notes.map((note, index) => {
+                const colorThemes = [
+                  { bg: 'bg-gradient-to-br from-blue-50 to-blue-100', border: 'border-blue-200' },
+                  { bg: 'bg-gradient-to-br from-green-50 to-green-100', border: 'border-green-200' },
+                  { bg: 'bg-gradient-to-br from-purple-50 to-purple-100', border: 'border-purple-200' },
+                  { bg: 'bg-gradient-to-br from-amber-50 to-amber-100', border: 'border-amber-200' },
+                  { bg: 'bg-gradient-to-br from-pink-50 to-pink-100', border: 'border-pink-200' },
+                  { bg: 'bg-gradient-to-br from-indigo-50 to-indigo-100', border: 'border-indigo-200' },
+                ];
+
+                const theme = colorThemes[index % colorThemes.length];
+
+                return (
+                  <div
+                    key={note.id}
+                    className={`${theme.bg} border ${theme.border} rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden flex flex-col h-full cursor-pointer`}
+                    onClick={() => handleViewNote(note.id)}
+                  >
+                    {/* Note Header */}
+                    <div className="p-5 pb-3">
+                      <div className="flex justify-between items-start mb-3">
+                        <h3 className="font-bold text-gray-800 text-lg line-clamp-2 leading-tight">
+                          {note.note_name}
+                        </h3>
+                        <span className={`ml-2 px-3 py-1 text-xs font-medium rounded-full whitespace-nowrap ${getTypeBadgeClass(note.note_type)}`}>
+                          {note.note_type}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center justify-between mb-4">
+                        {note.target_lang && (
+                          <span className="inline-flex items-center gap-1 px-3 py-1 bg-white/80 border border-gray-300 rounded-full text-sm">
+                            <FaGlobeAmericas className="text-gray-500" />
+                            {note.target_lang.toUpperCase()}
+                          </span>
+                        )}
+                        <span className="text-xs text-gray-500">
+                          {new Date(note.updated_at).toLocaleDateString()}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Note Content Preview */}
+                    <div className="px-5 pb-4 flex-grow">
+                      <p className="text-gray-600 text-sm leading-relaxed line-clamp-3">
+                        {note.content.substring(0, 180)}
+                        {note.content.length > 180 ? '...' : ''}
+                      </p>
+                    </div>
+
+                    {/* Tags Section */}
+                    {note.tags && note.tags.length > 0 && (
+                      <div className="px-5 pb-4">
+                        <div className="flex flex-wrap gap-1.5">
+                          {note.tags.slice(0, 3).map((tag, idx) => (
+                            <span
+                              key={idx}
+                              className="text-xs px-2.5 py-1 bg-white/70 border border-gray-300 rounded-full text-gray-700"
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                          {note.tags.length > 3 && (
+                            <span className="text-xs px-2.5 py-1 text-gray-500">
+                              +{note.tags.length - 3}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Action Buttons */}
+                    <div className="px-5 py-4 border-t border-gray-200/50 bg-white/30 mt-auto">
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center gap-1 text-gray-500 text-sm">
+                          <FaClock className="text-xs" />
+                          <span>
+                            {new Date(note.updated_at).toLocaleTimeString([], {
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            })}
+                          </span>
+                        </div>
+
+                        <div className="flex gap-2">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleEditNote(note.id);
+                            }}
+                            className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition  cursor-pointer"
+                            title="Edit note"
+                          >
+                            <FaEdit />
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteNote(note.id);
+                            }}
+                            className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition  cursor-pointer"
+                            title="Delete note"
+                          >
+                            <FaTrash />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Notes Count Footer */}
+            <div className="mt-8 pt-6 border-t border-gray-200">
+              <p className="text-center text-gray-500 text-sm">
+                Showing {notes.length} note{notes.length !== 1 ? 's' : ''}
+                {(searchTerm || selectedLanguage !== 'all' || selectedType !== 'all') && ' (filtered)'}
+              </p>
+            </div>
+          </>
+        )}
+
+        {/* Loading Overlay */}
+        {(loading || isRefreshing) && notes.length > 0 && (
+          <div className="fixed inset-0 bg-black/10 backdrop-blur-sm flex items-center justify-center z-50">
+            <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-sm mx-4 transform transition-all">
+              <div className="flex flex-col items-center">
+                <div className="relative">
+                  <div className="w-16 h-16 border-4 border-blue-200 rounded-full"></div>
+                  <div className="absolute top-0 left-0 w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                </div>
+                <p className="mt-4 text-gray-700 font-medium">Updating your notes...</p>
+                <p className="text-gray-500 text-sm mt-1">This will just take a moment</p>
+              </div>
+            </div>
+          </div>
+        )}
+      </main>
     </div>
   );
 }
