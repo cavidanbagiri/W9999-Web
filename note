@@ -3,17 +3,23 @@
 Problems
 
 
-1 - Add note to the ai screen
+1 - Add note to the ai word screen
 
-2 - Need to fetch word ai for adding the note btn there
+2 - Need to solve the active lang section
 
-3 - Need to solve the active lang section
+3 - Ai Must be re chech the all translations
+
+4 - Note url must be dynamic, ai direct to notes or note fecth or note edit or note detail and note to ai direct
+
+5 - After reload page in note, doesnt seem the notes
+
+6 - After returning the ai-direct-chat, each time fetch operation happen
+
+7 - Need to fix if you go to the note page from navbar, navigate always return back.
 
 
 Today:
     
-3
+4, 2, 3, 1
 
-
-Problem
 

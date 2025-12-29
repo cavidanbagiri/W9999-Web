@@ -2,11 +2,16 @@
 import React, { useState, useRef, useEffect, use } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { IoClose, IoSend, IoChatbubbleEllipses, IoArrowDown } from "react-icons/io5";
+import { useNavigate } from 'react-router-dom';
 import { API_URL } from '../../http/api';
 import ReactMarkdown from 'react-markdown';
 import AIService from '../../services/AIService';
 import MsgBox from '../../layouts/MsgBox';
 import VoiceInputComponent from '../../layouts/VoiceInputComponent'
+
+import { MdDeleteOutline } from "react-icons/md";
+import { FaRegNoteSticky } from "react-icons/fa6";
+
 
 export default function AIDirectChatComponent({ onClose }) {
 
@@ -17,8 +22,9 @@ export default function AIDirectChatComponent({ onClose }) {
     'Turkish': 'tr-TR',
   }
 
-
+  const navigate = useNavigate();
   const dispatch = useDispatch();
+
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -29,6 +35,9 @@ export default function AIDirectChatComponent({ onClose }) {
 
 
   const { currentWord } = useSelector((state) => state.aiSlice);
+
+  const {current_note_url} = useSelector((state) => state.notesSlice);
+
   const [nativeLang, setNativeLang] = useState(null);
   const [clearChatVisible, setClearChatVisible] = useState(false);
   const [clearChatMsg, setClearChatMsg] = useState('');
@@ -255,16 +264,21 @@ export default function AIDirectChatComponent({ onClose }) {
 
   const clearChat = async () => {
 
-    // const result = dispatch(AIService.clearDirectChatHistory())
+    let userResponse = confirm("Are you sure you want to delete your chat history?");
+    if (userResponse) {
     const result = await dispatch(AIService.clearDirectChatHistory()).unwrap()
-
-    if (result) {
-      setClearChatVisible(true);
-      setClearChatMsg(result.message);
-      setMessages(initialMessages);
-      setIsLoading(false);
-      setAbortController(null);
+      if (result) {
+        setClearChatVisible(true);
+        setClearChatMsg(result.message);
+        setMessages(initialMessages);
+        setIsLoading(false);
+        setAbortController(null);
+      }
+    } else {
+      return;
     }
+
+    
   };
 
   const formatMessage = (text) => {
@@ -375,18 +389,27 @@ useEffect(() => {
         </div>
         <div className="flex items-center space-x-2">
           <button
+            onClick={()=>{
+              current_note_url ? navigate(current_note_url) : navigate('/notes')
+            }}
+            className="p-2 hover:bg-white/10 rounded-lg transition-colors text-sm font-sans cursor-pointer"
+            title="Clear Chat"
+          >
+            <FaRegNoteSticky className="text-xl" />
+          </button>
+          <button
             onClick={clearChat}
             className="p-2 hover:bg-white/10 rounded-lg transition-colors text-sm font-sans cursor-pointer"
             title="Clear Chat"
           >
-            Clear
+            <MdDeleteOutline className="text-xl" />
           </button>
           <button
             onClick={onClose}
             className="p-2 hover:bg-white/10 rounded-lg transition-colors cursor-pointer"
             title="Close Chat"
           >
-            <IoClose className="text-xl" />
+            <IoClose className="text-2xl" />
           </button>
         </div>
       </div>

@@ -6,7 +6,9 @@ const initialState = {
     notes: [],
     loading: false,
     error: null,
-    currentNote: null
+    currentNote: null,
+
+    current_note_url: null,
 };
 
 const notesSlice = createSlice({
@@ -28,9 +30,14 @@ const notesSlice = createSlice({
         clearCurrentNote: (state) => {
             state.currentNote = null;
         },
-        // Manual updates for optimistic updates
         addNote: (state, action) => {
             state.notes.unshift(action.payload);
+        },
+        addCurrentNoteURL: (state, action) => {
+            state.current_note_url = action.payload;
+        },
+        removeCurrentNoteURL: (state) => {
+            state.current_note_url = null;
         },
         updateNoteInState: (state, action) => {
             const index = state.notes.findIndex(note => note.id === action.payload.id);
@@ -142,7 +149,9 @@ export const {
     addNote,
     updateNoteInState,
     removeNote,
-    clearError
+    clearError,
+    addCurrentNoteURL,
+    removeCurrentNoteURL
 } = notesSlice.actions;
 
 export default notesSlice.reducer;

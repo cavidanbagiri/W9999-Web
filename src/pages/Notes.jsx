@@ -6,6 +6,9 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import NoteService from '../services/NoteService';
 import UserNotAuth from '../components/notes/UserNotAuth';
+
+import { addCurrentNoteURL, removeCurrentNoteURL } from '../store/note_store';
+
 import {
   FaSearch,
   FaPlus,
@@ -23,6 +26,9 @@ import {
   FaClock,
   FaExclamationCircle
 } from 'react-icons/fa';
+
+import { IoSparklesOutline } from "react-icons/io5";
+
 
 
 function NotesScreen() {
@@ -93,11 +99,13 @@ function NotesScreen() {
 
   // Handle create note
   const handleCreateNote = () => {
+    dispatch(addCurrentNoteURL('/notes/create'));
     navigate('/notes/create');
   };
 
   // Handle edit note
   const handleEditNote = (noteId) => {
+    dispatch(addCurrentNoteURL(`/notes/edit/${noteId}`));
     navigate(`/notes/edit/${noteId}`);
   };
 
@@ -138,6 +146,7 @@ function NotesScreen() {
 
   // Function to view note detail
   const handleViewNote = (noteId) => {
+    dispatch(addCurrentNoteURL(`/notes/detail/${noteId}`));
     navigate(`/notes/detail/${noteId}`);
   };
 
@@ -165,6 +174,19 @@ function NotesScreen() {
             </div>
 
             <div className="flex flex-wrap gap-2 sm:gap-3 w-full sm:w-auto">
+
+              <button
+                onClick={()=>{
+                  navigate('/ai-direct-chat')
+                }}
+                disabled={isRefreshing}
+                className="flex-1 sm:flex-none px-4 py-2.5 bg-white border border-gray-300 hover:bg-gray-50 rounded-lg flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:shadow  cursor-pointer"
+                title="Go To Direct Chat"
+              >
+                <IoSparklesOutline className='text-xl' />
+                <span className="hidden xs:inline">Refresh</span>
+              </button>
+
               <button
                 onClick={handleRefresh}
                 disabled={isRefreshing}

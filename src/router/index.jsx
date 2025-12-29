@@ -23,6 +23,7 @@ import NotesScreen from "../pages/Notes";
 import EditNoteComponent from "../components/notes/EditNoteComponent";
 import CreateNoteComponent from "../components/notes/CreateNoteComponent";
 import NoteDetailScreen from "../components/notes/NoteDetailScreen";
+import AIDirectChatComponent from "../components/ai/AIDirectChatComponent";
 
 
 const router = createBrowserRouter([
@@ -41,6 +42,10 @@ const router = createBrowserRouter([
             {
                 path: "/ai-chat",
                 element: <AIScreen/>
+            },
+            {
+                path: "/ai-direct-chat",
+                element: <AIDirectChatComponent/>
             },
             {
                 path:'/card-detail',

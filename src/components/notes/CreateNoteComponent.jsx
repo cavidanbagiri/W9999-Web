@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
-
 import UserNotAuth from '../../components/notes/UserNotAuth';
+
+import { removeCurrentNoteURL } from '../../store/note_store';
 
 import {
   FaSave,
@@ -220,9 +221,11 @@ function CreateNoteComponent() {
   const handleCancel = () => {
     if (formData.note_name || formData.content) {
       if (window.confirm('Are you sure? Your changes will be lost.')) {
+        dispatch(removeCurrentNoteURL());
         navigate('/notes');
       }
     } else {
+      dispatch(removeCurrentNoteURL());
       navigate('/notes');
     }
   };
@@ -249,6 +252,12 @@ function CreateNoteComponent() {
           {error}
         </div>
       )}
+
+      <div>
+        <button onClick={()=>navigate('/ai-direct-chat')} className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+          Back to AI Direct Chat
+        </button>
+      </div>
 
       {/* Main Form */}
       <form onSubmit={handleSubmit} className="space-y-6">

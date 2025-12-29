@@ -6,6 +6,8 @@ import ReactMarkdown from 'react-markdown';
 import NoteService from '../../services/NoteService';
 import UserNotAuth from '../../components/notes/UserNotAuth';
 
+import { removeCurrentNoteURL, addCurrentNoteURL } from '../../store/note_store';
+
 import {
     FaEdit,
     FaTrash,
@@ -14,6 +16,8 @@ import {
     FaClock,
     FaArrowLeft, FaTag, FaCalendar, FaCopy, FaIdCard, FaUser, FaCalendarPlus, FaHashtag, FaChevronDown, FaSpinner, FaFileAlt, FaRuler, FaCode, FaHistory
 } from 'react-icons/fa';
+
+import { IoSparklesOutline } from "react-icons/io5";
 
 function NoteDetailScreen() {
     const { id } = useParams();
@@ -33,6 +37,7 @@ function NoteDetailScreen() {
 
     // Handle edit
     const handleEdit = () => {
+        dispatch(addCurrentNoteURL(`/notes/edit/${id}`));
         navigate(`/notes/edit/${id}`);
     };
 
@@ -63,6 +68,7 @@ function NoteDetailScreen() {
 
     // Handle back
     const handleBack = () => {
+        dispatch(removeCurrentNoteURL());
         navigate('/notes');
     };
 
@@ -127,6 +133,18 @@ function NoteDetailScreen() {
 
                         {/* Action Buttons */}
                         <div className="flex flex-wrap gap-2 w-full sm:w-auto">
+
+                            <button
+                                onClick={()=>{
+                                    navigate('/ai-direct-chat')
+                                }}
+                                className="flex-1 sm:flex-none px-4 py-2.5 bg-white border border-gray-300 hover:bg-gray-50  cursor-pointer rounded-xl flex items-center justify-center gap-2 transition-all hover:shadow-md"
+                                title="Copy content"
+                            >
+                                <IoSparklesOutline />
+                                <span className="hidden xs:inline">Copy</span>
+                            </button>
+
                             <button
                                 onClick={handleCopyContent}
                                 className="flex-1 sm:flex-none px-4 py-2.5 bg-white border border-gray-300 hover:bg-gray-50  cursor-pointer rounded-xl flex items-center justify-center gap-2 transition-all hover:shadow-md"
@@ -353,9 +371,17 @@ function NoteDetailScreen() {
             </main>
 
             {/* Floating Action Button for Mobile */}
-            <div className="fixed bottom-32 md:bottom-6 right-6 z-30 sm:hidden">
+            {/* <div className="fixed bottom-32 md:bottom-6 right-6 z-30 sm:hidden">
                 <div className="flex flex-col items-end gap-2">
                     <div className="flex flex-col gap-2 transform transition-all duration-300">
+                        <button
+                            onClick={()=>{
+                                navigate('/ai-direct-chat')
+                            }}
+                            className="p-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all  cursor-pointer"
+                        >
+                            <IoSparklesOutline />
+                        </button>
                         <button
                             onClick={handleEdit}
                             className="p-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all  cursor-pointer"
@@ -377,7 +403,7 @@ function NoteDetailScreen() {
                         </button>
                     </div>
                 </div>
-            </div>
+            </div> */}
         </div>
     );
 

@@ -4,6 +4,8 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import UserNotAuth from '../../components/notes/UserNotAuth';
 
+import { removeCurrentNoteURL, addCurrentNoteURL } from '../../store/note_store';
+
 import {
   FaSave,
   FaTimes,
@@ -17,6 +19,10 @@ import {
   FaCalendar,
   FaArrowLeft
 } from 'react-icons/fa';
+
+
+import { IoSparklesOutline } from "react-icons/io5";
+
 import NoteService from '../../services/NoteService';
 
 function EditNoteComponent() {
@@ -223,7 +229,7 @@ function EditNoteComponent() {
         tags: formData.tags || []
       };
 
-      console.log('Updating note with data:', dataToSend);
+      // console.log('Updating note with data:', dataToSend);
 
       // Dispatch update note action
       const result = await dispatch(NoteService.updateNote({
@@ -232,6 +238,7 @@ function EditNoteComponent() {
       })).unwrap();
 
       // Navigate back to notes screen on success
+      dispatch(addCurrentNoteURL(`/notes/detail/${id}`));
       navigate(`/notes/detail/${id}`);
 
     } catch (err) {
@@ -250,12 +257,14 @@ function EditNoteComponent() {
   // Handle cancel
   const handleCancel = () => {
     if (window.confirm('Are you sure? Your changes will be lost.')) {
+      dispatch(removeCurrentNoteURL());
       navigate(`/notes/detail/${id}`);
     }
   };
 
   // Handle back to detail view
   const handleBack = () => {
+    dispatch(addCurrentNoteURL(`/notes/detail/${id}`));
     navigate(`/notes/detail/${id}`);
   };
 
@@ -263,12 +272,12 @@ function EditNoteComponent() {
   const charCount = formData.content.length;
   const charLimit = 50000;
 
-  
-    // User Not Authenticated
-    if (!is_auth) {
-     return <UserNotAuth />
-    }
-  
+
+  // User Not Authenticated
+  if (!is_auth) {
+    return <UserNotAuth />
+  }
+
 
   // Loading state
   if (notesLoading && !currentNote) {
@@ -300,13 +309,27 @@ function EditNoteComponent() {
     <div className="container mx-auto px-4 py-6 max-w-4xl">
       {/* Header */}
       <div className="mb-8">
-        <button
-          onClick={handleBack}
-          className="flex items-center text-blue-600 hover:text-blue-800 mb-4"
-        >
-          <FaArrowLeft className="mr-2" />
-          Back to Note
-        </button>
+        <div className=' flex items-center justify-between mb-4'>
+          <button
+            onClick={handleBack}
+            className="flex items-center text-blue-600 hover:text-blue-800 "
+          >
+            <FaArrowLeft className="mr-2" />
+            Back to Note
+          </button>
+          <div>
+            <button
+              onClick={() => {
+                navigate('/ai-direct-chat')
+              }}
+              className="flex-1 sm:flex-none px-4 py-2.5 bg-white border border-gray-300 hover:bg-gray-50  cursor-pointer rounded-xl flex items-center justify-center gap-2 transition-all hover:shadow-md"
+              title="Copy content"
+            >
+              <IoSparklesOutline />
+              <span className="hidden xs:inline">Copy</span>
+            </button>
+          </div>
+        </div>
 
         <div className="flex justify-between items-start">
           <div>
@@ -411,8 +434,8 @@ function EditNoteComponent() {
                   type="button"
                   onClick={() => setFormData(prev => ({ ...prev, note_type: type.value }))}
                   className={`flex-1 px-4 py-3 rounded-lg border transition-all ${formData.note_type === type.value
-                      ? `${type.color} border-2`
-                      : 'bg-white border-gray-300 hover:bg-gray-50'
+                    ? `${type.color} border-2`
+                    : 'bg-white border-gray-300 hover:bg-gray-50'
                     }`}
                 >
                   {type.label}

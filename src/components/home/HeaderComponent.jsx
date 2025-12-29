@@ -101,7 +101,7 @@ export default function HeaderComponent({ username }) {
     fetchDailyStreak();
     const getNativeLang = async () => {
       try {
-        const native = await localStorage.getItem('native');
+        const native = localStorage.getItem('native');
         setNativeLangCode(native);
       } catch (error) {
         console.error('Failed to load native language', error);
@@ -218,7 +218,7 @@ export default function HeaderComponent({ username }) {
               </div>
               <div className="text-right">
                 <div className="text-2xl font-bold text-white">
-                  {dailyStatistics?.current_streak || 0}
+                  {dailyStreak?.daily_streak || 0}
                 </div>
                 <p className="text-blue-100 text-sm">Day streak</p>
               </div>

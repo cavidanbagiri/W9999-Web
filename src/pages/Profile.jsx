@@ -29,6 +29,7 @@ export default function ProfileScreen() {
   const [statistics, setStatistics] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [dailyStreak, setDailyStreak] = useState(null);
 
   const logoutHandler = async () => {
     if (confirm("Are you sure you want to logout?")) {
@@ -61,8 +62,31 @@ export default function ProfileScreen() {
     }
   };
 
+
+  const fetchDailyStreak = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const token = localStorage.getItem('token');
+        if (token) {
+          const result = await dispatch(WordService.getDailyStreak());    
+          if (result && result.payload) {
+            setDailyStreak(result.payload);
+          } else {
+            setError('Failed to load daily streak');
+          }
+        }
+      } catch (err) {
+        setError('Error fetching daily streak');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+
   useEffect(() => {
     fetchStatistics();
+    fetchDailyStreak();
   }, [dispatch]);
 
   const formatNumber = (num) => {
@@ -101,14 +125,6 @@ export default function ProfileScreen() {
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex flex-col items-center justify-center p-4">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          {/* <PropagateLoader
-                            color={'#6366f1'}
-                            loading={loading}
-                            cssOverride={override}
-                            size={10}
-                            aria-label="Loading Spinner"
-                            data-testid="loader"
-                        /> */}
           <p className="text-gray-600 font-medium mt-5">Loading your profile...</p>
         </div>
       </div>
@@ -188,7 +204,7 @@ export default function ProfileScreen() {
             },
             { 
               label: 'Active Streak', 
-              value: statistics ? `${statistics.current_streak || 0} days` : '0 days', 
+              value: statistics ? `${dailyStreak?.daily_streak || 0} days` : '0 days', 
               icon: <IoStatsChart className="text-2xl" />,
               color: 'from-green-500 to-emerald-500'
             },
@@ -217,7 +233,7 @@ export default function ProfileScreen() {
           <div className="space-y-4">
             {[
               { label: 'Total Words Mastered', value: statistics ? formatNumber(statistics.total_learned_words) : '0' },
-              { label: 'Current Learning Streak', value: statistics ? `${statistics.current_streak || 0} days` : '0 days' },
+              { label: 'Current Learning Streak', value: statistics ? `${dailyStreak?.daily_streak || 0} days` : '0 days' },
               { label: 'Days Registered', value: statistics ? `${getDaysRegistered(statistics.join_date)} days` : '0 days' },
               { label: 'Account Created', value: statistics?.join_date ? new Date(statistics.join_date).toLocaleDateString('en-US', { 
                   year: 'numeric', 
