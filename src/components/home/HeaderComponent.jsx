@@ -44,6 +44,7 @@ export default function HeaderComponent({ username }) {
   const [isStatsExpanded, setIsStatsExpanded] = useState(false);
   const [dailyStatistics, setDailyStatistics] = useState(null);
   const [dailyStreak, setDailyStreak] = useState(null);
+  const [activeLanguage, setActiveLanguage] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [totalLearnedWords, setTotalLearnedWords] = useState(0);
@@ -96,9 +97,30 @@ export default function HeaderComponent({ username }) {
     }
   };
 
+  const fetchActiveLanguage = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const token = localStorage.getItem('token');
+      if (token) {
+        const result = await dispatch(WordService.fetchActiveLanguage());
+        if (result && result.payload) {
+          setActiveLanguage(result.payload.payload);
+        } else {
+          setError('Failed to load active language');
+        }
+      }
+    } catch (err) {
+      setError('Error fetching active language');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchDailyStatistics();
     fetchDailyStreak();
+    fetchActiveLanguage();
     const getNativeLang = async () => {
       try {
         const native = localStorage.getItem('native');
@@ -285,7 +307,7 @@ export default function HeaderComponent({ username }) {
         { 
           icon: <IoGlobe className="text-2xl text-white"/>, 
           label: 'Active Languages', 
-          value: dailyStatistics?.active_languages || '1',
+          value: activeLanguage?.active || '0',
           color: 'from-emerald-500 to-green-600',
           bgColor: 'bg-gradient-to-br from-emerald-300 to-green-400'
         },

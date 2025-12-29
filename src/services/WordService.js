@@ -273,7 +273,6 @@ class WordService {
         async (data, thunkAPI) => {
             try {
                 const response = await $api.get(`/words/user/statistics/daily_streak`);
-                console.log('the daily streak is working and the result is ', response)
                 return response.data;
             } catch (error) {
                 // Extract error details
@@ -287,6 +286,28 @@ class WordService {
             }
         }
     )
+
+
+    static fetchActiveLanguage = createAsyncThunk(
+        'word/main/fetchActiveLanguage',
+        async (thunkAPI) => {
+            try {
+                const response = await $api.get('/words/user/statistics/active_lang');
+                return {
+                    payload: response.data,
+                    status: response.status,
+                };
+            } catch (error) {
+                const errorData = error.response?.data || error.response?.statusText || error.message;
+                const statusCode = error.response?.status || error.response?.statusText || error.message;
+                // Pass custom error payload
+                return thunkAPI.rejectWithValue({
+                    payload: errorData,
+                    status: statusCode,
+                });
+            }
+        }
+    );
 
 
     static getCategories = createAsyncThunk(

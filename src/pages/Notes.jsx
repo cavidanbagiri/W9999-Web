@@ -45,12 +45,20 @@ function NotesScreen() {
   const [selectedType, setSelectedType] = useState('all');
   const [isRefreshing, setIsRefreshing] = useState(false);
 
+
+  // Initial reload
+  useEffect(() => {
+    if (is_auth) {
+      fetchNotes();
+    }
+  }, [is_auth]);
+
+
   // Fetch notes on component mount and when filters change
   useEffect(() => {
     if (is_auth) {
       fetchNotes();
     }
-    // fetchNotes();
   }, [selectedLanguage, selectedType]);
 
   // Fetch notes function
