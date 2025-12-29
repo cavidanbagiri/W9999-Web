@@ -1,31 +1,11 @@
 
 
-// // NavIcon.jsx
-// import React from 'react';
-// import Tooltip from './Tooltip';
-// import { Link, useMatch } from "react-router-dom";
-
-// function NavIcon({ to, icon: Icon, label }) {
-//   const match = useMatch(to);
-
-//   return (
-//     <Tooltip text={label}>
-//       <Link to={to}>
-//         <div className={`my-3 text-black mx-1 hover:bg-gray-100 px-2.5 py-1 flex items-center rounded-lg ${match ? 'bg-gray-100' : ''}`}> 
-//           <Icon className={`text-[1.6rem] ${match ? '' : ''}`} />
-//         </div>
-//       </Link>
-//     </Tooltip>
-//   );
-// }
-
-// export default NavIcon;
-
-
 
 
 // components/navbar/NavIcon.jsx
 import { Link, useLocation } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { addCurrentNoteURL } from '../../store/note_store';
 
 const NavIcon = ({ 
   to, 
@@ -36,6 +16,7 @@ const NavIcon = ({
   isActive,
   isMobile = false 
 }) => {
+  const dispatch = useDispatch();
   const location = useLocation();
   const active = isActive !== undefined ? isActive : location.pathname === to;
 
@@ -43,6 +24,11 @@ const NavIcon = ({
     return (
       <Link
         to={to}
+        onClick={() => {
+          if (label === 'Notes') {
+            dispatch(addCurrentNoteURL('/notes'));
+          }
+        }}
         className="flex flex-col items-center justify-center flex-1 min-w-0 group"
       >
         <div className={`p-3 rounded-2xl transition-all duration-200 ${
@@ -65,6 +51,11 @@ const NavIcon = ({
   return (
     <Link
       to={to}
+      onClick={() => {
+          if (label === 'Notes') {
+            dispatch(addCurrentNoteURL('/notes'));
+          }
+        }}
       className={`flex flex-col items-center justify-center px-4 py-2 rounded-xl transition-all duration-200 group relative ${
         active 
           ? `bg-white shadow-md ${color} border border-gray-200` 

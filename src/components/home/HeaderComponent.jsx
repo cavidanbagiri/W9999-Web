@@ -64,7 +64,6 @@ export default function HeaderComponent({ username }) {
       if (token) {
         const result = await dispatch(WordService.getDailyStatistics());    
         if (result && result.payload) {
-          console.log('daiyl stat => ', result.payload)
           setDailyStatistics(result.payload);
         } else {
           setError('Failed to load daily streak');
