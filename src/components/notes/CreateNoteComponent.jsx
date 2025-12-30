@@ -1,10 +1,21 @@
+
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
 import UserNotAuth from '../../components/notes/UserNotAuth';
 
-import { removeCurrentNoteURL } from '../../store/note_store';
+import { removeCurrentNoteURL, 
+  addCurrentNoteURL,
+    handleInputChangeRT,
+    handleContentChangeRT,
+    handleAddTagRT,
+    handleRemoveTagRT,
+    handleTagKeyPressRT,
+    setTagInputRT,
+    resetFormDataRT,
+} from '../../store/note_store';
 
 import {
   FaSave,
@@ -26,16 +37,9 @@ function CreateNoteComponent() {
   const dispatch = useDispatch();
   const { user, is_auth } = useSelector((state) => state.authSlice);
 
-  // Form state
-  const [formData, setFormData] = useState({
-    note_name: '',
-    target_lang: user?.learning_language || '', // Set to user's learning language if available
-    note_type: 'general',
-    content: '',
-    tags: [],
-  });
+  const { formData, tagInput } = useSelector((state) => state.notesSlice);
 
-  const [tagInput, setTagInput] = useState('');
+  // const [tagInput, setTagInput] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
 
@@ -62,54 +66,47 @@ function CreateNoteComponent() {
   }
 
 
-  // Handle form input changes
+
+  // Handle form input changes - FIXED VERSION
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    dispatch(handleInputChangeRT({ name, value }));
   };
 
-  // Handle content change (for markdown editor)
+  // Handle content change - FIXED VERSION
   const handleContentChange = (e) => {
-    setFormData(prev => ({
-      ...prev,
-      content: e.target.value
-    }));
+    const value = e.target.value;
+    dispatch(handleContentChangeRT(value));
   };
 
-  // Add a tag
+  // Handle tag input field change
+  const handleTagInputChange = (e) => {
+    const value = e.target.value;
+    dispatch(setTagInputRT(value));
+  };
+
+  // Add a tag - FIXED VERSION
   const handleAddTag = () => {
-    if (tagInput.trim() && formData.tags.length < 20) {
-      const newTag = tagInput.trim().toLowerCase();
-      if (!formData.tags.includes(newTag)) {
-        setFormData(prev => ({
-          ...prev,
-          tags: [...prev.tags, newTag]
-        }));
-      }
-      setTagInput('');
-    }
+    dispatch(handleAddTagRT(tagInput)); // Pass the tagInput value
   };
 
-  // Remove a tag
+  // Remove a tag - Already correct
   const handleRemoveTag = (tagToRemove) => {
-    setFormData(prev => ({
-      ...prev,
-      tags: prev.tags.filter(tag => tag !== tagToRemove)
-    }));
+    dispatch(handleRemoveTagRT(tagToRemove));
   };
 
-  // Handle tag input key press
+  // Handle tag input key press - FIXED VERSION
   const handleTagKeyPress = (e) => {
     if (e.key === 'Enter') {
       e.preventDefault();
-      handleAddTag();
+      dispatch(handleTagKeyPressRT({ 
+        key: e.key, 
+        tagInput: e.target.value 
+      }));
     }
   };
 
-  // Formatting helpers for markdown
+  // Formatting helpers for markdown - NEEDS UPDATE
   const applyFormatting = (format) => {
     const textarea = document.getElementById('content-textarea');
     const start = textarea.selectionStart;
@@ -145,10 +142,8 @@ function CreateNoteComponent() {
       formattedText +
       formData.content.substring(end);
 
-    setFormData(prev => ({
-      ...prev,
-      content: newContent
-    }));
+    // Use Redux action instead of setFormData
+    dispatch(handleContentChangeRT(newContent));
 
     // Set cursor position after formatting
     setTimeout(() => {
@@ -177,10 +172,7 @@ function CreateNoteComponent() {
     return true;
   };
 
-
-
   // Handle create note
-  // In CreateNoteComponent.jsx, update the form submission:
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -197,11 +189,15 @@ function CreateNoteComponent() {
         tags: formData.tags || [] // Ensure tags is always an array
       };
 
-      console.log('Sending data:', dataToSend);
-
       // Dispatch create note action
       const result = await dispatch(NoteService.createNote(dataToSend)).unwrap();
 
+      // Add url to current note url
+      dispatch(addCurrentNoteURL('/notes'));
+
+      // Reset form after successful submission
+      dispatch(resetFormDataRT());
+      
       // Navigate back to notes screen on success
       navigate('/notes');
 
@@ -216,11 +212,11 @@ function CreateNoteComponent() {
     }
   };
 
-
   // Handle cancel
   const handleCancel = () => {
     if (formData.note_name || formData.content) {
       if (window.confirm('Are you sure? Your changes will be lost.')) {
+        dispatch(resetFormDataRT());
         dispatch(removeCurrentNoteURL());
         navigate('/notes');
       }
@@ -229,6 +225,15 @@ function CreateNoteComponent() {
       navigate('/notes');
     }
   };
+
+
+
+
+
+
+
+
+
 
   // Character count
   const charCount = formData.content.length;
@@ -317,7 +322,9 @@ function CreateNoteComponent() {
                 <button
                   key={type.value}
                   type="button"
-                  onClick={() => setFormData(prev => ({ ...prev, note_type: type.value }))}
+                  onClick={() => handleInputChange({ 
+                    target: { name: 'note_type', value: type.value } 
+                  })}
                   className={`flex-1 px-4 py-3 rounded-lg border transition ${formData.note_type === type.value
                       ? `${type.color} border-blue-500`
                       : 'bg-gray-100 border-gray-300 hover:bg-gray-200'
@@ -340,7 +347,7 @@ function CreateNoteComponent() {
             <input
               type="text"
               value={tagInput}
-              onChange={(e) => setTagInput(e.target.value)}
+              onChange={handleTagInputChange}
               onKeyPress={handleTagKeyPress}
               placeholder="Add a tag and press Enter"
               className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"

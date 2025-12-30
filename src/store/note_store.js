@@ -9,6 +9,18 @@ const initialState = {
     currentNote: null,
 
     current_note_url: null,
+
+    formData: {
+        note_name: '',
+        target_lang: '',
+        note_type: 'general',
+        content: '',
+        tags: [],
+    },
+    tagInput: '',
+    isDirty: false,
+
+
 };
 
 const notesSlice = createSlice({
@@ -50,7 +62,101 @@ const notesSlice = createSlice({
         },
         clearError: (state) => {
             state.error = null;
+        },
+        handleInputChangeRT: (state, action) => {
+            const { name, value } = action.payload;
+            if (name in state.formData) {
+                state.formData[name] = value;
+                state.isDirty = true;
+            }
+        },
+        handleContentChangeRT: (state, action) => {
+            state.formData.content = action.payload;
+            state.isDirty = true;
+        },
+        handleAddTagRT: (state, action) => {
+            const tagInput = action.payload || state.tagInput;
+            const { tags } = state.formData;
+
+            if (tagInput.trim() && tags.length < 20) {
+                const newTag = tagInput.trim().toLowerCase();
+                if (!tags.includes(newTag)) {
+                    state.formData.tags.push(newTag);
+                    state.isDirty = true;
+                }
+                state.tagInput = '';
+            }
+        },
+        handleRemoveTagRT: (state, action) => {
+            const tagToRemove = action.payload;
+            state.formData.tags = state.formData.tags.filter(
+                tag => tag !== tagToRemove
+            );
+            state.isDirty = true;
+        },
+        handleTagKeyPressRT: (state, action) => {
+            const { key, tagInput } = action.payload;
+            if (key === 'Enter') {
+                if (tagInput.trim() && state.formData.tags.length < 20) {
+                    const newTag = tagInput.trim().toLowerCase();
+                    if (!state.formData.tags.includes(newTag)) {
+                        state.formData.tags.push(newTag);
+                        state.isDirty = true;
+                    }
+                    state.tagInput = '';
+                }
+            }
+        },
+        setTagInputRT: (state, action) => {
+            state.tagInput = action.payload;
+        },
+        resetFormDataRT: (state) => {
+            state.formData = initialState.formData;
+            state.tagInput = '';
+            state.isDirty = false;
+        },
+
+         // Load existing note into form
+        loadNoteIntoForm: (state, action) => {
+        const note = action.payload;
+        if (note) {
+            state.formData = {
+            note_name: note.note_name || '',
+            target_lang: note.target_lang || null,
+            note_type: note.note_type || 'general',
+            content: note.content || '',
+            tags: note.tags || [],
+            };
+            state.tagInput = '';
+            state.isDirty = false;
         }
+        },
+        
+        // Clear form but keep note data for reference
+        clearFormForEdit: (state) => {
+        state.formData = {
+            ...initialState.formData,
+            target_lang: null,
+        };
+        state.tagInput = '';
+        state.isDirty = false;
+        },
+        
+        // Reset to original note data
+        resetToOriginalNote: (state, action) => {
+        const note = action.payload;
+        if (note) {
+            state.formData = {
+            note_name: note.note_name || '',
+            target_lang: note.target_lang || null,
+            note_type: note.note_type || 'general',
+            content: note.content || '',
+            tags: note.tags || [],
+            };
+            state.isDirty = false;
+        }
+        },
+
     },
     extraReducers: (builder) => {
         // Create Note
@@ -92,10 +198,22 @@ const notesSlice = createSlice({
                 state.loading = true;
                 state.error = null;
             })
+            
             .addCase(NoteService.getNoteById.fulfilled, (state, action) => {
                 state.loading = false;
+                const note = action.payload;
                 state.currentNote = action.payload;
-                state.error = null;
+                if (note) {
+                state.formData = {
+                    note_name: note.note_name || '',
+                    target_lang: note.target_lang || null,
+                    note_type: note.note_type || 'general',
+                    content: note.content || '',
+                    tags: note.tags || [],
+                };
+                state.tagInput = '';
+                state.isDirty = false;
+                }
             })
             .addCase(NoteService.getNoteById.rejected, (state, action) => {
                 state.loading = false;
@@ -151,7 +269,17 @@ export const {
     removeNote,
     clearError,
     addCurrentNoteURL,
-    removeCurrentNoteURL
+    removeCurrentNoteURL,
+    handleInputChangeRT,
+    handleContentChangeRT,
+    handleAddTagRT,
+    handleRemoveTagRT,
+    handleTagKeyPressRT,
+    setTagInputRT,
+    resetFormDataRT,
+    loadNoteIntoForm,
+    clearFormForEdit,
+    resetToOriginalNote,
 } = notesSlice.actions;
 
 export default notesSlice.reducer;

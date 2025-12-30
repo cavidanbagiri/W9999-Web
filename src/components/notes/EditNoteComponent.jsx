@@ -4,7 +4,17 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import UserNotAuth from '../../components/notes/UserNotAuth';
 
-import { removeCurrentNoteURL, addCurrentNoteURL } from '../../store/note_store';
+import { removeCurrentNoteURL,
+  addCurrentNoteURL,
+  handleInputChangeRT,
+  handleContentChangeRT,
+  handleAddTagRT,
+  handleRemoveTagRT,
+  handleTagKeyPressRT,
+  setTagInputRT,
+  resetToOriginalNote,
+  clearFormForEdit
+} from '../../store/note_store';
 
 import {
   FaSave,
@@ -31,42 +41,19 @@ function EditNoteComponent() {
   const { id } = useParams();
 
   // Get state from Redux
-  const { currentNote, loading: notesLoading, error: notesError } = useSelector((state) => state.notesSlice);
+  const { 
+    currentNote, 
+    loading: notesLoading, 
+    error: notesError, 
+    formData,
+    tagInput 
+  } = useSelector((state) => state.notesSlice);
   const { user, is_auth } = useSelector((state) => state.authSlice);
 
-  // Form state
-  const [formData, setFormData] = useState({
-    note_name: '',
-    target_lang: null,
-    note_type: 'general',
-    content: '',
-    tags: [],
-  });
-
-  const [tagInput, setTagInput] = useState('');
+  // const [tagInput, setTagInput] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [showPreview, setShowPreview] = useState(false);
-
-  // Fetch note data when component mounts
-  useEffect(() => {
-    if (id) {
-      dispatch(NoteService.getNoteById(parseInt(id)));
-    }
-  }, [dispatch, id]);
-
-  // Populate form when note data is loaded
-  useEffect(() => {
-    if (currentNote) {
-      setFormData({
-        note_name: currentNote.note_name || '',
-        target_lang: currentNote.target_lang || null,
-        note_type: currentNote.note_type || 'general',
-        content: currentNote.content || '',
-        tags: currentNote.tags || [],
-      });
-    }
-  }, [currentNote]);
 
   // Available languages
   const languages = [
@@ -84,50 +71,98 @@ function EditNoteComponent() {
     { value: 'general', label: 'General', color: 'bg-purple-100 text-purple-800 border-purple-300' },
   ];
 
-  // Handle form input changes
+
+
+  // User Not Authenticated
+  if (!is_auth) {
+    return <UserNotAuth />
+  }
+
+
+  useEffect(() => {
+  if (id) {
+    const noteId = parseInt(id);
+    
+    // Only fetch if form is empty (indicating first load)
+    // OR if the currentNote doesn't match the ID we're editing
+    const isFormEmpty = !formData.note_name && !formData.content;
+    const isDifferentNote = currentNote && currentNote.id !== noteId;
+    
+    if (isFormEmpty || isDifferentNote) {
+      dispatch(NoteService.getNoteById(noteId));
+    }
+  }
+}, [dispatch, id, formData.note_name, formData.content, currentNote]);
+
+
+// Loading state
+  if (notesLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading note...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (notesError) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-red-600 text-xl">⚠️</div>
+          <p className="mt-4 text-red-600">{notesError}</p>
+          <button
+            onClick={() => navigate('/notes')}
+            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          >
+            Back to Notes
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+
+
+// Handle form input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    dispatch(handleInputChangeRT({ name, value }));
   };
 
   // Handle content change
   const handleContentChange = (e) => {
-    setFormData(prev => ({
-      ...prev,
-      content: e.target.value
-    }));
+    const value = e.target.value;
+    dispatch(handleContentChangeRT(value));
+  };
+
+  // Handle tag input change
+  const handleTagInputChange = (e) => {
+    const value = e.target.value;
+    dispatch(setTagInputRT(value));
   };
 
   // Add a tag
   const handleAddTag = () => {
-    if (tagInput.trim() && formData.tags.length < 20) {
-      const newTag = tagInput.trim().toLowerCase();
-      if (!formData.tags.includes(newTag)) {
-        setFormData(prev => ({
-          ...prev,
-          tags: [...prev.tags, newTag]
-        }));
-      }
-      setTagInput('');
-    }
+    dispatch(handleAddTagRT(tagInput));
   };
 
   // Remove a tag
   const handleRemoveTag = (tagToRemove) => {
-    setFormData(prev => ({
-      ...prev,
-      tags: prev.tags.filter(tag => tag !== tagToRemove)
-    }));
+    dispatch(handleRemoveTagRT(tagToRemove));
   };
 
   // Handle tag input key press
   const handleTagKeyPress = (e) => {
     if (e.key === 'Enter') {
       e.preventDefault();
-      handleAddTag();
+      dispatch(handleTagKeyPressRT({ 
+        key: e.key, 
+        tagInput: e.target.value 
+      }));
     }
   };
 
@@ -158,7 +193,7 @@ function EditNoteComponent() {
         break;
       case 'link':
         formattedText = `[${selectedText}](url)`;
-        cursorOffset = selectedText.length + 3; // Position after "](url)"
+        cursorOffset = selectedText.length + 3;
         break;
       default:
         formattedText = selectedText;
@@ -169,10 +204,7 @@ function EditNoteComponent() {
       formattedText +
       formData.content.substring(end);
 
-    setFormData(prev => ({
-      ...prev,
-      content: newContent
-    }));
+    dispatch(handleContentChangeRT(newContent));
 
     // Set cursor position after formatting
     setTimeout(() => {
@@ -222,14 +254,12 @@ function EditNoteComponent() {
     setIsSubmitting(true);
 
     try {
-      // Prepare data - convert empty string to null for target_lang
+      // Prepare data - handle null target_lang properly
       const dataToSend = {
         ...formData,
         target_lang: formData.target_lang || null,
         tags: formData.tags || []
       };
-
-      // console.log('Updating note with data:', dataToSend);
 
       // Dispatch update note action
       const result = await dispatch(NoteService.updateNote({
@@ -242,7 +272,6 @@ function EditNoteComponent() {
       navigate(`/notes/detail/${id}`);
 
     } catch (err) {
-      // Handle error from Redux
       const errorMessage = err?.payload?.detail ||
         err?.payload?.message ||
         err?.message ||
@@ -268,42 +297,25 @@ function EditNoteComponent() {
     navigate(`/notes/detail/${id}`);
   };
 
+  // Reset to original note data
+  const handleResetToOriginal = () => {
+    if (currentNote && window.confirm('Are you sure? This will discard all changes.')) {
+      dispatch(resetToOriginalNote(currentNote));
+    }
+  };
+
+
+
+
+
+
+
   // Character count
   const charCount = formData.content.length;
   const charLimit = 50000;
 
 
-  // User Not Authenticated
-  if (!is_auth) {
-    return <UserNotAuth />
-  }
 
-
-  // Loading state
-  if (notesLoading && !currentNote) {
-    return (
-      <div className="container mx-auto px-4 py-12 text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mx-auto mb-4"></div>
-        <p className="text-gray-600">Loading note...</p>
-      </div>
-    );
-  }
-
-  // Error state
-  if (notesError && !currentNote) {
-    return (
-      <div className="container mx-auto px-4 py-12 text-center">
-        <h2 className="text-2xl font-bold text-gray-700 mb-4">Note not found</h2>
-        <p className="text-gray-600 mb-6">{notesError}</p>
-        <button
-          onClick={() => navigate('/notes')}
-          className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-        >
-          Back to Notes
-        </button>
-      </div>
-    );
-  }
 
   return (
     <div className="container mx-auto px-4 py-6 max-w-4xl">
@@ -404,10 +416,7 @@ function EditNoteComponent() {
             <select
               name="target_lang"
               value={formData.target_lang || ''}
-              onChange={(e) => setFormData(prev => ({
-                ...prev,
-                target_lang: e.target.value || null
-              }))}
+              onChange={handleInputChange}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
               {languages.map((lang) => (
@@ -432,7 +441,10 @@ function EditNoteComponent() {
                 <button
                   key={type.value}
                   type="button"
-                  onClick={() => setFormData(prev => ({ ...prev, note_type: type.value }))}
+                  onClick={() => dispatch(handleInputChangeRT({ 
+                    name: 'note_type', 
+                    value: type.value 
+                  }))}
                   className={`flex-1 px-4 py-3 rounded-lg border transition-all ${formData.note_type === type.value
                     ? `${type.color} border-2`
                     : 'bg-white border-gray-300 hover:bg-gray-50'
@@ -458,7 +470,7 @@ function EditNoteComponent() {
             <input
               type="text"
               value={tagInput}
-              onChange={(e) => setTagInput(e.target.value)}
+              onChange={handleTagInputChange}
               onKeyPress={handleTagKeyPress}
               placeholder="Add a tag and press Enter"
               className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"

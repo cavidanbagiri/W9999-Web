@@ -5,21 +5,24 @@ Problems
 
 1 - Ai Must be re chech the all translations
 
-2 - Note relationship added between notes and ai direct chat, but, after each time url changing, the notes are not updated
+2 - After returning the ai-direct-chat, each time fetch operation happen
 
-3 - After returning the ai-direct-chat, each time fetch operation happen
+3 - Need to add ai direct notes ability to work ai screen
 
-4 - Need to add ai direct notes ability to work ai screen
+4 - Need to chech, if l enter somewhere under the to in navbar, navbar menu must be active. 
 
 
 Today:
     
 
 
+                                                                   
+Test                                                                
 
-Test 
-
-4
+test the notes one more time.
 
 
 problem
+
+
+
