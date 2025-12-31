@@ -23,6 +23,20 @@ import { MdDeleteOutline } from "react-icons/md";
 import { FaRegNoteSticky, } from "react-icons/fa6";
 import { FaRedo } from "react-icons/fa";
 
+const AIMessageContent = React.memo(({ text }) => (
+  <ReactMarkdown
+    components={{
+      strong: ({ children }) => <strong className="font-bold text-gray-900">{children}</strong>,
+      em: ({ children }) => <em className="italic text-gray-800">{children}</em>,
+      p: ({ children }) => <p className="mb-2 leading-relaxed">{children}</p>,
+      ul: ({ children }) => <ul className="list-disc list-inside mb-2 space-y-1">{children}</ul>,
+      ol: ({ children }) => <ol className="list-decimal list-inside mb-2 space-y-1">{children}</ol>,
+      li: ({ children }) => <li className="leading-relaxed">{children}</li>,
+    }}
+  >
+    {text}
+  </ReactMarkdown>
+));
 
 export default function AIDirectChatComponent({ onClose }) {
   const STT_LANGUAGES = {
@@ -36,11 +50,11 @@ export default function AIDirectChatComponent({ onClose }) {
   const dispatch = useDispatch();
 
   // CORRECT WAY - Direct destructuring from state
-  const { 
-    messages = [], 
-    isLoading = false, 
-    error = null, 
-    isInitialized = false, 
+  const {
+    messages = [],
+    isLoading = false,
+    error = null,
+    isInitialized = false,
     lastFetched = null,
     cacheExpiryMinutes = 60
   } = useSelector((state) => state.aiDirectChatSlice || {});
@@ -84,6 +98,10 @@ export default function AIDirectChatComponent({ onClose }) {
       isStreaming: false
     }
   ];
+
+  const handleClose = () => {
+    navigate(-1);
+  };
 
   // Initialize component
   useEffect(() => {
@@ -240,7 +258,7 @@ export default function AIDirectChatComponent({ onClose }) {
 
               try {
                 const data = JSON.parse(dataStr);
-                
+
                 if (data.error) {
                   dispatch(updateStreamingMessage({
                     messageId: aiMessageId,
@@ -307,10 +325,10 @@ export default function AIDirectChatComponent({ onClose }) {
     if (userResponse) {
       dispatch(clearMessages());
       dispatch(setMessages(initialMessages));
-      
+
       setClearChatVisible(true);
       setClearChatMsg('Chat history cleared successfully');
-      
+
       setTimeout(() => {
         setClearChatVisible(false);
       }, 2000);
@@ -325,22 +343,38 @@ export default function AIDirectChatComponent({ onClose }) {
     }
   };
 
-  const formatMessage = (text) => {
-    return (
-      <ReactMarkdown
-        components={{
-          strong: ({ children }) => <strong className="font-bold text-gray-900">{children}</strong>,
-          em: ({ children }) => <em className="italic text-gray-800">{children}</em>,
-          p: ({ children }) => <p className="mb-2 leading-relaxed">{children}</p>,
-          ul: ({ children }) => <ul className="list-disc list-inside mb-2 space-y-1">{children}</ul>,
-          ol: ({ children }) => <ol className="list-decimal list-inside mb-2 space-y-1">{children}</ol>,
-          li: ({ children }) => <li className="leading-relaxed">{children}</li>,
-        }}
+
+  const MessageItem = React.memo(({ message }) => (
+    <div className={`flex ${message.isUser ? 'justify-end' : 'justify-start'}`}>
+      <div className={`max-w-[95%] rounded-2xl p-4 ${message.isUser
+          ? 'bg-indigo-500 text-white'
+          : 'bg-white border border-gray-200 text-gray-800'
+        }`}
       >
-        {text}
-      </ReactMarkdown>
-    );
-  };
+        <div>
+          {message.isUser ? (
+            <div className="whitespace-pre-wrap">{message.text}</div>
+          ) : (
+            <AIMessageContent text={message.text} />
+          )}
+          {message.isStreaming && message.text === '' && (
+            <div className="flex space-x-1 mt-2">
+              <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+              <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+              <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  ));
+
+  // ADD THIS: Memoize the entire messages list
+  const renderedMessages = React.useMemo(() => {
+    return messages.map((message) => (
+      <MessageItem key={message.id} message={message} />
+    ));
+  }, [messages]); // <-- CRITICAL: Only depends on messages array
 
   return (
     <div className="fixed inset-0 z-50 bg-white flex flex-col">
@@ -383,7 +417,7 @@ export default function AIDirectChatComponent({ onClose }) {
             <MdDeleteOutline className="text-xl" />
           </button>
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className="p-2 hover:bg-white/10 rounded-lg transition-colors"
             title="Close Chat"
           >
@@ -405,35 +439,7 @@ export default function AIDirectChatComponent({ onClose }) {
         className="flex-1 overflow-y-auto bg-gray-50 p-4"
       >
         <div className="max-w-3xl mx-auto space-y-4">
-          {messages.map((message) => (
-            <div key={message.id} className={`flex ${message.isUser ? 'justify-end' : 'justify-start'}`}>
-              <div className={`max-w-[95%] rounded-2xl p-4 ${
-                message.isUser
-                  ? 'bg-indigo-500 text-white'
-                  : 'bg-white border border-gray-200 text-gray-800'
-                }`}
-              >
-                <div>
-                  {message.isUser ? (
-                    <div className="whitespace-pre-wrap">{message.text}</div>
-                  ) : (
-                    formatMessage(message.text)
-                  )}
-                  {message.isStreaming && message.text === '' && (
-                    <div className="flex space-x-1 mt-2">
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                    </div>
-                  )}
-                </div>
-                <div className={`text-xs mt-2 ${message.isUser ? 'text-indigo-200' : 'text-gray-500'}`}>
-                  {/* {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} */}
-                  
-                </div>
-              </div>
-            </div>
-          ))}
+          {renderedMessages}
           <div ref={messagesEndRef} />
         </div>
 
@@ -450,24 +456,6 @@ export default function AIDirectChatComponent({ onClose }) {
       {/* Input Area */}
       <div className="border-t border-gray-200 px-4 py-4 bg-white">
         <div className="max-w-3xl mx-auto">
-          {/* <div className="flex gap-2">
-            <textarea
-              value={inputMessage}
-              onChange={(e) => setInputMessage(e.target.value)}
-              onKeyPress={handleKeyPress}
-              placeholder="Type your message here..."
-              className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
-              rows={2}
-              disabled={isLoading}
-            />
-            <button
-              onClick={handleSendMessage}
-              disabled={isLoading || !inputMessage.trim()}
-              className="px-6 py-3 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <IoSend className="text-lg" />
-            </button>
-          </div> */}
           
           <div className="mt-3">
             <VoiceInputComponent
