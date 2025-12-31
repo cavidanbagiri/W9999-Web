@@ -9,8 +9,9 @@ Problems
 
 3 - Need to add ai direct notes ability to work ai screen
 
-4 - Need to chech, if l enter somewhere under the to in navbar, navbar menu must be active. 
+4 - Need to add cancel the ai chat when user click on the close button. abort controller 
 
+5 - In the ar_direct_chat, meassges wwrites very late and also
 
 Today:
     
@@ -23,6 +24,3 @@ test the notes one more time.
 
 
 problem
-
-
-

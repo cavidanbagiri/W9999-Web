@@ -7,6 +7,7 @@ import translateSlice from './translate_store.js'
 import favoritesSlice from './favorites_store.js'
 import categoryWordsSlice from './category_words_store.js'
 import notesSlice from './note_store.js'
+import aiDirectChatSlice from './ai_direct_chat_store.js'
 
 const store = configureStore({
   reducer: {
@@ -17,7 +18,11 @@ const store = configureStore({
     favoritesSlice: favoritesSlice,
     categoryWordsSlice: categoryWordsSlice,
     notesSlice: notesSlice,
+    aiDirectChatSlice: aiDirectChatSlice,
   },
 })
 
+
 export default store;
+
+

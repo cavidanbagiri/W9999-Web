@@ -1,74 +1,133 @@
-
-import React, { useState, useRef, useEffect, use } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { IoClose, IoSend, IoChatbubbleEllipses, IoArrowDown } from "react-icons/io5";
 import { useNavigate } from 'react-router-dom';
 import { API_URL } from '../../http/api';
 import ReactMarkdown from 'react-markdown';
-import AIService from '../../services/AIService';
-import MsgBox from '../../layouts/MsgBox';
-import VoiceInputComponent from '../../layouts/VoiceInputComponent'
 
+// Import actions from your slice
+import {
+  addMessage,
+  updateStreamingMessage,
+  clearMessages,
+  setMessages,
+  loadFromBackup,
+  saveToBackup,
+  fetchChatContext,
+  // Check if you have forceRefresh in your slice, if not we'll create it
+} from '../../store/ai_direct_chat_store';
+
+import MsgBox from '../../layouts/MsgBox';
+import VoiceInputComponent from '../../layouts/VoiceInputComponent';
 import { MdDeleteOutline } from "react-icons/md";
-import { FaRegNoteSticky } from "react-icons/fa6";
+import { FaRegNoteSticky, } from "react-icons/fa6";
+import { FaRedo } from "react-icons/fa";
 
 
 export default function AIDirectChatComponent({ onClose }) {
-
   const STT_LANGUAGES = {
     'English': 'en-US',
     'Spanish': 'es-ES',
     'Russian': 'ru-RU',
     'Turkish': 'tr-TR',
-  }
+  };
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const [messages, setMessages] = useState([]);
+  // CORRECT WAY - Direct destructuring from state
+  const { 
+    messages = [], 
+    isLoading = false, 
+    error = null, 
+    isInitialized = false, 
+    lastFetched = null,
+    cacheExpiryMinutes = 60
+  } = useSelector((state) => state.aiDirectChatSlice || {});
+
+  // Calculate derived states
+  const isCacheExpired = React.useMemo(() => {
+    if (!lastFetched) return true;
+    const expiryTime = lastFetched + (cacheExpiryMinutes * 60 * 1000);
+    return Date.now() > expiryTime;
+  }, [lastFetched, cacheExpiryMinutes]);
+
+  const shouldFetch = React.useMemo(() => {
+    return !isInitialized || (isCacheExpired && messages.length === 0);
+  }, [isInitialized, isCacheExpired, messages.length]);
+
   const [inputMessage, setInputMessage] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
   const [abortController, setAbortController] = useState(null);
   const [showScrollToBottom, setShowScrollToBottom] = useState(false);
 
-
-  const { currentWord } = useSelector((state) => state.aiSlice);
-
-  const {current_note_url} = useSelector((state) => state.notesSlice);
-
+  const { current_note_url } = useSelector((state) => state.notesSlice);
   const [nativeLang, setNativeLang] = useState(null);
   const [clearChatVisible, setClearChatVisible] = useState(false);
   const [clearChatMsg, setClearChatMsg] = useState('');
 
-  // Sample initial messages for better UX
+  // Initial messages
   const initialMessages = [
     {
       id: 1,
       text: "Hello! I'm your AI language tutor. You can ask me anything about languages, grammar, vocabulary, or just practice conversation!",
       isUser: false,
-      timestamp: new Date()
+      timestamp: new Date().toISOString(),
+      isStreaming: false
     },
     {
       id: 2,
       text: "Try asking me things like:\n• 'Explain Spanish verb tenses'\n• 'Help me practice French greetings'\n• 'What's the difference between these words?'\n• 'Give me a conversation practice'",
       isUser: false,
-      timestamp: new Date()
+      timestamp: new Date().toISOString(),
+      isStreaming: false
     }
   ];
 
+  // Initialize component
   useEffect(() => {
     const native = localStorage.getItem('native');
     setNativeLang(native);
-    setMessages(initialMessages);
+
+    // Load from localStorage backup
+    dispatch(loadFromBackup());
+
+    // Only set initial messages if we have none
+    if (messages.length === 0) {
+      dispatch(setMessages(initialMessages));
+    }
+
     return () => {
       if (abortController) {
         abortController.abort();
       }
+      // Save to backup when component unmounts
+      dispatch(saveToBackup());
     };
-  }, []);
+  }, [dispatch]);
 
+  // Smart fetch logic
+  useEffect(() => {
+    const fetchIfNeeded = async () => {
+      if (shouldFetch) {
+        await dispatch(fetchChatContext());
+      }
+    };
+
+    fetchIfNeeded();
+  }, [dispatch, shouldFetch]);
+
+  // Auto-scroll
+  useEffect(() => {
+    if (messages.length > 0) {
+      setTimeout(() => {
+        scrollToBottom();
+      }, 100);
+    }
+  }, [messages.length]);
+
+  // Scroll handling
   useEffect(() => {
     const checkScrollPosition = () => {
       if (messagesContainerRef.current) {
@@ -81,6 +140,7 @@ export default function AIDirectChatComponent({ onClose }) {
     const container = messagesContainerRef.current;
     if (container) {
       container.addEventListener('scroll', checkScrollPosition);
+      checkScrollPosition();
       return () => container.removeEventListener('scroll', checkScrollPosition);
     }
   }, []);
@@ -90,6 +150,15 @@ export default function AIDirectChatComponent({ onClose }) {
     setShowScrollToBottom(false);
   };
 
+  // Manual refresh
+  const handleRefreshChat = () => {
+    // Clear and refetch
+    dispatch(clearMessages());
+    setTimeout(() => {
+      dispatch(fetchChatContext());
+    }, 100);
+  };
+
   const handleSendMessage = async () => {
     if (!inputMessage.trim() || isLoading) return;
 
@@ -97,38 +166,32 @@ export default function AIDirectChatComponent({ onClose }) {
       id: Date.now(),
       text: inputMessage,
       isUser: true,
-      timestamp: new Date()
+      timestamp: new Date().toISOString(), // ISO string here too
+      isStreaming: false
     };
 
-    setMessages(prev => [...prev, userMessage]);
+    // Add user message
+    dispatch(addMessage(userMessage));
     setInputMessage('');
-    setIsLoading(true);
 
-    // Auto-scroll to bottom when user sends a message (optional)
-    setTimeout(() => {
-      scrollToBottom();
-    }, 100);
-
-    // Create abort controller for this request
-    const controller = new AbortController();
-    setAbortController(controller);
-
-    // Create AI message with empty text (will be filled via streaming)
+    // Create AI message placeholder
     const aiMessageId = Date.now() + 1;
     const aiMessage = {
       id: aiMessageId,
-      text: '', // Start with empty text
+      text: '',
       isUser: false,
       timestamp: new Date(),
-      isStreaming: true // Mark as streaming
+      isStreaming: true
     };
 
-    setMessages(prev => [...prev, aiMessage]);
+    dispatch(addMessage(aiMessage));
+
+    // Create abort controller
+    const controller = new AbortController();
+    setAbortController(controller);
 
     try {
-      // Get token from localStorage
       const token = localStorage.getItem('token');
-
       const response = await fetch(`${API_URL}/words/ai_direct_chat_stream`, {
         method: 'POST',
         headers: {
@@ -143,18 +206,6 @@ export default function AIDirectChatComponent({ onClose }) {
       });
 
       if (!response.ok) {
-        if (response.status === 401) {
-          setMessages(prev => prev.map(msg =>
-            msg.id === aiMessageId
-              ? {
-                ...msg,
-                text: "Sorry, you need to login to use this feature.",
-                isStreaming: false
-              }
-              : msg
-          ));
-          return;
-        }
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
@@ -164,12 +215,11 @@ export default function AIDirectChatComponent({ onClose }) {
 
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
-      let fullResponse = '';
+      let accumulatedText = '';
 
       try {
         while (true) {
           const { done, value } = await reader.read();
-
           if (done) break;
 
           const chunk = decoder.decode(value, { stream: true });
@@ -177,46 +227,48 @@ export default function AIDirectChatComponent({ onClose }) {
 
           for (const line of lines) {
             if (line.startsWith('data: ')) {
-              const dataStr = line.slice(6); // Remove 'data: ' prefix
-
+              const dataStr = line.slice(6);
               if (dataStr.trim() === '') continue;
-              if (dataStr === '[DONE]') break;
+              if (dataStr === '[DONE]') {
+                dispatch(updateStreamingMessage({
+                  messageId: aiMessageId,
+                  text: '',
+                  isStreaming: false
+                }));
+                break;
+              }
 
               try {
                 const data = JSON.parse(dataStr);
-
+                
                 if (data.error) {
-                  setMessages(prev => prev.map(msg =>
-                    msg.id === aiMessageId
-                      ? {
-                        ...msg,
-                        text: `Error: ${data.error}`,
-                        isStreaming: false
-                      }
-                      : msg
-                  ));
+                  dispatch(updateStreamingMessage({
+                    messageId: aiMessageId,
+                    text: `Error: ${data.error}`,
+                    isStreaming: false
+                  }));
                   break;
                 }
 
                 if (data.content) {
-                  fullResponse += data.content;
-                  setMessages(prev => prev.map(msg =>
-                    msg.id === aiMessageId
-                      ? { ...msg, text: fullResponse }
-                      : msg
-                  ));
+                  accumulatedText += data.content;
+                  dispatch(updateStreamingMessage({
+                    messageId: aiMessageId,
+                    text: data.content,
+                    isStreaming: true
+                  }));
                 }
 
                 if (data.done) {
-                  setMessages(prev => prev.map(msg =>
-                    msg.id === aiMessageId
-                      ? { ...msg, isStreaming: false }
-                      : msg
-                  ));
+                  dispatch(updateStreamingMessage({
+                    messageId: aiMessageId,
+                    text: '',
+                    isStreaming: false
+                  }));
                   break;
                 }
               } catch (e) {
-                console.error('Error parsing stream data:', e, 'Data:', dataStr);
+                console.error('Error parsing stream data:', e);
               }
             }
           }
@@ -225,11 +277,12 @@ export default function AIDirectChatComponent({ onClose }) {
         reader.releaseLock();
       }
 
-      setMessages(prev => prev.map(msg =>
-        msg.id === aiMessageId
-          ? { ...msg, isStreaming: false }
-          : msg
-      ));
+      // Final update
+      dispatch(updateStreamingMessage({
+        messageId: aiMessageId,
+        text: '',
+        isStreaming: false
+      }));
 
     } catch (error) {
       console.error('Failed to send message:', error);
@@ -239,63 +292,49 @@ export default function AIDirectChatComponent({ onClose }) {
         return;
       }
 
-      setMessages(prev => prev.map(msg =>
-        msg.id === aiMessageId
-          ? {
-            ...msg,
-            text: error.message || "Sorry, I'm having trouble responding right now. Please try again later.",
-            isStreaming: false
-          }
-          : msg
-      ));
+      dispatch(updateStreamingMessage({
+        messageId: aiMessageId,
+        text: error.message || "Sorry, I'm having trouble responding right now.",
+        isStreaming: false
+      }));
     } finally {
-      setIsLoading(false);
       setAbortController(null);
     }
   };
 
-  useEffect(() => {
-    if (clearChatVisible) {
+  const clearChat = () => {
+    const userResponse = confirm("Are you sure you want to delete your chat history?");
+    if (userResponse) {
+      dispatch(clearMessages());
+      dispatch(setMessages(initialMessages));
+      
+      setClearChatVisible(true);
+      setClearChatMsg('Chat history cleared successfully');
+      
       setTimeout(() => {
         setClearChatVisible(false);
       }, 2000);
     }
-  }, [clearChatVisible]);
+  };
 
-  const clearChat = async () => {
-
-    let userResponse = confirm("Are you sure you want to delete your chat history?");
-    if (userResponse) {
-    const result = await dispatch(AIService.clearDirectChatHistory()).unwrap()
-      if (result) {
-        setClearChatVisible(true);
-        setClearChatMsg(result.message);
-        setMessages(initialMessages);
-        setIsLoading(false);
-        setAbortController(null);
-      }
-    } else {
-      return;
+  // Handle Enter key
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
     }
-
-    
   };
 
   const formatMessage = (text) => {
     return (
       <ReactMarkdown
         components={{
-          // Customize how markdown elements are rendered
           strong: ({ children }) => <strong className="font-bold text-gray-900">{children}</strong>,
           em: ({ children }) => <em className="italic text-gray-800">{children}</em>,
-          h1: ({ children }) => <h1 className="text-xl font-bold text-gray-900 mt-4 mb-2">{children}</h1>,
-          h2: ({ children }) => <h2 className="text-lg font-bold text-gray-900 mt-3 mb-2">{children}</h2>,
-          h3: ({ children }) => <h3 className="text-base font-bold text-gray-900 mt-2 mb-1">{children}</h3>,
           p: ({ children }) => <p className="mb-2 leading-relaxed">{children}</p>,
           ul: ({ children }) => <ul className="list-disc list-inside mb-2 space-y-1">{children}</ul>,
           ol: ({ children }) => <ol className="list-decimal list-inside mb-2 space-y-1">{children}</ol>,
           li: ({ children }) => <li className="leading-relaxed">{children}</li>,
-          blockquote: ({ children }) => <blockquote className="border-l-4 border-gray-300 pl-3 italic text-gray-700 my-2">{children}</blockquote>,
         }}
       >
         {text}
@@ -303,74 +342,8 @@ export default function AIDirectChatComponent({ onClose }) {
     );
   };
 
-  const convertBackendToFrontendFormat = (backendMessages) => {
-  return backendMessages.map((msg, index) => ({
-    id: Date.now() + index, // Generate unique ID
-    text: msg.content || msg.text || '', // Use content or text
-    isUser: msg.role === 'user', // Convert role to isUser boolean
-    timestamp: new Date(msg.timestamp),
-    isStreaming: false // Add this property if not present
-  }));
-};
-
-  // Add this useEffect to fetch chat context
-useEffect(() => {
-    const fetchChatContext = async () => {
-    try {
-        setIsLoading(true);
-        const token = localStorage.getItem('token');
-        
-        const response = await fetch(`${API_URL}/words/ai_direct/fetch`, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            }
-        });
-
-        if (!response.ok) {
-            if (response.status === 401) {
-                console.error("Unauthorized - Please login");
-                setMessages(initialMessages);
-                return;
-            }
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        
-        // If backend returns null/undefined (no context exists yet)
-        if (!data) {
-            console.log("No chat context found - using initial messages");
-            setMessages(initialMessages);
-            return;
-        }
-        
-        // If we have messages in the context
-        if (data.messages && data.messages.length > 0) {
-            // CONVERT BACKEND FORMAT TO FRONTEND FORMAT
-            const formattedMessages = convertBackendToFrontendFormat(data.messages);
-            setMessages(formattedMessages);
-        } else {
-            // Context exists but has no messages
-            console.log("Chat context exists but empty - using initial messages");
-            setMessages(initialMessages);
-        }
-    } catch (error) {
-        console.error("Failed to fetch chat context:", error);
-        // Fallback to initial messages
-        setMessages(initialMessages);
-    } finally {
-        setIsLoading(false);
-    }
-};
-
-    fetchChatContext();
-}, []); // Empty dependency array - runs once on mount
-
   return (
     <div className="fixed inset-0 z-50 bg-white flex flex-col">
-
       <MsgBox
         message={clearChatMsg}
         visible={clearChatVisible}
@@ -383,30 +356,35 @@ useEffect(() => {
             <IoChatbubbleEllipses className="text-lg" />
           </div>
           <div>
-            <h2 className="font-semibold text-lg font-sans">AI Language Tutor</h2>
-            <p className="text-indigo-100 text-sm font-sans">Ask me anything about languages!</p>
+            <h2 className="font-semibold text-lg">AI Language Tutor</h2>
+            <p className="text-indigo-100 text-sm">Ask me anything about languages!</p>
           </div>
         </div>
         <div className="flex items-center space-x-2">
           <button
-            onClick={()=>{
-              current_note_url ? navigate(current_note_url) : navigate('/notes')
-            }}
-            className="p-2 hover:bg-white/10 rounded-lg transition-colors text-sm font-sans cursor-pointer"
-            title="Clear Chat"
+            onClick={() => current_note_url ? navigate(current_note_url) : navigate('/notes')}
+            className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+            title="Back to Notes"
           >
             <FaRegNoteSticky className="text-xl" />
           </button>
+          {/* <button
+            onClick={handleRefreshChat}
+            className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+            title="Refresh Chat"
+          >
+            <FaRedo className="text-xl" />  
+          </button> */}
           <button
             onClick={clearChat}
-            className="p-2 hover:bg-white/10 rounded-lg transition-colors text-sm font-sans cursor-pointer"
+            className="p-2 hover:bg-white/10 rounded-lg transition-colors"
             title="Clear Chat"
           >
             <MdDeleteOutline className="text-xl" />
           </button>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-white/10 rounded-lg transition-colors cursor-pointer"
+            className="p-2 hover:bg-white/10 rounded-lg transition-colors"
             title="Close Chat"
           >
             <IoClose className="text-2xl" />
@@ -414,26 +392,35 @@ useEffect(() => {
         </div>
       </div>
 
+      {/* Error Display */}
+      {error && (
+        <div className="bg-red-50 border border-red-200 p-3 mx-4 mt-4 rounded-lg">
+          <p className="text-red-600 text-sm">{error}</p>
+        </div>
+      )}
+
       {/* Messages Container */}
       <div
         ref={messagesContainerRef}
-        className="flex-1 overflow-y-auto bg-gray-50 p-4 relative"
+        className="flex-1 overflow-y-auto bg-gray-50 p-4"
       >
         <div className="max-w-3xl mx-auto space-y-4">
           {messages.map((message) => (
             <div key={message.id} className={`flex ${message.isUser ? 'justify-end' : 'justify-start'}`}>
-              <div className={`max-w-[95%] rounded-2xl p-4 ${message.isUser
-                  ? 'bg-indigo-500 text-white text-lg'
-                  : ' text-gray-800 text-lg'
-                } ${message.isStreaming ? 'streaming-cursor' : ''}`}>
-                <div className="font-sans">
+              <div className={`max-w-[95%] rounded-2xl p-4 ${
+                message.isUser
+                  ? 'bg-indigo-500 text-white'
+                  : 'bg-white border border-gray-200 text-gray-800'
+                }`}
+              >
+                <div>
                   {message.isUser ? (
                     <div className="whitespace-pre-wrap">{message.text}</div>
                   ) : (
                     formatMessage(message.text)
                   )}
                   {message.isStreaming && message.text === '' && (
-                    <div className="flex space-x-1">
+                    <div className="flex space-x-1 mt-2">
                       <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
                       <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
                       <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
@@ -441,22 +428,19 @@ useEffect(() => {
                   )}
                 </div>
                 <div className={`text-xs mt-2 ${message.isUser ? 'text-indigo-200' : 'text-gray-500'}`}>
-                  {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                  {message.isStreaming && ' • Typing...'}
+                  {/* {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} */}
+                  
                 </div>
               </div>
             </div>
           ))}
-
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Scroll to Bottom Button - Only shows when user scrolls up */}
         {showScrollToBottom && (
           <button
             onClick={scrollToBottom}
-            className="fixed bottom-24 right-8 bg-indigo-500 text-white p-3 rounded-full shadow-lg hover:bg-indigo-600 transition-colors cursor-pointer z-10"
-            title="Scroll to bottom"
+            className="fixed bottom-24 right-8 bg-indigo-500 text-white p-3 rounded-full shadow-lg hover:bg-indigo-600 transition-colors"
           >
             <IoArrowDown className="text-lg" />
           </button>
@@ -464,22 +448,39 @@ useEffect(() => {
       </div>
 
       {/* Input Area */}
-      <div className="border-t border-gray-200  px-4 py-2 bg-white">
+      <div className="border-t border-gray-200 px-4 py-4 bg-white">
         <div className="max-w-3xl mx-auto">
-
-          <VoiceInputComponent
-            onTranscript={(text) => console.log('Transcript:', text)}
-            onSend={handleSendMessage}
-            inputMessage={inputMessage}
-            setInputMessage={setInputMessage}
-            isLoading={isLoading}
-            language={STT_LANGUAGES[nativeLang] || 'en-US'} // Or make this dynamic based on user's learning language
-          />
-
+          {/* <div className="flex gap-2">
+            <textarea
+              value={inputMessage}
+              onChange={(e) => setInputMessage(e.target.value)}
+              onKeyPress={handleKeyPress}
+              placeholder="Type your message here..."
+              className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
+              rows={2}
+              disabled={isLoading}
+            />
+            <button
+              onClick={handleSendMessage}
+              disabled={isLoading || !inputMessage.trim()}
+              className="px-6 py-3 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <IoSend className="text-lg" />
+            </button>
+          </div> */}
+          
+          <div className="mt-3">
+            <VoiceInputComponent
+              onTranscript={(text) => setInputMessage(prev => prev + ' ' + text)}
+              onSend={handleSendMessage}
+              inputMessage={inputMessage}
+              setInputMessage={setInputMessage}
+              isLoading={isLoading}
+              language={STT_LANGUAGES[nativeLang] || 'en-US'}
+            />
+          </div>
         </div>
       </div>
     </div>
   );
 }
-
-
