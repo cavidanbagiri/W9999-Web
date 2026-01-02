@@ -7,8 +7,9 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 
-import { addChatMessage, updateChatMessage, removeChatMessage } from '../../store/ai_store';
+import { addChatMessage, updateChatMessage, removeChatMessage, stopChatStreaming } from '../../store/ai_store';
 import { addCurrentNoteURL, handleInputChangeRT } from '../../store/note_store';
+
 
 import { API_URL } from '../../http/api';
 import LANGUAGES from '../../constants/Languages';
@@ -118,6 +119,32 @@ export default function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat
   const handlePromptPress = (prompt) => {
     setMessage(prompt);
     textInputRef.current?.focus();
+  };
+
+  // Add this function in your component, near the other handlers
+  const handleStopGeneration = () => {
+    if (streamController && isStreaming) {
+      // Get the current streaming message first
+      const streamingMessage = messages.find(msg => 
+        msg.isStreaming && msg.role === 'assistant'
+      );
+      
+      if (streamingMessage) {
+        // Save the partial content before aborting
+        const partialContent = streamingMessage.content || '';
+        
+        // Abort the request
+        streamController.abort();
+        setStreamController(null);
+        setIsStreaming(false);
+        
+        // Update the message with partial content
+        dispatch(stopChatStreaming(currentWord.id, streamingMessage.id, partialContent));
+        
+        // Optional: Show notification
+        console.log('AI response stopped');
+      }
+    }
   };
 
   const handleSubmit = async () => {
@@ -246,12 +273,24 @@ export default function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat
       console.error('Failed to send message:', error);
 
       if (error.name === 'AbortError') {
-        console.log('Request was aborted');
-        dispatch(removeChatMessage(wordId, aiMessageId));
+        console.log('Request was aborted by user');
+        
+        // The message should already be updated by handleStopGeneration
+        // But as a fallback, update it if still streaming
+        const streamingMessage = messages.find(msg => 
+          msg.id === aiMessageId && msg.isStreaming
+        );
+        
+        if (streamingMessage) {
+          const partialContent = streamingMessage.content || '';
+          dispatch(stopChatStreaming(currentWord.id, aiMessageId, partialContent));
+        }
+        
         return;
       }
 
-      dispatch(updateChatMessage(wordId, aiMessageId, {
+      // For other errors, show error message
+      dispatch(updateChatMessage(currentWord.id, aiMessageId, {
         content: error.message || "Sorry, I'm having trouble responding right now. Please try again later.",
         isStreaming: false
       }));
@@ -289,8 +328,17 @@ export default function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat
     }
   }, [isCopyMessage]);
 
-  // Format message text with markdown
-  const formatMessage = (text) => {
+  // Update formatMessage function
+  const formatMessage = (text, wasStopped = false) => {
+    // Check if this is a stopped/interrupted message
+    const isStoppedMessage = wasStopped || text.includes('[Response interrupted]');
+    
+    // Clean the text for display
+    let displayText = text;
+    if (isStoppedMessage) {
+      // Remove the [Response interrupted] marker for cleaner display
+      displayText = text.replace('[Response interrupted]', '').trim();
+    }
 
     const handleCopyMessage = () => {
       setIsCopyMessage(true);
@@ -305,9 +353,8 @@ export default function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat
       navigate('/notes/create');
     }
 
-
     return (
-      <div>
+      <div className="relative">
         <ReactMarkdown
           components={{
             strong: ({ children }) => <strong className="font-bold text-gray-900">{children}</strong>,
@@ -322,8 +369,24 @@ export default function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat
             blockquote: ({ children }) => <blockquote className="border-l-4 border-gray-300 pl-3 italic text-gray-700 my-2">{children}</blockquote>,
           }}
         >
-          {text}
+          {displayText}
         </ReactMarkdown>
+        
+        {/* Show interrupted indicator if message was stopped */}
+        {isStoppedMessage && (
+          <div className="mt-3 p-2 bg-yellow-50 border border-yellow-200 rounded text-sm">
+            <div className="flex items-center text-yellow-700">
+              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.162 16.5c-.77.833.192 2.5 1.732 2.5z" />
+              </svg>
+              <span className="font-medium">Response interrupted</span>
+            </div>
+            <p className="text-yellow-600 text-xs mt-1">
+              You stopped the AI response. Send another message to continue.
+            </p>
+          </div>
+        )}
+        
         <div className='flex my-2'>
           <FaRegCopy 
             onClick={handleCopyMessage}
@@ -332,7 +395,6 @@ export default function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat
             onClick={createNote}
             className='text-xl cursor-pointer text-gray-600 hover:text-gray-300 duration-200 hover:scale-110 ml-4' />
         </div>
-
       </div>
     );
   };
@@ -351,15 +413,32 @@ export default function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat
           <p className="text-sm text-gray-500">Your AI language assistant</p>
         </div>
         {/* {onOpenDirectChat && ( */}
+          <div className="flex items-center space-x-2">
+          {/* Stop button - only shown when streaming */}
+          {isStreaming && streamController && (
+            <button
+              onClick={handleStopGeneration}
+              className="px-3 py-2 bg-red-500 hover:bg-red-600 text-white text-sm font-medium transition-colors cursor-pointer rounded-b-xl rounded-tl-xl flex items-center space-x-1 animate-pulse"
+              title="Stop AI response"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" />
+              </svg>
+              <span>Stop</span>
+            </button>
+          )}
+                  
           <button
             onClick={() => navigate('/notes')}
             className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-sm font-medium text-gray-700 transition-colors cursor-pointer rounded-b-xl rounded-tl-xl"
           >
-              <span className='flex items-center space-x-2'>
-                <span className='text-lg hidden md:block'>Notes</span>
-                <FaRegNoteSticky className='text-xl' />
-              </span>
+            <span className='flex items-center space-x-2'>
+              <span className='text-lg hidden md:block'>Notes</span>
+              <FaRegNoteSticky className='text-xl' />
+            </span>
           </button>
+        </div>
         {/* // )} */}
       </div>
 
@@ -407,14 +486,16 @@ export default function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat
                 <div
                   className={`max-w-[95%] rounded-b-xl rounded-tl-xl px-4 py-3 ${msg.role === 'user'
                       ? 'bg-purple-600 text-white'
-                      : 'text-gray-900'
+                      : msg.wasStopped 
+                        ? 'bg-yellow-50 border border-yellow-200' // Different style for stopped messages
+                        : 'text-gray-900'
                     } ${msg.isStreaming ? 'streaming-cursor' : ''}`}
                 >
-                  <div className="text-lg leading-relaxed font-sans"> {/* Changed from text-sm to text-lg */}
+                  <div className="text-lg leading-relaxed font-sans">
                     {msg.role === 'user' ? (
                       <div className="whitespace-pre-wrap ">{msg.content}</div>
                     ) : (
-                      formatMessage(msg.content)
+                      formatMessage(msg.content, msg.wasStopped) // Pass wasStopped flag
                     )}
                     {msg.isStreaming && msg.content === '' && (
                       <div className="flex space-x-1">

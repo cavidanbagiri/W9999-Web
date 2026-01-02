@@ -29,6 +29,13 @@ export const updateChatMessage = createAction('ai/updateChatMessage',
   })
 );
 
+// Add this custom action to your existing custom actions
+export const stopChatStreaming = createAction('ai/stopChatStreaming',
+  (wordId, messageId, partialContent = '') => ({
+    payload: { wordId, messageId, partialContent }
+  })
+);
+
 export const clearChatForWord = createAction('ai/clearChatForWord',
   (wordId) => ({ payload: { wordId } })
 );
@@ -110,6 +117,24 @@ const aiSlice = createSlice({
             if (updates.isStreaming !== undefined) {
               message.isStreaming = updates.isStreaming;
             }
+          }
+        }
+      })
+
+      .addCase(stopChatStreaming, (state, action) => {
+        const { wordId, messageId, partialContent = '' } = action.payload;
+        
+        if (state.conversations[wordId]) {
+          const message = state.conversations[wordId].messages.find(msg => msg.id === messageId);
+          if (message) {
+            // Keep whatever content we already have, or show stopped message
+            const finalContent = partialContent.trim() 
+              ? `${partialContent} [Response interrupted]`
+              : 'Response stopped by user.';
+            
+            message.content = finalContent;
+            message.isStreaming = false;
+            message.wasStopped = true;
           }
         }
       })

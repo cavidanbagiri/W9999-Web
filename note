@@ -10,11 +10,11 @@ Features:
 
 Problems
 
-1 - Need to add cancel the ai chat when user click on the close button. abort controller 
+1 - The words ai doesnt fetch from backend after reloading. need to fix that.
 
 2 - When the answer is big in ai direct chat, streaming failed happen. maybe the time is short or l dont know where is the problem
 
-
+3 - Add copy abiliyty to the ai direct chat also
 
 
 Today:
