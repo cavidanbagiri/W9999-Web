@@ -8,9 +8,7 @@ import AIScreenChat from './AIScreenChat';
 import { clearAIResponse, setAIResponse, clearConversation } from '../../store/ai_store';
 import TRANSLATE_LANGUAGES_LIST from '../../constants/TranslateLanguagesList';
 
-import { IoChatbox } from "react-icons/io5";
-import { IoChatboxOutline } from "react-icons/io5";
-import { IoChatbubbleOutline } from "react-icons/io5";
+
 import { IoChatbubble } from "react-icons/io5";
 
 
@@ -245,13 +243,7 @@ export default function AIComponent({ onOpenDirectChat }) {
     );
   }
 
-  // if (!aiResponse) {
-  //   return (
-  //     <div className="min-h-screen flex flex-col items-center justify-center p-5">
-  //       <p className="text-gray-600 font-sans">Select a word to get started</p>
-  //     </div>
-  //   );
-  // }
+
 
   if (!aiResponse) {
     return (

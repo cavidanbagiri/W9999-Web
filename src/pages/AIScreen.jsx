@@ -51,15 +51,9 @@ export default function AIScreen({ route, come_from }) {
   if (currentWord?.text) {
     return <AIScreenChat {...aiScreenChatProps} />;
   }
-
-  // useEffect(() => {
-  //   console.log('...the current word is changed as -> ', currentWord)
-  // },[currentWord])
-
-  // Onboarding experience - No word selected
+  
   return (
     <div className="min-h-[calc(100vh-100px)] bg-gradient-to-br from-gray-50 to-purple-50 flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-      
       {/* Hero Section */}
       <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-12">
         <div className="inline-flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-2xl mb-6 sm:mb-8 shadow-lg">
@@ -111,7 +105,7 @@ export default function AIScreen({ route, come_from }) {
           </div>
           
           <h3 className="text-xl font-bold text-gray-900 mb-3 font-sans group-hover:text-purple-600 transition-colors">
-            Direct Chat
+            Direct Chat 
           </h3>
           
           <p className="text-gray-600 mb-5 leading-relaxed">

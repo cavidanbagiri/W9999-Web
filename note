@@ -1,16 +1,25 @@
 
+Features:
+
+1 - Notes can be protected, public and private
+2 - Notes can be starred and favorited
+3 - Can share the books
+4 - Add profile image and bio
+5 - Make ai direct answers as copyable
+
 
 Problems
 
+1 - Need to add cancel the ai chat when user click on the close button. abort controller 
 
-1 - Need to add ai direct notes ability to work ai screen
+2 - When the answer is big in ai direct chat, streaming failed happen. maybe the time is short or l dont know where is the problem
 
-2 - Need to add cancel the ai chat when user click on the close button. abort controller 
+
 
 
 Today:
     
-
+3, 1
 
                                                                    
 Test                                                                

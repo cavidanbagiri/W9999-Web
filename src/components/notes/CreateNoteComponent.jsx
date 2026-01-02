@@ -433,9 +433,9 @@ function CreateNoteComponent() {
             >
               <FaLink />
             </button>
-            <div className="ml-auto text-xs text-gray-500">
+            {/* <div className="ml-auto text-xs text-gray-500">
               Use **bold**, *italic*, - lists, [links](url)
-            </div>
+            </div> */}
           </div>
 
           {/* Content Textarea */}

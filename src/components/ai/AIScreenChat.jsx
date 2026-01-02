@@ -4,15 +4,25 @@
 
 import { useDispatch, useSelector } from 'react-redux';
 import { useState, useEffect, useRef, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
-import { IoArrowDown } from "react-icons/io5";
-import { IoSparklesSharp } from "react-icons/io5";
+
 import { addChatMessage, updateChatMessage, removeChatMessage } from '../../store/ai_store';
+import { addCurrentNoteURL, handleInputChangeRT } from '../../store/note_store';
+
+import { API_URL } from '../../http/api';
 import LANGUAGES from '../../constants/Languages';
 import TRANSLATE_LANGUAGES_LIST from '../../constants/TranslateLanguagesList';
-import { API_URL } from '../../http/api';
 
+import MsgBox from '../../layouts/MsgBox';
 import VoiceInputComponent from '../../layouts/VoiceInputComponent'
+
+
+import { IoArrowDown } from "react-icons/io5";
+import { FaRegCopy } from "react-icons/fa6";
+import { FaRegNoteSticky } from "react-icons/fa6";
+import { IoSparklesSharp } from "react-icons/io5";
+
 
 // Helper function to generate unique IDs
 const generateUniqueId = () => {
@@ -29,14 +39,17 @@ export default function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat
     'Turkish': 'tr-TR',
   }
 
-
+  const navigate = useNavigate();
   const dispatch = useDispatch();
+
   const [message, setMessage] = useState('');
   const [isStreaming, setIsStreaming] = useState(false);
   const [streamController, setStreamController] = useState(null);
   const [showScrollToBottom, setShowScrollToBottom] = useState(false);
 
   const [isLoading, setIsLoading] = useState(false);
+
+  const [isCopyMessage, setIsCopyMessage] = useState(false);
 
   // Get conversation for current word from Redux
   const { conversations } = useSelector((state) => state.aiSlice);
@@ -267,45 +280,87 @@ export default function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat
     ];
   }, [currentWord?.text, currentWord?.language_code]);
 
+
+  useEffect(() => {
+    if (isCopyMessage) {
+      setTimeout(() => {
+        setIsCopyMessage(false);
+      }, 1000);
+    }
+  }, [isCopyMessage]);
+
   // Format message text with markdown
   const formatMessage = (text) => {
+
+    const handleCopyMessage = () => {
+      setIsCopyMessage(true);
+      navigator.clipboard.writeText(text)
+    }
+
+    const createNote = () => {
+      dispatch(addCurrentNoteURL('/notes/create'));
+      dispatch(handleInputChangeRT({ name: 'note_name', value: currentWord?.text }));
+      dispatch(handleInputChangeRT({ name: 'target_lang', value: currentWord?.language_code }));
+      dispatch(handleInputChangeRT({ name: 'content', value: text }));
+      navigate('/notes/create');
+    }
+
+
     return (
-      <ReactMarkdown
-        components={{
-          strong: ({ children }) => <strong className="font-bold text-gray-900">{children}</strong>,
-          em: ({ children }) => <em className="italic text-gray-800">{children}</em>,
-          h1: ({ children }) => <h1 className="text-xl font-bold text-gray-900 mt-4 mb-2">{children}</h1>,
-          h2: ({ children }) => <h2 className="text-lg font-bold text-gray-900 mt-3 mb-2">{children}</h2>,
-          h3: ({ children }) => <h3 className="text-base font-bold text-gray-900 mt-2 mb-1">{children}</h3>,
-          p: ({ children }) => <p className="mb-2 leading-relaxed">{children}</p>,
-          ul: ({ children }) => <ul className="list-disc list-inside mb-2 space-y-1">{children}</ul>,
-          ol: ({ children }) => <ol className="list-decimal list-inside mb-2 space-y-1">{children}</ol>,
-          li: ({ children }) => <li className="leading-relaxed">{children}</li>,
-          blockquote: ({ children }) => <blockquote className="border-l-4 border-gray-300 pl-3 italic text-gray-700 my-2">{children}</blockquote>,
-        }}
-      >
-        {text}
-      </ReactMarkdown>
+      <div>
+        <ReactMarkdown
+          components={{
+            strong: ({ children }) => <strong className="font-bold text-gray-900">{children}</strong>,
+            em: ({ children }) => <em className="italic text-gray-800">{children}</em>,
+            h1: ({ children }) => <h1 className="text-xl font-bold text-gray-900 mt-4 mb-2">{children}</h1>,
+            h2: ({ children }) => <h2 className="text-lg font-bold text-gray-900 mt-3 mb-2">{children}</h2>,
+            h3: ({ children }) => <h3 className="text-base font-bold text-gray-900 mt-2 mb-1">{children}</h3>,
+            p: ({ children }) => <p className="mb-2 leading-relaxed">{children}</p>,
+            ul: ({ children }) => <ul className="list-disc list-inside mb-2 space-y-1">{children}</ul>,
+            ol: ({ children }) => <ol className="list-decimal list-inside mb-2 space-y-1">{children}</ol>,
+            li: ({ children }) => <li className="leading-relaxed">{children}</li>,
+            blockquote: ({ children }) => <blockquote className="border-l-4 border-gray-300 pl-3 italic text-gray-700 my-2">{children}</blockquote>,
+          }}
+        >
+          {text}
+        </ReactMarkdown>
+        <div className='flex my-2'>
+          <FaRegCopy 
+            onClick={handleCopyMessage}
+            className='text-xl cursor-pointer text-gray-600 hover:text-gray-300 duration-200 hover:scale-110' />
+          <FaRegNoteSticky 
+            onClick={createNote}
+            className='text-xl cursor-pointer text-gray-600 hover:text-gray-300 duration-200 hover:scale-110 ml-4' />
+        </div>
+
+      </div>
     );
   };
 
   return (
     <div className="flex flex-col sm:pb-20 md:pb-0 h-[calc(100vh-100px)] bg-gray-50">
-
+      <MsgBox
+        message={isCopyMessage ? 'Copied to clipboard!' : ''}
+        visible={isCopyMessage}
+        type="success"
+      />
       {/* Header with Direct Chat button */}
       <div className="border-b border-gray-200 bg-white px-4 py-3 flex justify-between items-center">
         <div>
           <h2 className="text-lg font-semibold text-gray-900">Chat about: <span className="text-purple-600">{currentWord?.text}</span></h2>
           <p className="text-sm text-gray-500">Your AI language assistant</p>
         </div>
-        {onOpenDirectChat && (
+        {/* {onOpenDirectChat && ( */}
           <button
-            onClick={onOpenDirectChat}
-            className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm font-medium text-gray-700 transition-colors cursor-pointer"
+            onClick={() => navigate('/notes')}
+            className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-sm font-medium text-gray-700 transition-colors cursor-pointer rounded-b-xl rounded-tl-xl"
           >
-            💬 Direct Chat
+              <span className='flex items-center space-x-2'>
+                <span className='text-lg hidden md:block'>Notes</span>
+                <FaRegNoteSticky className='text-xl' />
+              </span>
           </button>
-        )}
+        {/* // )} */}
       </div>
 
       {/* Chat Messages */}
@@ -350,14 +405,14 @@ export default function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat
                 className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 <div
-                  className={`max-w-[95%] rounded-2xl px-4 py-3 ${msg.role === 'user'
+                  className={`max-w-[95%] rounded-b-xl rounded-tl-xl px-4 py-3 ${msg.role === 'user'
                       ? 'bg-purple-600 text-white'
                       : 'text-gray-900'
                     } ${msg.isStreaming ? 'streaming-cursor' : ''}`}
                 >
                   <div className="text-lg leading-relaxed font-sans"> {/* Changed from text-sm to text-lg */}
                     {msg.role === 'user' ? (
-                      <div className="whitespace-pre-wrap">{msg.content}</div>
+                      <div className="whitespace-pre-wrap ">{msg.content}</div>
                     ) : (
                       formatMessage(msg.content)
                     )}

@@ -336,10 +336,10 @@ export default function AIDirectChatComponent({ onClose }) {
       }));
 
     } catch (error) {
-      console.error('Failed to send message:', error);
+      // console.error('Failed to send message:', error);
 
       if (error.name === 'AbortError') {
-        console.log('Request was aborted');
+        // console.log('Request was aborted');
 
         // Check if we still have a streaming message to update
         const streamingMessage = messages.find(msg => msg.id === aiMessageId && msg.isStreaming);
