@@ -152,7 +152,6 @@ const aiDirectChatSlice = createSlice({
       .addCase(fetchChatContext.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isInitialized = true;
-        console.log('time timestamp is : ', action.payload)
         if (action.payload?.messages?.length > 0) {
           const formattedMessages = action.payload.messages.map((msg, index) => ({
             id: Date.now() + index,

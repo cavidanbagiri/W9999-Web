@@ -382,7 +382,7 @@ const VoiceInputComponent = ({
             onChange={(e) => setInputMessage(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder="Type or speak ..."
-            className="w-full border border-gray-300 rounded-2xl px-4 py-3 pr-24 resize-none outline-none bg-white disabled:bg-gray-50"
+            className="w-full border border-gray-300 rounded-2xl px-4 py-3 pr-12 resize-none outline-none bg-white disabled:bg-gray-50"
             rows="1"
             disabled={isLoading || isProcessing}
             style={{

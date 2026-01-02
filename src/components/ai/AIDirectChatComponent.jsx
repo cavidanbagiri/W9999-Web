@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { API_URL } from '../../http/api';
 import ReactMarkdown from 'react-markdown';
 
+
 // Import actions from your slice
 import {
   addMessage,
@@ -17,11 +18,15 @@ import {
   // Check if you have forceRefresh in your slice, if not we'll create it
 } from '../../store/ai_direct_chat_store';
 
+import { HiMiniArrowLeftOnRectangle } from "react-icons/hi2";
+
+
 import MsgBox from '../../layouts/MsgBox';
 import VoiceInputComponent from '../../layouts/VoiceInputComponent';
 import { MdDeleteOutline } from "react-icons/md";
 import { FaRegNoteSticky, } from "react-icons/fa6";
 import { FaRedo } from "react-icons/fa";
+import AIService from '../../services/AIService';
 
 const AIMessageContent = React.memo(({ text }) => (
   <ReactMarkdown
@@ -177,6 +182,30 @@ export default function AIDirectChatComponent({ onClose }) {
     }, 100);
   };
 
+  // Add a state for stopping
+  const [stopRequested, setStopRequested] = useState(false);
+
+  // Create a function to stop the current AI response
+  const handleStopGeneration = () => {
+    if (abortController) {
+      abortController.abort();
+      setStopRequested(true);
+
+      // Find the currently streaming message and mark it as stopped
+      const streamingMessage = messages.find(msg => msg.isStreaming);
+      if (streamingMessage) {
+        dispatch(updateStreamingMessage({
+          messageId: streamingMessage.id,
+          text: "AI response stopped by user.",
+          isStreaming: false
+        }));
+      }
+
+      setTimeout(() => setStopRequested(false), 1000);
+    }
+  };
+
+  // Modify your handleSendMessage function to handle stop requests
   const handleSendMessage = async () => {
     if (!inputMessage.trim() || isLoading) return;
 
@@ -184,7 +213,7 @@ export default function AIDirectChatComponent({ onClose }) {
       id: Date.now(),
       text: inputMessage,
       isUser: true,
-      timestamp: new Date().toISOString(), // ISO string here too
+      timestamp: new Date().toISOString(),
       isStreaming: false
     };
 
@@ -198,11 +227,14 @@ export default function AIDirectChatComponent({ onClose }) {
       id: aiMessageId,
       text: '',
       isUser: false,
-      timestamp: new Date(),
+      timestamp: new Date().toISOString(),
       isStreaming: true
     };
 
     dispatch(addMessage(aiMessage));
+
+    // Reset stop requested flag
+    setStopRequested(false);
 
     // Create abort controller
     const controller = new AbortController();
@@ -303,10 +335,15 @@ export default function AIDirectChatComponent({ onClose }) {
       }));
 
     } catch (error) {
-      console.error('Failed to send message:', error);
+      // console.error('Failed to send message:', error);
 
       if (error.name === 'AbortError') {
         console.log('Request was aborted');
+        dispatch(updateStreamingMessage({
+          messageId: aiMessageId,
+          text: "AI response stopped.",
+          isStreaming: false
+        }));
         return;
       }
 
@@ -320,11 +357,13 @@ export default function AIDirectChatComponent({ onClose }) {
     }
   };
 
+
   const clearChat = () => {
     const userResponse = confirm("Are you sure you want to delete your chat history?");
     if (userResponse) {
       dispatch(clearMessages());
       dispatch(setMessages(initialMessages));
+      dispatch(AIService.clearDirectChatHistory())
 
       setClearChatVisible(true);
       setClearChatMsg('Chat history cleared successfully');
@@ -344,32 +383,51 @@ export default function AIDirectChatComponent({ onClose }) {
   };
 
 
+  // Update your MessageItem component
   const MessageItem = React.memo(({ message }) => (
     <div className={`flex ${message.isUser ? 'justify-end' : 'justify-start'}`}>
-      <div className={`max-w-[95%] rounded-2xl p-4 ${message.isUser
-          ? 'bg-indigo-500 text-white'
-          : 'bg-white border border-gray-200 text-gray-800'
+      <div className={`max-w-[95%]  p-4 ${message.isUser
+        ? 'bg-indigo-500 text-white rounded-b-2xl rounded-tl-2xl'
+        : '  text-gray-800'
         }`}
       >
         <div>
           {message.isUser ? (
-            <div className="whitespace-pre-wrap">{message.text}</div>
+            <div className="whitespace-pre-wrap">{message.text} 
+            </div>
           ) : (
             <AIMessageContent text={message.text} />
           )}
-          {message.isStreaming && message.text === '' && (
-            <div className="flex space-x-1 mt-2">
-              <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-              <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-              <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+
+          {/* Show different loading indicators based on state */}
+          {message.isStreaming && (
+            <div className="flex items-center justify-between mt-2">
+              <div className="flex space-x-1">
+                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+              </div>
+
+              {/* Add a small stop hint text */}
+              {/* <div className="text-xs text-gray-500 ml-6">
+                AI is thinking...
+              </div> */}
             </div>
           )}
+
+          {/* Show "Stopped" message if text indicates it was stopped */}
+          {message.text === "AI response stopped." || message.text === "AI response stopped by user." ? (
+            <div className="text-sm text-gray-500  mt-4">
+              Response stopped
+            </div>
+          ) : null}
         </div>
       </div>
     </div>
   ));
 
-  // ADD THIS: Memoize the entire messages list
+
+
   const renderedMessages = React.useMemo(() => {
     return messages.map((message) => (
       <MessageItem key={message.id} message={message} />
@@ -390,39 +448,47 @@ export default function AIDirectChatComponent({ onClose }) {
             <IoChatbubbleEllipses className="text-lg" />
           </div>
           <div>
-            <h2 className="font-semibold text-lg">AI Language Tutor</h2>
-            <p className="text-indigo-100 text-sm">Ask me anything about languages!</p>
+            <h2 className="font-semibold text-lg">AI Tutor</h2>
+            {/* <p className="text-indigo-100 text-sm">Ask me anything about languages!</p> */}
           </div>
         </div>
         <div className="flex items-center space-x-2">
+
+          {/* {isLoading && abortController && ( */}
+          { abortController && (
+            <button
+              onClick={handleStopGeneration}
+              className="p-1.5 md:p-2 hover:bg-white/10 rounded-lg transition-colors "
+              title="Stop AI Response"
+            >
+              <IoClose className="text-xl" />
+            </button>
+          )}
+
           <button
             onClick={() => current_note_url ? navigate(current_note_url) : navigate('/notes')}
-            className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+            className="p-1.5 md:p-2 hover:bg-white/10 rounded-lg transition-colors"
             title="Back to Notes"
           >
-            <FaRegNoteSticky className="text-xl" />
+            <FaRegNoteSticky className="text-lg" />
           </button>
-          {/* <button
-            onClick={handleRefreshChat}
-            className="p-2 hover:bg-white/10 rounded-lg transition-colors"
-            title="Refresh Chat"
-          >
-            <FaRedo className="text-xl" />  
-          </button> */}
+
           <button
             onClick={clearChat}
-            className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+            className="p-1.5 md:p-2 hover:bg-white/10 rounded-lg transition-colors"
             title="Clear Chat"
           >
             <MdDeleteOutline className="text-xl" />
           </button>
+
           <button
             onClick={handleClose}
-            className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+            className="p-1.5 md:p-2 hover:bg-white/10 rounded-lg transition-colors"
             title="Close Chat"
           >
-            <IoClose className="text-2xl" />
+            <HiMiniArrowLeftOnRectangle className="text-xl" />
           </button>
+
         </div>
       </div>
 
@@ -456,7 +522,7 @@ export default function AIDirectChatComponent({ onClose }) {
       {/* Input Area */}
       <div className="border-t border-gray-200 px-4 py-4 bg-white">
         <div className="max-w-3xl mx-auto">
-          
+
           <div className="mt-3">
             <VoiceInputComponent
               onTranscript={(text) => setInputMessage(prev => prev + ' ' + text)}
