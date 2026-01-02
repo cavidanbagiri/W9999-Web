@@ -10,6 +10,7 @@ import ReactMarkdown from 'react-markdown';
 import {
   addMessage,
   updateStreamingMessage,
+  stopStreamingMessage, // Add this
   clearMessages,
   setMessages,
   loadFromBackup,
@@ -185,22 +186,22 @@ export default function AIDirectChatComponent({ onClose }) {
   // Add a state for stopping
   const [stopRequested, setStopRequested] = useState(false);
 
-  // Create a function to stop the current AI response
   const handleStopGeneration = () => {
     if (abortController) {
       abortController.abort();
       setStopRequested(true);
 
-      // Find the currently streaming message and mark it as stopped
+      // Find the currently streaming message
       const streamingMessage = messages.find(msg => msg.isStreaming);
       if (streamingMessage) {
-        dispatch(updateStreamingMessage({
+        // Use the new stopStreamingMessage action to replace the text
+        dispatch(stopStreamingMessage({
           messageId: streamingMessage.id,
-          text: "AI response stopped by user.",
-          isStreaming: false
+          stopText: "AI response stopped."
         }));
       }
 
+      setAbortController(null);
       setTimeout(() => setStopRequested(false), 1000);
     }
   };
@@ -335,18 +336,24 @@ export default function AIDirectChatComponent({ onClose }) {
       }));
 
     } catch (error) {
-      // console.error('Failed to send message:', error);
+      console.error('Failed to send message:', error);
 
       if (error.name === 'AbortError') {
         console.log('Request was aborted');
-        dispatch(updateStreamingMessage({
-          messageId: aiMessageId,
-          text: "AI response stopped.",
-          isStreaming: false
-        }));
+
+        // Check if we still have a streaming message to update
+        const streamingMessage = messages.find(msg => msg.id === aiMessageId && msg.isStreaming);
+        if (streamingMessage) {
+          dispatch(stopStreamingMessage({
+            messageId: aiMessageId,
+            stopText: "AI response stopped."
+          }));
+        }
+
         return;
       }
 
+      // For other errors, update normally
       dispatch(updateStreamingMessage({
         messageId: aiMessageId,
         text: error.message || "Sorry, I'm having trouble responding right now.",
@@ -384,48 +391,56 @@ export default function AIDirectChatComponent({ onClose }) {
 
 
   // Update your MessageItem component
-  const MessageItem = React.memo(({ message }) => (
+const MessageItem = React.memo(({ message }) => {
+  // Check if this is a stopped message
+  const isStoppedMessage = message.text === "AI response stopped." || 
+                          message.text === "AI response stopped by user." ||
+                          message.wasStopped;
+  
+  return (
     <div className={`flex ${message.isUser ? 'justify-end' : 'justify-start'}`}>
-      <div className={`max-w-[95%]  p-4 ${message.isUser
+      <div className={`max-w-[95%] p-4 ${message.isUser
         ? 'bg-indigo-500 text-white rounded-b-2xl rounded-tl-2xl'
-        : '  text-gray-800'
+        : isStoppedMessage 
+          ? 'bg-gray-100 border border-gray-300 text-gray-600 italic rounded-2xl' // Different style for stopped messages
+          : 'text-gray-800'
         }`}
       >
         <div>
           {message.isUser ? (
-            <div className="whitespace-pre-wrap">{message.text} 
+            <div className="whitespace-pre-wrap">{message.text}</div>
+          ) : isStoppedMessage ? (
+            // Special rendering for stopped messages
+            <div className="flex items-center space-x-2">
+              <span className="text-gray-600 italic">{message.text}</span>
             </div>
           ) : (
             <AIMessageContent text={message.text} />
           )}
 
-          {/* Show different loading indicators based on state */}
-          {message.isStreaming && (
+          {/* Show loading indicators only if it's streaming AND not a stopped message */}
+          {message.isStreaming && !isStoppedMessage && (
             <div className="flex items-center justify-between mt-2">
               <div className="flex space-x-1">
                 <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
                 <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
                 <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
               </div>
-
-              {/* Add a small stop hint text */}
-              {/* <div className="text-xs text-gray-500 ml-6">
-                AI is thinking...
-              </div> */}
             </div>
           )}
 
-          {/* Show "Stopped" message if text indicates it was stopped */}
-          {message.text === "AI response stopped." || message.text === "AI response stopped by user." ? (
-            <div className="text-sm text-gray-500  mt-4">
-              Response stopped
+          {/* Optional: Show a small indicator for stopped messages */}
+          {isStoppedMessage && (
+            <div className="flex items-center mt-2 text-xs text-gray-500">
+              <IoClose className="mr-1" />
+              <span>Response interrupted</span>
             </div>
-          ) : null}
+          )}
         </div>
       </div>
     </div>
-  ));
-
+  );
+});
 
 
   const renderedMessages = React.useMemo(() => {
@@ -433,6 +448,7 @@ export default function AIDirectChatComponent({ onClose }) {
       <MessageItem key={message.id} message={message} />
     ));
   }, [messages]); // <-- CRITICAL: Only depends on messages array
+
 
   return (
     <div className="fixed inset-0 z-50 bg-white flex flex-col">
@@ -455,7 +471,7 @@ export default function AIDirectChatComponent({ onClose }) {
         <div className="flex items-center space-x-2">
 
           {/* {isLoading && abortController && ( */}
-          { abortController && (
+          {abortController && (
             <button
               onClick={handleStopGeneration}
               className="p-1.5 md:p-2 hover:bg-white/10 rounded-lg transition-colors "
@@ -537,4 +553,5 @@ export default function AIDirectChatComponent({ onClose }) {
       </div>
     </div>
   );
+
 }

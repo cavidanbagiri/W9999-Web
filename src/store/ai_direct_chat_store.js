@@ -74,6 +74,25 @@ const aiDirectChatSlice = createSlice({
       }
     },
 
+    stopStreamingMessage: (state, action) => {
+      const { messageId, stopText = "AI response stopped by user." } = action.payload;
+      
+      const messageIndex = state.messages.findIndex(msg => msg.id === messageId);
+      
+      if (messageIndex !== -1) {
+        // Completely replace the text with stop message
+        state.messages[messageIndex] = {
+          ...state.messages[messageIndex],
+          text: stopText,
+          isStreaming: false,
+          wasStopped: true // Add a flag to identify stopped messages
+        };
+        
+        state.cachedMessages = state.messages;
+        state.lastFetched = Date.now();
+      }
+    },
+
     // Clear all messages
     clearMessages: (state) => {
       state.messages = [];
@@ -215,6 +234,7 @@ const aiDirectChatSlice = createSlice({
 export const {
   addMessage,
   updateStreamingMessage,
+  stopStreamingMessage,
   clearMessages,
   setMessages,
   markAsInitialized,
