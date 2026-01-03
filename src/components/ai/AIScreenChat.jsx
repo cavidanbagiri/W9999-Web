@@ -422,29 +422,31 @@ export default function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat
 
 
   // Add this useEffect after your existing useEffects
-  // useEffect(() => {
-  //   // Load conversation history when word changes and no messages exist
-  //   if (currentWord?.id && currentWord?.text && messages.length === 0) {
-  //     const loadHistory = async () => {
-  //       let target_language = LANGUAGES.find(lang => lang.code === currentWord.language_code)?.name;
-  //       if (!target_language) {
-  //         target_language = TRANSLATE_LANGUAGES_LIST[currentWord.language_code];
-  //       }
+  useEffect(() => {
+    // Load conversation history when word changes and no messages exist
+    // console.log('use effect is working')
+    if (currentWord?.id && currentWord?.text && messages.length === 0) {
+      const loadHistory = async () => {
+        let target_language = LANGUAGES.find(lang => lang.code === currentWord.language_code)?.name;
+        if (!target_language) {
+          target_language = TRANSLATE_LANGUAGES_LIST[currentWord.language_code];
+        }
 
-  //       try {
-  //         await dispatch(AIService.fetchConversationHistoryThunk({
-  //           word: currentWord.text,
-  //           language: target_language,
-  //           wordId: currentWord.id
-  //         }));
-  //       } catch (error) {
-  //         console.error('Failed to load initial conversation history:', error);
-  //       }
-  //     };
+        try {
+          console.log('fetch operation is happening')
+          await dispatch(AIService.fetchConversationHistoryThunk({
+            word: currentWord.text,
+            language: target_language,
+            wordId: currentWord.id
+          }));
+        } catch (error) {
+          console.error('Failed to load initial conversation history:', error);
+        }
+      };
 
-  //     loadHistory();
-  //   }
-  // }, [currentWord?.id, currentWord?.text, dispatch]);
+      loadHistory();
+    }
+  }, [currentWord?.id, currentWord?.text, dispatch]);
 
   useEffect(() => {
     if (isCopyMessage) {
