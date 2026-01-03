@@ -19,7 +19,10 @@ import {
   // Check if you have forceRefresh in your slice, if not we'll create it
 } from '../../store/ai_direct_chat_store';
 
+import {addCurrentNoteURL, handleInputChangeRT} from '../../store/note_store';
+
 import { HiMiniArrowLeftOnRectangle } from "react-icons/hi2";
+import { FaRegCopy } from "react-icons/fa6";
 
 
 import MsgBox from '../../layouts/MsgBox';
@@ -389,6 +392,17 @@ export default function AIDirectChatComponent({ onClose }) {
     }
   };
 
+  const handleCopyMessage = (text) => {
+    // console.log('handle copy message is working and the text is ', text)
+    navigator.clipboard.writeText(text)
+  };
+
+  const createNote = (text) => {
+        dispatch(addCurrentNoteURL('/notes/create'));
+        dispatch(handleInputChangeRT({ name: 'content', value: text }));
+        navigate('/notes/create');
+  }
+
 
   // Update your MessageItem component
   const MessageItem = React.memo(({ message }) => {
@@ -415,7 +429,22 @@ export default function AIDirectChatComponent({ onClose }) {
                 <span className="text-gray-600 italic">{message.text}</span>
               </div>
             ) : (
-              <AIMessageContent text={message.text} />
+              <div>
+                <AIMessageContent text={message.text} />
+                <div className='flex my-2'>
+                  <FaRegCopy 
+                            onClick={()=>{
+                              handleCopyMessage(message.text)
+                            }}
+                            className='text-xl cursor-pointer text-gray-600 hover:text-gray-300 duration-200 hover:scale-110' />
+
+                <FaRegNoteSticky 
+                  onClick={()=>{
+                    createNote(message.text)
+                  }}
+                  className='text-xl cursor-pointer text-gray-600 hover:text-gray-300 duration-200 hover:scale-110 ml-4' />
+                </div>
+              </div>
             )}
 
             {/* Show loading indicators only if it's streaming AND not a stopped message */}
