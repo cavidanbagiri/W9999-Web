@@ -81,9 +81,18 @@ export default function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat
     // Clear input focus
     textInputRef.current?.blur();
 
-    // Scroll to top for new word
+    // Scroll to bottom only if there are no messages or if we just loaded history
     if (messagesContainerRef.current) {
-      messagesContainerRef.current.scrollTop = 0;
+      // Check if this is a new conversation with no messages
+      if (!messages || messages.length === 0) {
+        // Wait a bit for any initial messages to load
+        setTimeout(() => {
+          if (messagesContainerRef.current) {
+            messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+          }
+        }, 100);
+      }
+      // Otherwise, leave scroll position as is (user's choice)
     }
   }, [currentWord?.id]);
 
@@ -144,7 +153,7 @@ export default function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat
         dispatch(stopChatStreaming(currentWord.id, streamingMessage.id, partialContent));
         
         // Optional: Show notification
-        console.log('AI response stopped');
+        // console.log('AI response stopped');
       }
     }
   };
@@ -275,7 +284,7 @@ export default function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat
       console.error('Failed to send message:', error);
 
       if (error.name === 'AbortError') {
-        console.log('Request was aborted by user');
+        // console.log('Request was aborted by user');
         
         // The message should already be updated by handleStopGeneration
         // But as a fallback, update it if still streaming
@@ -423,30 +432,36 @@ export default function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat
 
   // Add this useEffect after your existing useEffects
   useEffect(() => {
-    // Load conversation history when word changes and no messages exist
-    // console.log('use effect is working')
-    if (currentWord?.id && currentWord?.text && messages.length === 0) {
-      const loadHistory = async () => {
-        let target_language = LANGUAGES.find(lang => lang.code === currentWord.language_code)?.name;
-        if (!target_language) {
-          target_language = TRANSLATE_LANGUAGES_LIST[currentWord.language_code];
-        }
+  // Load conversation history when word changes and no messages exist
+  if (currentWord?.id && currentWord?.text && messages.length === 0) {
+    const loadHistory = async () => {
+      let target_language = LANGUAGES.find(lang => lang.code === currentWord.language_code)?.name;
+      if (!target_language) {
+        target_language = TRANSLATE_LANGUAGES_LIST[currentWord.language_code];
+      }
 
-        try {
-          console.log('fetch operation is happening')
-          await dispatch(AIService.fetchConversationHistoryThunk({
-            word: currentWord.text,
-            language: target_language,
-            wordId: currentWord.id
-          }));
-        } catch (error) {
-          console.error('Failed to load initial conversation history:', error);
-        }
-      };
+      try {
+        // console.log('fetch operation is happening')
+        await dispatch(AIService.fetchConversationHistoryThunk({
+          word: currentWord.text,
+          language: target_language,
+          wordId: currentWord.id
+        }));
+        
+        // After loading history, scroll to bottom
+        setTimeout(() => {
+          if (messagesContainerRef.current) {
+            messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+          }
+        }, 200);
+      } catch (error) {
+        console.error('Failed to load initial conversation history:', error);
+      }
+    };
 
-      loadHistory();
-    }
-  }, [currentWord?.id, currentWord?.text, dispatch]);
+    loadHistory();
+  }
+}, [currentWord?.id, currentWord?.text, dispatch]);
 
   useEffect(() => {
     if (isCopyMessage) {
@@ -528,6 +543,18 @@ export default function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat
     );
   };
 
+  // Scroll to bottom on initial component mount
+  useEffect(() => {
+    // This runs only once when component mounts
+    const timer = setTimeout(() => {
+      if (messagesContainerRef.current) {
+        messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+      }
+    }, 100); // Give time for DOM to render
+    
+    return () => clearTimeout(timer);
+  }, []); // Empty dependency array = runs once on mount
+
   return (
     <div className="flex flex-col sm:pb-20 md:pb-0 h-[calc(100vh-100px)] bg-gray-50">
       <MsgBox
@@ -539,10 +566,25 @@ export default function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat
       <div className="border-b border-gray-200 bg-white px-4 py-3 flex justify-between items-center">
         <div>
           <h2 className="text-lg font-semibold text-gray-900">Chat about: <span className="text-purple-600">{currentWord?.text}</span></h2>
-          <p className="text-sm text-gray-500">Your AI language assistant</p>
+          {/* <p className="text-sm text-gray-500">Your AI language assistant</p> */}
         </div>
         {/* {onOpenDirectChat && ( */}
           <div className="flex items-center space-x-2">
+
+          <button
+            onClick={()=>{
+              navigate('/ai-direct-chat')
+            }}
+            className='px-4 py-2 text-sm font-medium transition-colors cursor-pointer rounded-b-xl rounded-tl-xl flex items-center space-x-2 bg-gray-100 hover:bg-gray-50 hover:shadow-md text-gray-700 cursor-pointer'
+          >
+            <>
+                  <span className='text-sm hidden md:block'>Direct AI</span>
+                  < IoSparklesSharp className='text-xl' />
+                </>
+            
+          </button>
+
+
           {/* Stop button - only shown when streaming */}
           {isStreaming && streamController && (
             <button
@@ -581,6 +623,8 @@ export default function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat
               )}
             </span>
           </button>
+
+          
 
 
         </div>
@@ -672,7 +716,7 @@ export default function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat
         {showScrollToBottom && (
           <button
             onClick={scrollToBottom}
-            className="fixed bottom-24 right-6 bg-purple-600 text-white p-3 rounded-full shadow-lg hover:bg-purple-700 transition-colors cursor-pointer z-10"
+            className="fixed bottom-48 md:bottom-24 right-6 bg-purple-600 text-white p-3 rounded-full shadow-lg hover:bg-purple-700 transition-colors cursor-pointer z-10"
             title="Scroll to bottom"
           >
             <IoArrowDown className="text-lg" />

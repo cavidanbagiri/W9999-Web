@@ -10,7 +10,7 @@ Features:
 
 Problems
 
-1 - The words ai doesnt fetch from backend after reloading. need to fix that.
+1 - The words ai writing is delaying
 
 2 - When the answer is big in ai direct chat, streaming failed happen. maybe the time is short or l dont know where is the problem
 
@@ -28,4 +28,3 @@ test the notes one more time.
 
 
 DeepSeek
-

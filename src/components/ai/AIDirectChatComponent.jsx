@@ -391,56 +391,56 @@ export default function AIDirectChatComponent({ onClose }) {
 
 
   // Update your MessageItem component
-const MessageItem = React.memo(({ message }) => {
-  // Check if this is a stopped message
-  const isStoppedMessage = message.text === "AI response stopped." || 
-                          message.text === "AI response stopped by user." ||
-                          message.wasStopped;
-  
-  return (
-    <div className={`flex ${message.isUser ? 'justify-end' : 'justify-start'}`}>
-      <div className={`max-w-[95%] p-4 ${message.isUser
-        ? 'bg-indigo-500 text-white rounded-b-2xl rounded-tl-2xl'
-        : isStoppedMessage 
-          ? 'bg-gray-100 border border-gray-300 text-gray-600 italic rounded-2xl' // Different style for stopped messages
-          : 'text-gray-800'
-        }`}
-      >
-        <div>
-          {message.isUser ? (
-            <div className="whitespace-pre-wrap">{message.text}</div>
-          ) : isStoppedMessage ? (
-            // Special rendering for stopped messages
-            <div className="flex items-center space-x-2">
-              <span className="text-gray-600 italic">{message.text}</span>
-            </div>
-          ) : (
-            <AIMessageContent text={message.text} />
-          )}
+  const MessageItem = React.memo(({ message }) => {
+    // Check if this is a stopped message
+    const isStoppedMessage = message.text === "AI response stopped." ||
+      message.text === "AI response stopped by user." ||
+      message.wasStopped;
 
-          {/* Show loading indicators only if it's streaming AND not a stopped message */}
-          {message.isStreaming && !isStoppedMessage && (
-            <div className="flex items-center justify-between mt-2">
-              <div className="flex space-x-1">
-                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+    return (
+      <div className={`flex ${message.isUser ? 'justify-end' : 'justify-start'}`}>
+        <div className={`max-w-[95%] p-4 ${message.isUser
+          ? 'bg-indigo-500 text-white rounded-b-2xl rounded-tl-2xl'
+          : isStoppedMessage
+            ? 'bg-gray-100 border border-gray-300 text-gray-600 italic rounded-2xl' // Different style for stopped messages
+            : 'text-gray-800'
+          }`}
+        >
+          <div>
+            {message.isUser ? (
+              <div className="whitespace-pre-wrap">{message.text}</div>
+            ) : isStoppedMessage ? (
+              // Special rendering for stopped messages
+              <div className="flex items-center space-x-2">
+                <span className="text-gray-600 italic">{message.text}</span>
               </div>
-            </div>
-          )}
+            ) : (
+              <AIMessageContent text={message.text} />
+            )}
 
-          {/* Optional: Show a small indicator for stopped messages */}
-          {isStoppedMessage && (
-            <div className="flex items-center mt-2 text-xs text-gray-500">
-              <IoClose className="mr-1" />
-              <span>Response interrupted</span>
-            </div>
-          )}
+            {/* Show loading indicators only if it's streaming AND not a stopped message */}
+            {message.isStreaming && !isStoppedMessage && (
+              <div className="flex items-center justify-between mt-2">
+                <div className="flex space-x-1">
+                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                </div>
+              </div>
+            )}
+
+            {/* Optional: Show a small indicator for stopped messages */}
+            {isStoppedMessage && (
+              <div className="flex items-center mt-2 text-xs text-gray-500">
+                <IoClose className="mr-1" />
+                <span>Response interrupted</span>
+              </div>
+            )}
+          </div>
         </div>
       </div>
-    </div>
-  );
-});
+    );
+  });
 
 
   const renderedMessages = React.useMemo(() => {
