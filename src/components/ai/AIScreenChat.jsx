@@ -7,9 +7,9 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 
-import { addChatMessage, updateChatMessage, removeChatMessage, stopChatStreaming } from '../../store/ai_store';
+import { addChatMessage, updateChatMessage, removeChatMessage, stopChatStreaming, clearLocalChat } from '../../store/ai_store';
 import { addCurrentNoteURL, handleInputChangeRT } from '../../store/note_store';
-
+import AIService from '../../services/AIService';
 
 import { API_URL } from '../../http/api';
 import LANGUAGES from '../../constants/Languages';
@@ -23,6 +23,8 @@ import { IoArrowDown } from "react-icons/io5";
 import { FaRegCopy } from "react-icons/fa6";
 import { FaRegNoteSticky } from "react-icons/fa6";
 import { IoSparklesSharp } from "react-icons/io5";
+import { IoMdRefresh } from "react-icons/io";
+
 
 
 // Helper function to generate unique IDs
@@ -310,7 +312,7 @@ export default function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat
     const targetLang = LANGUAGES.find(lang => lang.code === language_code)?.name;
 
     return [
-      `Explain "${text}" in simple ${targetLang || 'English'} terms`,
+      // `Explain "${text}" in simple ${targetLang || 'English'} terms`,
       `Give me detailed explanation of "${text}"`,
       // `Write a short story (100 words) with "${currentWord?.text}"`,
       `Create a 100-word story using "${text}" in ${targetLang} with  translation`,
@@ -319,6 +321,130 @@ export default function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat
     ];
   }, [currentWord?.text, currentWord?.language_code]);
 
+
+  const handleRefresh = async () => {
+    if (!currentWord?.id || !currentWord?.text) return;
+
+    // Create loading state for refresh
+    const refreshId = generateUniqueId();
+    dispatch(addChatMessage(currentWord.id, {
+      role: 'system',
+      content: 'Loading conversation history...',
+      id: refreshId,
+      isSystem: true
+    }));
+
+    try {
+      // First, clear local chat state
+      dispatch(clearLocalChat(currentWord.id));
+
+      // Get target language
+      let target_language = LANGUAGES.find(lang => lang.code === currentWord.language_code)?.name;
+      if (!target_language) {
+        target_language = TRANSLATE_LANGUAGES_LIST[currentWord.language_code];
+      }
+
+      // Fetch conversation history from backend
+      const resultAction = await dispatch(AIService.fetchConversationHistoryThunk({
+        word: currentWord.text,
+        language: target_language,
+        wordId: currentWord.id
+      }));
+
+      // Remove the loading message
+      dispatch(removeChatMessage(currentWord.id, refreshId));
+
+      if (AIService.fetchConversationHistoryThunk.fulfilled.match(resultAction)) {
+        const { history } = resultAction.payload;
+        
+        // Show success message if history was loaded
+        if (history && history.length > 0) {
+          const successId = generateUniqueId();
+          dispatch(addChatMessage(currentWord.id, {
+            role: 'system',
+            content: `Loaded ${history.length} previous conversation${history.length > 1 ? 's' : ''}`,
+            id: successId,
+            isSystem: true
+          }));
+          
+          // Auto-remove success message after 3 seconds
+          setTimeout(() => {
+            dispatch(removeChatMessage(currentWord.id, successId));
+          }, 3000);
+        } else {
+          // No history found - add empty state message
+          const emptyId = generateUniqueId();
+          dispatch(addChatMessage(currentWord.id, {
+            role: 'system',
+            content: 'No previous conversations found. Start a new conversation!',
+            id: emptyId,
+            isSystem: true
+          }));
+          
+          setTimeout(() => {
+            dispatch(removeChatMessage(currentWord.id, emptyId));
+          }, 3000);
+        }
+      } else {
+        // Handle error
+        const errorId = generateUniqueId();
+        dispatch(addChatMessage(currentWord.id, {
+          role: 'system',  // Changed from 'system' to 'assistant' to avoid breaking
+          content: 'Loading conversation history...',
+          id: refreshId,
+          isSystem: true  // Add this property
+        }));
+        
+        setTimeout(() => {
+          dispatch(removeChatMessage(currentWord.id, errorId));
+        }, 3000);
+      }
+
+    } catch (error) {
+      console.error('Refresh error:', error);
+      
+      // Remove loading message and show error
+      dispatch(removeChatMessage(currentWord.id, refreshId));
+      
+      const errorId = generateUniqueId();
+      dispatch(addChatMessage(currentWord.id, {
+        role: 'system',
+        content: 'Error loading conversation history',
+        id: errorId,
+        isSystem: true
+      }));
+      
+      setTimeout(() => {
+        dispatch(removeChatMessage(currentWord.id, errorId));
+      }, 3000);
+    }
+  };
+
+
+  // Add this useEffect after your existing useEffects
+  // useEffect(() => {
+  //   // Load conversation history when word changes and no messages exist
+  //   if (currentWord?.id && currentWord?.text && messages.length === 0) {
+  //     const loadHistory = async () => {
+  //       let target_language = LANGUAGES.find(lang => lang.code === currentWord.language_code)?.name;
+  //       if (!target_language) {
+  //         target_language = TRANSLATE_LANGUAGES_LIST[currentWord.language_code];
+  //       }
+
+  //       try {
+  //         await dispatch(AIService.fetchConversationHistoryThunk({
+  //           word: currentWord.text,
+  //           language: target_language,
+  //           wordId: currentWord.id
+  //         }));
+  //       } catch (error) {
+  //         console.error('Failed to load initial conversation history:', error);
+  //       }
+  //     };
+
+  //     loadHistory();
+  //   }
+  // }, [currentWord?.id, currentWord?.text, dispatch]);
 
   useEffect(() => {
     if (isCopyMessage) {
@@ -330,6 +456,7 @@ export default function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat
 
   // Update formatMessage function
   const formatMessage = (text, wasStopped = false) => {
+
     // Check if this is a stopped/interrupted message
     const isStoppedMessage = wasStopped || text.includes('[Response interrupted]');
     
@@ -430,14 +557,30 @@ export default function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat
           )}
                   
           <button
-            onClick={() => navigate('/notes')}
-            className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-sm font-medium text-gray-700 transition-colors cursor-pointer rounded-b-xl rounded-tl-xl"
+            onClick={handleRefresh}
+            disabled={currentConversation.isLoadingHistory}
+            className={`px-4 py-2 text-sm font-medium transition-colors cursor-pointer rounded-b-xl rounded-tl-xl flex items-center space-x-2 ${
+              currentConversation.isLoadingHistory
+                ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+            }`}
           >
             <span className='flex items-center space-x-2'>
-              <span className='text-lg hidden md:block'>Notes</span>
-              <FaRegNoteSticky className='text-xl' />
+              {currentConversation.isLoadingHistory ? (
+                <>
+                  <span className='text-sm hidden md:block'>Loading...</span>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-500"></div>
+                </>
+              ) : (
+                <>
+                  <span className='text-sm hidden md:block'>Refresh</span>
+                  <IoMdRefresh className='text-xl' />
+                </>
+              )}
             </span>
           </button>
+
+
         </div>
         {/* // )} */}
       </div>
@@ -483,29 +626,39 @@ export default function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat
                 key={msg.id}
                 className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
               >
-                <div
-                  className={`max-w-[95%] rounded-b-xl rounded-tl-xl px-4 py-3 ${msg.role === 'user'
-                      ? 'bg-purple-600 text-white'
-                      : msg.wasStopped 
-                        ? 'bg-yellow-50 border border-yellow-200' // Different style for stopped messages
-                        : 'text-gray-900'
-                    } ${msg.isStreaming ? 'streaming-cursor' : ''}`}
-                >
-                  <div className="text-lg leading-relaxed font-sans">
-                    {msg.role === 'user' ? (
-                      <div className="whitespace-pre-wrap ">{msg.content}</div>
-                    ) : (
-                      formatMessage(msg.content, msg.wasStopped) // Pass wasStopped flag
-                    )}
-                    {msg.isStreaming && msg.content === '' && (
-                      <div className="flex space-x-1">
-                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                      </div>
-                    )}
+                {/* Handle system messages differently */}
+                {msg.isSystem ? (
+                  <div className="w-full text-center">
+                    <div className="inline-block bg-gray-100 text-gray-600 text-sm italic px-4 py-2 rounded-lg">
+                      {msg.content}
+                    </div>
                   </div>
-                </div>
+                ) : (
+                  <div
+                    className={`max-w-[95%] rounded-b-xl rounded-tl-xl px-4 py-3 ${
+                      msg.role === 'user'
+                        ? 'bg-purple-600 text-white'
+                        : msg.wasStopped 
+                          ? 'bg-yellow-50 border border-yellow-200'
+                          : 'text-gray-900'
+                    } ${msg.isStreaming ? 'streaming-cursor' : ''}`}
+                  >
+                    <div className="text-lg leading-relaxed font-sans">
+                      {msg.role === 'user' ? (
+                        <div className="whitespace-pre-wrap ">{msg.content}</div>
+                      ) : (
+                        formatMessage(msg.content, msg.wasStopped)
+                      )}
+                      {msg.isStreaming && msg.content === '' && (
+                        <div className="flex space-x-1">
+                          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
             ))}
 
@@ -544,6 +697,7 @@ export default function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat
       </div>
     </div>
   );
+
 }
 
 

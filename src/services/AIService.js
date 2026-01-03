@@ -79,7 +79,34 @@ class AIService {
                     status: statusCode,
                 });
             }
+    });
+
+    // Add this to your existing services or create a new file
+    static fetchConversationHistoryThunk = createAsyncThunk(
+    'ai/fetchConversationHistory',
+    async ({ word, language }, { rejectWithValue }) => {
+        try {
+        const token = localStorage.getItem('token');
+        
+        const response = await fetch(`${API_URL}/words/wordai/conversation_history?word=${encodeURIComponent(word)}&language=${encodeURIComponent(language)}`, {
+            method: 'GET',
+            headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+            },
         });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        return data;
+        } catch (error) {
+        return rejectWithValue(error.message);
+        }
+    }
+    );
 
 
 }

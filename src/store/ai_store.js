@@ -3,6 +3,8 @@
 import { createSlice, createAction } from '@reduxjs/toolkit';
 import { generateAIWordThunk, generateAITextWithQuestionThunk } from '../services/AIService';
 
+import AIService from '../services/AIService';
+
 const MAX_CACHE_SIZE = 50;
 
 const initialState = {
@@ -37,6 +39,10 @@ export const stopChatStreaming = createAction('ai/stopChatStreaming',
 );
 
 export const clearChatForWord = createAction('ai/clearChatForWord',
+  (wordId) => ({ payload: { wordId } })
+);
+
+export const clearLocalChat = createAction('ai/clearLocalChat',
   (wordId) => ({ payload: { wordId } })
 );
 
@@ -82,8 +88,30 @@ const aiSlice = createSlice({
   },
   extraReducers: (builder) => {
     // Handle custom actions for chat operations
+
+
     builder
       // Add chat message to specific word's conversation
+      // .addCase(addChatMessage, (state, action) => {
+      //   const { wordId, message } = action.payload;
+        
+      //   if (!state.conversations[wordId]) {
+      //     state.conversations[wordId] = {
+      //       messages: [],
+      //       isLoading: false
+      //     };
+      //   }
+        
+      //   const newMessage = {
+      //     id: message.id || Date.now(),
+      //     role: message.role,
+      //     content: message.content || '',
+      //     isStreaming: message.isStreaming || false
+      //   };
+        
+      //   state.conversations[wordId].messages.push(newMessage);
+      // })
+
       .addCase(addChatMessage, (state, action) => {
         const { wordId, message } = action.payload;
         
@@ -98,10 +126,20 @@ const aiSlice = createSlice({
           id: message.id || Date.now(),
           role: message.role,
           content: message.content || '',
-          isStreaming: message.isStreaming || false
+          isStreaming: message.isStreaming || false,
+          isSystem: message.isSystem || false,  // Add this line
+          wasStopped: message.wasStopped || false  // Add this if not already there
         };
         
         state.conversations[wordId].messages.push(newMessage);
+      })
+
+      .addCase(clearLocalChat, (state, action) => {
+        const { wordId } = action.payload;
+        if (state.conversations[wordId]) {
+          state.conversations[wordId].messages = [];
+          state.conversations[wordId].historyLoaded = false;
+        }
       })
       
       // Update existing chat message
@@ -246,7 +284,53 @@ const aiSlice = createSlice({
           });
         }
         state.error = action.payload;
-      });
+      })
+
+      builder
+    .addCase(AIService.fetchConversationHistoryThunk.pending, (state, action) => {
+      const { wordId } = action.meta.arg;
+      if (wordId && state.conversations[wordId]) {
+        state.conversations[wordId].isLoadingHistory = true;
+      }
+    })
+    .addCase(AIService.fetchConversationHistoryThunk.fulfilled, (state, action) => {
+      const { wordId } = action.meta.arg;
+      const { history, word, language } = action.payload;
+      
+      if (wordId && history) {
+        if (!state.conversations[wordId]) {
+          state.conversations[wordId] = {
+            messages: [],
+            isLoading: false,
+            historyLoaded: true,
+          };
+        }
+        
+        // Convert history to message format
+        const formattedMessages = history.map((msg, index) => ({
+          id: `history_${wordId}_${index}_${Date.now()}`,
+          role: msg.role,
+          content: msg.content,
+          isStreaming: false,
+          isHistory: true,
+          timestamp: msg.timestamp || new Date().toISOString(),
+        }));
+        
+        // Clear existing messages and load history
+        state.conversations[wordId].messages = formattedMessages;
+        state.conversations[wordId].historyLoaded = true;
+        state.conversations[wordId].isLoadingHistory = false;
+      }
+    })
+    .addCase(AIService.fetchConversationHistoryThunk.rejected, (state, action) => {
+      const { wordId } = action.meta.arg;
+      if (wordId && state.conversations[wordId]) {
+        state.conversations[wordId].isLoadingHistory = false;
+        state.conversations[wordId].historyError = action.payload;
+      }
+    });
+
+
   },
 });
 
@@ -256,7 +340,7 @@ export const {
   clearAIResponse, 
   setAIResponse, 
   clearCache,
-  clearAllConversations
+  clearAllConversations,
 } = aiSlice.actions;
 
 export default aiSlice.reducer;
