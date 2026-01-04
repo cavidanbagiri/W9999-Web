@@ -1,9 +1,8 @@
 
 
 
-
 import { useDispatch, useSelector } from 'react-redux';
-import { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 
@@ -32,7 +31,79 @@ const generateUniqueId = () => {
   return Date.now() + Math.random().toString(36).substr(2, 9);
 };
 
-export default function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat }) {
+// Add this OUTSIDE the AIScreenChat component, at the top of the file after imports
+const MemoizedReactMarkdown = React.memo(({ children, components }) => (
+  <ReactMarkdown components={components}>
+    {children}
+  </ReactMarkdown>
+));
+
+
+// Create a memoized message component WITH proper imports
+const MemoizedMessage = React.memo(({ 
+  text, 
+  wasStopped, 
+  onCopy,
+  onCreateNote 
+}) => {
+  const displayText = wasStopped || text.includes('[Response interrupted]') 
+    ? text.replace('[Response interrupted]', '').trim()
+    : text;
+
+  const markdownComponents = useMemo(() => ({
+    strong: ({ children }) => <strong className="font-bold text-gray-900">{children}</strong>,
+    em: ({ children }) => <em className="italic text-gray-800">{children}</em>,
+    h1: ({ children }) => <h1 className="text-xl font-bold text-gray-900 mt-4 mb-2">{children}</h1>,
+    h2: ({ children }) => <h2 className="text-lg font-bold text-gray-900 mt-3 mb-2">{children}</h2>,
+    h3: ({ children }) => <h3 className="text-base font-bold text-gray-900 mt-2 mb-1">{children}</h3>,
+    p: ({ children }) => <p className="mb-2 leading-relaxed">{children}</p>,
+    ul: ({ children }) => <ul className="list-disc list-inside mb-2 space-y-1">{children}</ul>,
+    ol: ({ children }) => <ol className="list-decimal list-inside mb-2 space-y-1">{children}</ol>,
+    li: ({ children }) => <li className="leading-relaxed">{children}</li>,
+    blockquote: ({ children }) => <blockquote className="border-l-4 border-gray-300 pl-3 italic text-gray-700 my-2">{children}</blockquote>,
+  }), []);
+
+  return (
+    <div className="relative">
+      <MemoizedReactMarkdown components={markdownComponents}>
+        {displayText}
+      </MemoizedReactMarkdown>
+      
+      {wasStopped && (
+        <div className="mt-3 p-2 bg-yellow-50 border border-yellow-200 rounded text-sm">
+          <div className="flex items-center text-yellow-700">
+            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.162 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>
+            <span className="font-medium">Response interrupted</span>
+          </div>
+          <p className="text-yellow-600 text-xs mt-1">
+            You stopped the AI response. Send another message to continue.
+          </p>
+        </div>
+      )}
+      
+      <div className='flex my-2'>
+        <FaRegCopy 
+          onClick={onCopy}
+          className='text-xl cursor-pointer text-gray-600 hover:text-gray-300 duration-200 hover:scale-110' 
+        />
+        <FaRegNoteSticky 
+          onClick={onCreateNote}
+          className='text-xl cursor-pointer text-gray-600 hover:text-gray-300 duration-200 hover:scale-110 ml-4' 
+        />
+      </div>
+    </div>
+  );
+});
+
+MemoizedMessage.displayName = 'MemoizedMessage';
+
+
+MemoizedMessage.displayName = 'MemoizedMessage';
+MemoizedReactMarkdown.displayName = 'MemoizedReactMarkdown';
+
+function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat }) {
 
   
   const STT_LANGUAGES = {
@@ -471,77 +542,7 @@ export default function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat
     }
   }, [isCopyMessage]);
 
-  // Update formatMessage function
-  const formatMessage = (text, wasStopped = false) => {
 
-    // Check if this is a stopped/interrupted message
-    const isStoppedMessage = wasStopped || text.includes('[Response interrupted]');
-    
-    // Clean the text for display
-    let displayText = text;
-    if (isStoppedMessage) {
-      // Remove the [Response interrupted] marker for cleaner display
-      displayText = text.replace('[Response interrupted]', '').trim();
-    }
-
-    const handleCopyMessage = () => {
-      setIsCopyMessage(true);
-      navigator.clipboard.writeText(text)
-    }
-
-    const createNote = () => {
-      dispatch(addCurrentNoteURL('/notes/create'));
-      dispatch(handleInputChangeRT({ name: 'note_name', value: currentWord?.text }));
-      dispatch(handleInputChangeRT({ name: 'target_lang', value: currentWord?.language_code }));
-      dispatch(handleInputChangeRT({ name: 'content', value: text }));
-      navigate('/notes/create');
-    }
-
-    return (
-      <div className="relative">
-        <ReactMarkdown
-          components={{
-            strong: ({ children }) => <strong className="font-bold text-gray-900">{children}</strong>,
-            em: ({ children }) => <em className="italic text-gray-800">{children}</em>,
-            h1: ({ children }) => <h1 className="text-xl font-bold text-gray-900 mt-4 mb-2">{children}</h1>,
-            h2: ({ children }) => <h2 className="text-lg font-bold text-gray-900 mt-3 mb-2">{children}</h2>,
-            h3: ({ children }) => <h3 className="text-base font-bold text-gray-900 mt-2 mb-1">{children}</h3>,
-            p: ({ children }) => <p className="mb-2 leading-relaxed">{children}</p>,
-            ul: ({ children }) => <ul className="list-disc list-inside mb-2 space-y-1">{children}</ul>,
-            ol: ({ children }) => <ol className="list-decimal list-inside mb-2 space-y-1">{children}</ol>,
-            li: ({ children }) => <li className="leading-relaxed">{children}</li>,
-            blockquote: ({ children }) => <blockquote className="border-l-4 border-gray-300 pl-3 italic text-gray-700 my-2">{children}</blockquote>,
-          }}
-        >
-          {displayText}
-        </ReactMarkdown>
-        
-        {/* Show interrupted indicator if message was stopped */}
-        {isStoppedMessage && (
-          <div className="mt-3 p-2 bg-yellow-50 border border-yellow-200 rounded text-sm">
-            <div className="flex items-center text-yellow-700">
-              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.162 16.5c-.77.833.192 2.5 1.732 2.5z" />
-              </svg>
-              <span className="font-medium">Response interrupted</span>
-            </div>
-            <p className="text-yellow-600 text-xs mt-1">
-              You stopped the AI response. Send another message to continue.
-            </p>
-          </div>
-        )}
-        
-        <div className='flex my-2'>
-          <FaRegCopy 
-            onClick={handleCopyMessage}
-            className='text-xl cursor-pointer text-gray-600 hover:text-gray-300 duration-200 hover:scale-110' />
-          <FaRegNoteSticky 
-            onClick={createNote}
-            className='text-xl cursor-pointer text-gray-600 hover:text-gray-300 duration-200 hover:scale-110 ml-4' />
-        </div>
-      </div>
-    );
-  };
 
   // Scroll to bottom on initial component mount
   useEffect(() => {
@@ -668,45 +669,61 @@ export default function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat
         ) : (
           <div className="space-y-4">
             {messages.map((msg) => (
-              <div
-                key={msg.id}
-                className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
-              >
-                {/* Handle system messages differently */}
-                {msg.isSystem ? (
-                  <div className="w-full text-center">
-                    <div className="inline-block bg-gray-100 text-gray-600 text-sm italic px-4 py-2 rounded-lg">
-                      {msg.content}
-                    </div>
-                  </div>
-                ) : (
-                  <div
-                    className={`max-w-[95%] rounded-b-xl rounded-tl-xl px-4 py-3 ${
-                      msg.role === 'user'
-                        ? 'bg-purple-600 text-white'
-                        : msg.wasStopped 
-                          ? 'bg-yellow-50 border border-yellow-200'
-                          : 'text-gray-900'
-                    } ${msg.isStreaming ? 'streaming-cursor' : ''}`}
-                  >
-                    <div className="text-lg leading-relaxed font-sans">
-                      {msg.role === 'user' ? (
-                        <div className="whitespace-pre-wrap ">{msg.content}</div>
-                      ) : (
-                        formatMessage(msg.content, msg.wasStopped)
-                      )}
-                      {msg.isStreaming && msg.content === '' && (
-                        <div className="flex space-x-1">
-                          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
-            ))}
+  <div
+    key={msg.id}
+    className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+  >
+    {/* Handle system messages differently */}
+    {msg.isSystem ? (
+      <div className="w-full text-center">
+        <div className="inline-block bg-gray-100 text-gray-600 text-sm italic px-4 py-2 rounded-lg">
+          {msg.content}
+        </div>
+      </div>
+    ) : (
+      <div
+        className={`max-w-[95%] rounded-b-xl rounded-tl-xl px-4 py-3 ${
+          msg.role === 'user'
+            ? 'bg-purple-600 text-white'
+            : msg.wasStopped 
+              ? 'bg-yellow-50 border border-yellow-200'
+              : 'text-gray-900'
+        } ${msg.isStreaming ? 'streaming-cursor' : ''}`}
+      >
+        <div className="text-lg leading-relaxed font-sans">
+          {msg.role === 'user' ? (
+            <div className="whitespace-pre-wrap ">{msg.content}</div>
+          ) : (
+            <MemoizedMessage
+              text={msg.content}
+              wasStopped={msg.wasStopped}
+              currentWordText={currentWord?.text}
+              currentWordLangCode={currentWord?.language_code}
+              onCopy={() => {
+                setIsCopyMessage(true);
+                navigator.clipboard.writeText(msg.content);
+              }}
+              onCreateNote={() => {
+                dispatch(addCurrentNoteURL('/notes/create'));
+                dispatch(handleInputChangeRT({ name: 'note_name', value: currentWord?.text }));
+                dispatch(handleInputChangeRT({ name: 'target_lang', value: currentWord?.language_code }));
+                dispatch(handleInputChangeRT({ name: 'content', value: msg.content }));
+                navigate('/notes/create');
+              }}
+            />
+          )}
+          {msg.isStreaming && msg.content === '' && (
+            <div className="flex space-x-1">
+              <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+              <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+              <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+            </div>
+          )}
+        </div>
+      </div>
+    )}
+  </div>
+))}
 
             <div ref={messagesEndRef} />
           </div>
@@ -747,4 +764,4 @@ export default function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat
 }
 
 
-
+export default React.memo(AIScreenChat);
