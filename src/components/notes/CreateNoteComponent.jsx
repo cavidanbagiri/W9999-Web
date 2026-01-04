@@ -28,7 +28,7 @@ import {
   FaListUl,
   FaLink
 } from 'react-icons/fa';
-
+import { IoSparklesOutline } from "react-icons/io5";
 
 import NoteService from '../../services/NoteService';
 
@@ -242,13 +242,14 @@ function CreateNoteComponent() {
   return (
     <div className="container mx-auto px-8 md:px-4 py-6 max-w-4xl">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-blue-700 mb-2">
+      <div className="mb-8 flex flex-row justify-between items-center">
+        <h1 className="text-2xl md:text-3xl font-bold text-blue-700 mb-2">
           Create New Note
         </h1>
-        <p className="text-gray-600">
-          Add a new learning note for vocabulary, grammar, or general insights.
-        </p>
+        <button onClick={()=>navigate('/ai-direct-chat')} className="flex  px-4 py-3 rounded-lg bg-gray-200 hover:bg-gray-100 duration-100 cursor-pointer">
+          <span className='mr-2 hidden md:block'>Back to AI Direct Chat</span>
+          <IoSparklesOutline className="text-xl" />
+        </button>
       </div>
 
       {/* Error Display */}
@@ -259,9 +260,7 @@ function CreateNoteComponent() {
       )}
 
       <div>
-        <button onClick={()=>navigate('/ai-direct-chat')} className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors">
-          Back to AI Direct Chat
-        </button>
+        
       </div>
 
       {/* Main Form */}
