@@ -40,13 +40,13 @@ const MemoizedReactMarkdown = React.memo(({ children, components }) => (
 
 
 // Create a memoized message component WITH proper imports
-const MemoizedMessage = React.memo(({ 
-  text, 
-  wasStopped, 
+const MemoizedMessage = React.memo(({
+  text,
+  wasStopped,
   onCopy,
-  onCreateNote 
+  onCreateNote
 }) => {
-  const displayText = wasStopped || text.includes('[Response interrupted]') 
+  const displayText = wasStopped || text.includes('[Response interrupted]')
     ? text.replace('[Response interrupted]', '').trim()
     : text;
 
@@ -68,7 +68,7 @@ const MemoizedMessage = React.memo(({
       <MemoizedReactMarkdown components={markdownComponents}>
         {displayText}
       </MemoizedReactMarkdown>
-      
+
       {wasStopped && (
         <div className="mt-3 p-2 bg-yellow-50 border border-yellow-200 rounded text-sm">
           <div className="flex items-center text-yellow-700">
@@ -82,30 +82,24 @@ const MemoizedMessage = React.memo(({
           </p>
         </div>
       )}
-      
+
       <div className='flex my-2'>
-        <FaRegCopy 
+        <FaRegCopy
           onClick={onCopy}
-          className='text-xl cursor-pointer text-gray-600 hover:text-gray-300 duration-200 hover:scale-110' 
+          className='text-xl cursor-pointer text-gray-600 hover:text-gray-300 duration-200 hover:scale-110'
         />
-        <FaRegNoteSticky 
+        <FaRegNoteSticky
           onClick={onCreateNote}
-          className='text-xl cursor-pointer text-gray-600 hover:text-gray-300 duration-200 hover:scale-110 ml-4' 
+          className='text-xl cursor-pointer text-gray-600 hover:text-gray-300 duration-200 hover:scale-110 ml-4'
         />
       </div>
     </div>
   );
 });
 
-MemoizedMessage.displayName = 'MemoizedMessage';
-
-
-MemoizedMessage.displayName = 'MemoizedMessage';
-MemoizedReactMarkdown.displayName = 'MemoizedReactMarkdown';
 
 function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat }) {
 
-  
   const STT_LANGUAGES = {
     'English': 'en-US',
     'Spanish': 'es-ES',
@@ -122,8 +116,8 @@ function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat }) {
   const [showScrollToBottom, setShowScrollToBottom] = useState(false);
 
   const [isLoading, setIsLoading] = useState(false);
-
   const [isCopyMessage, setIsCopyMessage] = useState(false);
+  const [isLoadingInitial, setIsLoadingInitial] = useState(false);
 
   // Get conversation for current word from Redux
   const { conversations } = useSelector((state) => state.aiSlice);
@@ -137,61 +131,7 @@ function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat }) {
   const textInputRef = useRef();
   const messagesContainerRef = useRef();
 
-  useEffect(() => {
-    // Cancel any ongoing stream
-    if (streamController) {
-      streamController.abort();
-      setStreamController(null);
-    }
 
-    // Reset local state
-    setMessage('');
-    setIsStreaming(false);
-    setShowScrollToBottom(false);
-
-    // Clear input focus
-    textInputRef.current?.blur();
-
-    // Scroll to bottom only if there are no messages or if we just loaded history
-    if (messagesContainerRef.current) {
-      // Check if this is a new conversation with no messages
-      if (!messages || messages.length === 0) {
-        // Wait a bit for any initial messages to load
-        setTimeout(() => {
-          if (messagesContainerRef.current) {
-            messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
-          }
-        }, 100);
-      }
-      // Otherwise, leave scroll position as is (user's choice)
-    }
-  }, [currentWord?.id]);
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      if (streamController) {
-        streamController.abort();
-      }
-    };
-  }, [streamController]);
-
-  // Check scroll position to show/hide scroll-to-bottom button
-  useEffect(() => {
-    const checkScrollPosition = () => {
-      if (messagesContainerRef.current) {
-        const { scrollTop, scrollHeight, clientHeight } = messagesContainerRef.current;
-        const isNearBottom = scrollHeight - scrollTop - clientHeight < 100;
-        setShowScrollToBottom(!isNearBottom);
-      }
-    };
-
-    const container = messagesContainerRef.current;
-    if (container) {
-      container.addEventListener('scroll', checkScrollPosition);
-      return () => container.removeEventListener('scroll', checkScrollPosition);
-    }
-  }, []);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -207,22 +147,22 @@ function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat }) {
   const handleStopGeneration = () => {
     if (streamController && isStreaming) {
       // Get the current streaming message first
-      const streamingMessage = messages.find(msg => 
+      const streamingMessage = messages.find(msg =>
         msg.isStreaming && msg.role === 'assistant'
       );
-      
+
       if (streamingMessage) {
         // Save the partial content before aborting
         const partialContent = streamingMessage.content || '';
-        
+
         // Abort the request
         streamController.abort();
         setStreamController(null);
         setIsStreaming(false);
-        
+
         // Update the message with partial content
         dispatch(stopChatStreaming(currentWord.id, streamingMessage.id, partialContent));
-        
+
         // Optional: Show notification
         // console.log('AI response stopped');
       }
@@ -356,18 +296,18 @@ function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat }) {
 
       if (error.name === 'AbortError') {
         // console.log('Request was aborted by user');
-        
+
         // The message should already be updated by handleStopGeneration
         // But as a fallback, update it if still streaming
-        const streamingMessage = messages.find(msg => 
+        const streamingMessage = messages.find(msg =>
           msg.id === aiMessageId && msg.isStreaming
         );
-        
+
         if (streamingMessage) {
           const partialContent = streamingMessage.content || '';
           dispatch(stopChatStreaming(currentWord.id, aiMessageId, partialContent));
         }
-        
+
         return;
       }
 
@@ -436,7 +376,7 @@ function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat }) {
 
       if (AIService.fetchConversationHistoryThunk.fulfilled.match(resultAction)) {
         const { history } = resultAction.payload;
-        
+
         // Show success message if history was loaded
         if (history && history.length > 0) {
           const successId = generateUniqueId();
@@ -446,7 +386,7 @@ function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat }) {
             id: successId,
             isSystem: true
           }));
-          
+
           // Auto-remove success message after 3 seconds
           setTimeout(() => {
             dispatch(removeChatMessage(currentWord.id, successId));
@@ -460,7 +400,7 @@ function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat }) {
             id: emptyId,
             isSystem: true
           }));
-          
+
           setTimeout(() => {
             dispatch(removeChatMessage(currentWord.id, emptyId));
           }, 3000);
@@ -474,7 +414,7 @@ function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat }) {
           id: refreshId,
           isSystem: true  // Add this property
         }));
-        
+
         setTimeout(() => {
           dispatch(removeChatMessage(currentWord.id, errorId));
         }, 3000);
@@ -482,10 +422,10 @@ function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat }) {
 
     } catch (error) {
       console.error('Refresh error:', error);
-      
+
       // Remove loading message and show error
       dispatch(removeChatMessage(currentWord.id, refreshId));
-      
+
       const errorId = generateUniqueId();
       dispatch(addChatMessage(currentWord.id, {
         role: 'system',
@@ -493,7 +433,7 @@ function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat }) {
         id: errorId,
         isSystem: true
       }));
-      
+
       setTimeout(() => {
         dispatch(removeChatMessage(currentWord.id, errorId));
       }, 3000);
@@ -501,38 +441,100 @@ function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat }) {
   };
 
 
-  // Add this useEffect after your existing useEffects
   useEffect(() => {
-  // Load conversation history when word changes and no messages exist
-  if (currentWord?.id && currentWord?.text && messages.length === 0) {
-    const loadHistory = async () => {
-      let target_language = LANGUAGES.find(lang => lang.code === currentWord.language_code)?.name;
-      if (!target_language) {
-        target_language = TRANSLATE_LANGUAGES_LIST[currentWord.language_code];
-      }
+    // Cancel any ongoing stream
+    if (streamController) {
+      streamController.abort();
+      setStreamController(null);
+    }
 
-      try {
-        // console.log('fetch operation is happening')
-        await dispatch(AIService.fetchConversationHistoryThunk({
-          word: currentWord.text,
-          language: target_language,
-          wordId: currentWord.id
-        }));
-        
-        // After loading history, scroll to bottom
+    // Reset local state
+    setMessage('');
+    setIsStreaming(false);
+    setShowScrollToBottom(false);
+
+    // Clear input focus
+    textInputRef.current?.blur();
+
+    // Scroll to bottom only if there are no messages or if we just loaded history
+    if (messagesContainerRef.current) {
+      // Check if this is a new conversation with no messages
+      if (!messages || messages.length === 0) {
+        // Wait a bit for any initial messages to load
         setTimeout(() => {
           if (messagesContainerRef.current) {
             messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
           }
-        }, 200);
-      } catch (error) {
-        console.error('Failed to load initial conversation history:', error);
+        }, 100);
+      }
+      // Otherwise, leave scroll position as is (user's choice)
+    }
+  }, [currentWord?.id]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (streamController) {
+        streamController.abort();
+      }
+    };
+  }, [streamController]);
+
+  // Check scroll position to show/hide scroll-to-bottom button
+  useEffect(() => {
+    const checkScrollPosition = () => {
+      if (messagesContainerRef.current) {
+        const { scrollTop, scrollHeight, clientHeight } = messagesContainerRef.current;
+        const isNearBottom = scrollHeight - scrollTop - clientHeight < 100;
+        setShowScrollToBottom(!isNearBottom);
       }
     };
 
-    loadHistory();
-  }
-}, [currentWord?.id, currentWord?.text, dispatch]);
+    const container = messagesContainerRef.current;
+    if (container) {
+      container.addEventListener('scroll', checkScrollPosition);
+      return () => container.removeEventListener('scroll', checkScrollPosition);
+    }
+  }, []);
+
+  // Add this useEffect after your existing useEffects
+  useEffect(() => {
+    // Load conversation history when word changes and no messages exist
+    if (currentWord?.id && currentWord?.text && messages.length === 0) {
+      const loadHistory = async () => {
+
+        setIsLoadingInitial(true); // Start loading
+
+        let target_language = LANGUAGES.find(lang => lang.code === currentWord.language_code)?.name;
+        if (!target_language) {
+          target_language = TRANSLATE_LANGUAGES_LIST[currentWord.language_code];
+        }
+
+        try {
+          // console.log('fetch operation is happening')
+          await dispatch(AIService.fetchConversationHistoryThunk({
+            word: currentWord.text,
+            language: target_language,
+            wordId: currentWord.id
+          }));
+
+          // After loading history, scroll to bottom
+          setTimeout(() => {
+            if (messagesContainerRef.current) {
+              messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+            }
+          }, 200);
+        } catch (error) {
+          console.error('Failed to load initial conversation history:', error);
+        }
+        finally {
+          setIsLoadingInitial(false); // Stop loading
+        }
+      };
+
+      loadHistory();
+    }
+  }, [currentWord?.id, currentWord?.text, dispatch, messages.length]);
 
   useEffect(() => {
     if (isCopyMessage) {
@@ -542,8 +544,6 @@ function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat }) {
     }
   }, [isCopyMessage]);
 
-
-
   // Scroll to bottom on initial component mount
   useEffect(() => {
     // This runs only once when component mounts
@@ -552,9 +552,11 @@ function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat }) {
         messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
       }
     }, 100); // Give time for DOM to render
-    
+
     return () => clearTimeout(timer);
   }, []); // Empty dependency array = runs once on mount
+
+
 
   return (
     <div className="flex flex-col sm:pb-20 md:pb-0 h-[calc(100vh-100px)] bg-gray-50">
@@ -570,19 +572,19 @@ function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat }) {
           {/* <p className="text-sm text-gray-500">Your AI language assistant</p> */}
         </div>
         {/* {onOpenDirectChat && ( */}
-          <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-2">
 
           <button
-            onClick={()=>{
+            onClick={() => {
               navigate('/ai-direct-chat')
             }}
             className='px-4 py-2 text-sm font-medium transition-colors cursor-pointer rounded-b-xl rounded-tl-xl flex items-center space-x-2 bg-gray-100 hover:bg-gray-50 hover:shadow-md text-gray-700 cursor-pointer'
           >
             <>
-                  <span className='text-sm hidden md:block'>Direct AI</span>
-                  < IoSparklesSharp className='text-xl' />
-                </>
-            
+              <span className='text-sm hidden md:block'>Direct AI</span>
+              < IoSparklesSharp className='text-xl' />
+            </>
+
           </button>
 
 
@@ -600,15 +602,14 @@ function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat }) {
               <span>Stop</span>
             </button>
           )}
-                  
+
           <button
             onClick={handleRefresh}
             disabled={currentConversation.isLoadingHistory}
-            className={`px-4 py-2 text-sm font-medium transition-colors cursor-pointer rounded-b-xl rounded-tl-xl flex items-center space-x-2 ${
-              currentConversation.isLoadingHistory
-                ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-            }`}
+            className={`px-4 py-2 text-sm font-medium transition-colors cursor-pointer rounded-b-xl rounded-tl-xl flex items-center space-x-2 ${currentConversation.isLoadingHistory
+              ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+              : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+              }`}
           >
             <span className='flex items-center space-x-2'>
               {currentConversation.isLoadingHistory ? (
@@ -625,7 +626,7 @@ function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat }) {
             </span>
           </button>
 
-          
+
 
 
         </div>
@@ -637,97 +638,108 @@ function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat }) {
         ref={messagesContainerRef}
         className="flex-1 overflow-y-auto p-4 relative"
       >
-        {messages.length === 0 ? (
-          <div className="flex flex-col items-center text-center mt-8">
-            <div className="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mb-6">
-              <span className="text-purple-600 text-3xl">
-                <IoSparklesSharp />
-              </span>
-            </div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-3 font-sans">
-              Your Personal Language Coach
-            </h3>
-            <p className="text-gray-600 mb-8 max-w-md leading-relaxed font-sans">
-              Ask anything about{" "}
-              <span className="font-semibold text-purple-600">
-                "{currentWord?.text}"
-              </span>
-            </p>
 
-            <div className="w-full max-w-md space-y-3">
-              {quickPrompts.map((prompt, index) => (
-                <button
-                  key={index}
-                  onClick={() => handlePromptPress(prompt)}
-                  className="w-full bg-white border border-gray-200 rounded-xl p-4 text-left hover:bg-gray-50 hover:border-gray-300 transition-colors shadow-sm cursor-pointer group"
-                >
-                  <p className="text-gray-800 text-sm font-sans group-hover:text-purple-600 transition-colors">{prompt}</p>
-                </button>
-              ))}
+        {isLoadingInitial  ? (
+          <div className="flex flex-col items-center justify-center h-full">
+            <div className="flex flex-col items-center justify-center h-full w-full">
+              <div className="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mb-6">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Loading History</h3>
             </div>
+           
           </div>
-        ) : (
-          <div className="space-y-4">
-            {messages.map((msg) => (
-  <div
-    key={msg.id}
-    className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
-  >
-    {/* Handle system messages differently */}
-    {msg.isSystem ? (
-      <div className="w-full text-center">
-        <div className="inline-block bg-gray-100 text-gray-600 text-sm italic px-4 py-2 rounded-lg">
-          {msg.content}
-        </div>
-      </div>
-    ) : (
-      <div
-        className={`max-w-[95%] rounded-b-xl rounded-tl-xl px-4 py-3 ${
-          msg.role === 'user'
-            ? 'bg-purple-600 text-white'
-            : msg.wasStopped 
-              ? 'bg-yellow-50 border border-yellow-200'
-              : 'text-gray-900'
-        } ${msg.isStreaming ? 'streaming-cursor' : ''}`}
-      >
-        <div className="text-lg leading-relaxed font-sans">
-          {msg.role === 'user' ? (
-            <div className="whitespace-pre-wrap ">{msg.content}</div>
+        ) :
+          messages.length === 0 ? (
+            <div className="flex flex-col items-center text-center mt-8">
+              <div className="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mb-6">
+                <span className="text-purple-600 text-3xl">
+                  <IoSparklesSharp />
+                </span>
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-3 font-sans">
+                Your Personal Language Coach
+              </h3>
+              <p className="text-gray-600 mb-8 max-w-md leading-relaxed font-sans">
+                Ask anything about{" "}
+                <span className="font-semibold text-purple-600">
+                  "{currentWord?.text}"
+                </span>
+              </p>
+
+              <div className="w-full max-w-md space-y-3">
+                {quickPrompts.map((prompt, index) => (
+                  <button
+                    key={index}
+                    onClick={() => handlePromptPress(prompt)}
+                    className="w-full bg-white border border-gray-200 rounded-xl p-4 text-left hover:bg-gray-50 hover:border-gray-300 transition-colors shadow-sm cursor-pointer group"
+                  >
+                    <p className="text-gray-800 text-sm font-sans group-hover:text-purple-600 transition-colors">{prompt}</p>
+                  </button>
+                ))}
+              </div>
+            </div>
           ) : (
-            <MemoizedMessage
-              text={msg.content}
-              wasStopped={msg.wasStopped}
-              currentWordText={currentWord?.text}
-              currentWordLangCode={currentWord?.language_code}
-              onCopy={() => {
-                setIsCopyMessage(true);
-                navigator.clipboard.writeText(msg.content);
-              }}
-              onCreateNote={() => {
-                dispatch(addCurrentNoteURL('/notes/create'));
-                dispatch(handleInputChangeRT({ name: 'note_name', value: currentWord?.text }));
-                dispatch(handleInputChangeRT({ name: 'target_lang', value: currentWord?.language_code }));
-                dispatch(handleInputChangeRT({ name: 'content', value: msg.content }));
-                navigate('/notes/create');
-              }}
-            />
-          )}
-          {msg.isStreaming && msg.content === '' && (
-            <div className="flex space-x-1">
-              <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-              <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-              <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+            <div className="space-y-4">
+              {messages.map((msg) => (
+                <div
+                  key={msg.id}
+                  className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                >
+                  {/* Handle system messages differently */}
+                  {msg.isSystem ? (
+                    <div className="w-full text-center">
+                      <div className="inline-block bg-gray-100 text-gray-600 text-sm italic px-4 py-2 rounded-lg">
+                        {msg.content}
+                      </div>
+                    </div>
+                  ) : (
+                    <div
+                      className={`max-w-[95%] rounded-b-xl rounded-tl-xl px-4 py-3 ${msg.role === 'user'
+                        ? 'bg-purple-600 text-white'
+                        : msg.wasStopped
+                          ? 'bg-yellow-50 border border-yellow-200'
+                          : 'text-gray-900'
+                        } ${msg.isStreaming ? 'streaming-cursor' : ''}`}
+                    >
+                      <div className="text-lg leading-relaxed font-sans">
+                        {msg.role === 'user' ? (
+                          <div className="whitespace-pre-wrap ">{msg.content}</div>
+                        ) : (
+                          <MemoizedMessage
+                            text={msg.content}
+                            wasStopped={msg.wasStopped}
+                            currentWordText={currentWord?.text}
+                            currentWordLangCode={currentWord?.language_code}
+                            onCopy={() => {
+                              setIsCopyMessage(true);
+                              navigator.clipboard.writeText(msg.content);
+                            }}
+                            onCreateNote={() => {
+                              dispatch(addCurrentNoteURL('/notes/create'));
+                              dispatch(handleInputChangeRT({ name: 'note_name', value: currentWord?.text }));
+                              dispatch(handleInputChangeRT({ name: 'target_lang', value: currentWord?.language_code }));
+                              dispatch(handleInputChangeRT({ name: 'content', value: msg.content }));
+                              navigate('/notes/create');
+                            }}
+                          />
+                        )}
+                        {msg.isStreaming && msg.content === '' && (
+                          <div className="flex space-x-1">
+                            <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                            <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                            <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+
+              <div ref={messagesEndRef} />
             </div>
           )}
-        </div>
-      </div>
-    )}
-  </div>
-))}
-
-            <div ref={messagesEndRef} />
-          </div>
-        )}
 
         {/* Scroll to Bottom Button */}
         {showScrollToBottom && (
@@ -751,7 +763,6 @@ function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat }) {
             inputMessage={message}
             setInputMessage={setMessage}
             isLoading={isLoading}
-            // language="en-US" // Or make this dynamic based on user's learning language
             language={STT_LANGUAGES[nativeLang] || 'en-US'}
           />
 

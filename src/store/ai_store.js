@@ -91,26 +91,6 @@ const aiSlice = createSlice({
 
 
     builder
-      // Add chat message to specific word's conversation
-      // .addCase(addChatMessage, (state, action) => {
-      //   const { wordId, message } = action.payload;
-        
-      //   if (!state.conversations[wordId]) {
-      //     state.conversations[wordId] = {
-      //       messages: [],
-      //       isLoading: false
-      //     };
-      //   }
-        
-      //   const newMessage = {
-      //     id: message.id || Date.now(),
-      //     role: message.role,
-      //     content: message.content || '',
-      //     isStreaming: message.isStreaming || false
-      //   };
-        
-      //   state.conversations[wordId].messages.push(newMessage);
-      // })
 
       .addCase(addChatMessage, (state, action) => {
         const { wordId, message } = action.payload;
@@ -286,7 +266,6 @@ const aiSlice = createSlice({
         state.error = action.payload;
       })
 
-      builder
     .addCase(AIService.fetchConversationHistoryThunk.pending, (state, action) => {
       const { wordId } = action.meta.arg;
       if (wordId && state.conversations[wordId]) {
