@@ -17,7 +17,7 @@ const LANGUAGES = [
     { name: 'English', image: English_flag, code: 'en' },
 ];
 
-export default function ChooseLangComponent({ selectedLanguage, setSelectedLanguage }) {
+export default function ChooseLangComponent({ selectedLanguage, setSelectedLanguage, t }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -61,7 +61,7 @@ export default function ChooseLangComponent({ selectedLanguage, setSelectedLangu
     return (
       <div className="bg-white rounded-3xl shadow-xl p-8 text-center border border-gray-100">
         <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-        <p className="text-gray-600">Loading languages...</p>
+        <p className="text-gray-600">{t('Dashboard.ChooseLangComponent.loading.loading_languages')}</p>
       </div>
     );
   }
@@ -72,13 +72,13 @@ export default function ChooseLangComponent({ selectedLanguage, setSelectedLangu
         <div className="w-20 h-20 bg-gradient-to-r from-green-100 to-blue-100 rounded-3xl flex items-center justify-center mx-auto mb-4">
           <IoCheckmark className="text-3xl text-green-600" />
         </div>
-        <h3 className="text-xl font-bold text-gray-900 mb-2">All Languages Added</h3>
-        <p className="text-gray-600 mb-4">You're learning all available languages!</p>
+        <h3 className="text-xl font-bold text-gray-900 mb-2">{t('Dashboard.ChooseLangComponent.header.learn_new_language')}</h3>
+        <p className="text-gray-600 mb-4">{t('Dashboard.ChooseLangComponent.header.expand_skills')}</p>
         <button 
           onClick={() => navigate('/words')}
           className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-2xl font-semibold hover:shadow-lg transition-all"
         >
-          Continue Learning
+          {t('Dashboard.ChooseLangComponent.buttons.continue_learning')}
         </button>
       </div>
     );
@@ -93,8 +93,8 @@ export default function ChooseLangComponent({ selectedLanguage, setSelectedLangu
             <IoAdd className="text-white text-xl" />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-white">Learn New Language</h2>
-            <p className="text-blue-100">Expand your language skills</p>
+            <h2 className="text-xl font-bold text-white">{t('Dashboard.ChooseLangComponent.header.learn_new_language')}</h2>
+            <p className="text-blue-100">{t('Dashboard.ChooseLangComponent.header.expand_skills')}</p>
           </div>
         </div>
       </div>
@@ -144,7 +144,7 @@ export default function ChooseLangComponent({ selectedLanguage, setSelectedLangu
                 <p className={`text-sm ${
                   selectedLanguage === lang.name ? 'text-blue-600' : 'text-gray-600'
                 }`}>
-                  Start learning {lang.name}
+                  {t('Dashboard.ChooseLangComponent.language_items.start_learning', {language_name: lang.name})}
                 </p>
               </div>
 
@@ -170,9 +170,14 @@ export default function ChooseLangComponent({ selectedLanguage, setSelectedLangu
       {/* Footer */}
       <div className="bg-gray-50 px-6 py-4 border-t border-gray-200">
         <p className="text-gray-600 text-center text-sm">
-          {filteredLanguages.length} language{filteredLanguages.length !== 1 ? 's' : ''} available to learn
+          {t('Dashboard.ChooseLangComponent.footer.languages_available', {
+            count: filteredLanguages.length,
+            languages_plural: filteredLanguages.length !== 1 ? 's' : ''
+          })}
         </p>
       </div>
+
+
     </div>
   );
 }

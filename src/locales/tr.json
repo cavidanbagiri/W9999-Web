@@ -1,0 +1,957 @@
+{
+    "loading": {
+        "initializing": "Başlatılıyor",
+        "please_wait": "Lütfen bekleyin...",
+        "saving_language": "Dil kaydediliyor..."
+    },
+    "native_language": {
+        "welcome": "W9999'a hoş geldiniz",
+        "get_started": "Ana dilinizi seçerek başlayalım",
+        "select_title": "Ana Dilinizi Seçin",
+        "select_description": "Bu, öğrenme deneyiminizi kişiselleştirmemize yardımcı olur",
+        "features_title": "Neler elde edeceksiniz:",
+        "one_time_selection": "Ana dilinizi yalnızca bir kez seçebilirsiniz.",
+        "saving": "Diliniz Ayarlanıyor",
+        "saving_message": "Ana dil tercihinizi kaydederken lütfen bekleyin..."
+    },
+    "features": {
+        "progress_tracking": "İlerlemeyi izleme",
+        "fast_translations": "Hızlı çeviri",
+        "ai_tutor": "AI öğretmen",
+        "word_library": "Kelime kütüphanesi"
+    },
+    "errors": {
+        "save_language_failed": "Dil tercihi kaydedilemedi. Lütfen tekrar deneyin."
+    },
+    "Layout": {
+        "FilterComponent": {
+            "main_screen": {
+                "search": {
+                    "search_placeholder": "Kelimeleri ara...",
+                    "search_aria_label": "Kelimeleri ara",
+                    "search_title": "Kelime dağarcığı bulmak için arama ekranını açar"
+                },
+                "labels": {
+                    "select_language": "Dil seç",
+                    "part_of_speech": "Sözcük türü",
+                    "category": "Kategori",
+                    "refresh": "Yenile"
+                },
+                "filter_toggles": {
+                    "starred": "Yıldızlı",
+                    "all_words": "Tüm Kelimeler"
+                },
+                "buttons": {
+                    "refresh": "Yenile"
+                },
+                "icons": {
+                    "search": "🔍",
+                    "chevron": "›"
+                }
+            },
+            "LanguageSelected": {
+                "accessibility": {
+                    "flag_alt_text": "{language_name} bayrağı"
+                },
+                "buttons": {
+                    "toggle_dropdown": "Dil seç"
+                }
+            },
+            "Categories": {
+                "header": {
+                    "title": "Kelime Kategorileri",
+                    "subtitle": "Konulara göre kelime dağarcığını öğrenin"
+                },
+                "stats": {
+                    "categories": "Kategoriler",
+                    "words_learned": "Öğrenilen Kelimeler",
+                    "completed": "Tamamlandı"
+                },
+                "search": {
+                    "placeholder": "Kategorileri ara...",
+                    "no_results_found": "Kategori bulunamadı",
+                    "no_matching_categories": "\"{search_term}\" ile eşleşen kategori yok",
+                    "try_different_language": "Mevcut kategorileri görmek için farklı bir dil seçmeyi deneyin"
+                },
+                "loading": {
+                    "loading_categories": "Kategorileriniz yükleniyor..."
+                },
+                "category_status": {
+                    "mastered": "Uzmanlaşıldı",
+                    "in_progress": "Devam Ediyor",
+                    "start_learning": "Öğrenmeye Başla"
+                },
+                "progress": {
+                    "learned": "{learned_count} öğrenildi",
+                    "total": "{total_count} toplam",
+                    "progress_percentage": "{percentage}%"
+                },
+                "footer": {
+                    "summary": "{category_count} kategoride {learned_words} kelime uzmanlaşıldı"
+                },
+                "buttons": {
+                    "close": "✕"
+                }
+            },
+            "PosStatistics": {
+                "header": {
+                    "title": "Dilbilgisi İstatistikleri",
+                    "subtitle": "Sözcük türlerine göre ilerlemenizi takip edin"
+                },
+                "stats": {
+                    "pos_types": "Sözcük Türleri",
+                    "words_learned": "Öğrenilen Kelimeler",
+                    "mastered": "Uzmanlaşıldı",
+                    "overall": "Genel"
+                },
+                "search": {
+                    "placeholder": "Sözcük türlerini ara...",
+                    "no_matching_pos": "Eşleşen sözcük türü yok",
+                    "no_matching_results": "\"{search_term}\" ile eşleşen sözcük türü yok",
+                    "no_data_available": "Veri mevcut değil",
+                    "select_language_prompt": "Dilbilgisi ilerleme istatistiklerinizi görmek için bir dil seçin",
+                    "no_statistics_available": "Dilbilgisi istatistiği mevcut değil"
+                },
+                "loading": {
+                    "loading_statistics": "Dilbilgisi istatistikleri yükleniyor..."
+                },
+                "pos_status": {
+                    "mastered": "Uzmanlaşıldı",
+                    "in_progress": "Devam Ediyor",
+                    "start_learning": "Öğrenmeye Başla"
+                },
+                "progress": {
+                    "learned": "{learned_count} öğrenildi",
+                    "total": "{total_count} toplam",
+                    "progress_percentage": "{percentage}%"
+                },
+                "footer": {
+                    "summary": "{pos_count} sözcük türünde {learned_words} kelime uzmanlaşıldı"
+                },
+                "buttons": {
+                    "close": "✕"
+                }
+            }
+        },
+        "WordList": {
+            "loading": {
+                "loading_words": "Kelimeleriniz yükleniyor..."
+            }
+        },
+        "VocabCard": {
+            "labels": {
+                "level": "Sev. {level}",
+                "translation_not_available": "Çeviri mevcut değil",
+                "starred": "Yıldızlı",
+                "learned": "Öğrenildi"
+            },
+            "buttons": {
+                "create_note": "Not oluştur",
+                "generate_ai": "Yapay Zeka Oluştur"
+            },
+            "accessibility": {
+                "star_button_remove": "Favorilerden kaldır",
+                "star_button_add": "Favorilere ekle",
+                "learned_button_mark_not_learned": "Öğrenilmedi olarak işaretle",
+                "learned_button_mark_learned": "Öğrenildi olarak işaretle"
+            },
+            "default_values": {
+                "level_default": "1",
+                "frequency_default": "–"
+            }
+        },
+        "VoiceButtonComponent": {
+            "buttons": {
+                "play_pronunciation": "Telaffuzu oynat",
+                "playing_pronunciation": "Telaffuz oynatılıyor",
+                "playing": "Oynatılıyor...",
+                "loading": "Yükleniyor..."
+            },
+            "error_messages": {
+                "no_audio_received": "Ses alınmadı",
+                "audio_playback_failed": "Ses oynatma başarısız",
+                "failed_to_play_sound": "Ses oynatılamadı",
+                "audio_error_alert": "Ses oynatılamadı. Lütfen tekrar deneyin."
+            },
+            "accessibility": {
+                "playing_aria_label": "Telaffuz oynatılıyor",
+                "play_aria_label": "Telaffuzu oynat"
+            }
+        }
+    },
+    "Dashboard": {
+        "HeaderComponent": {
+            "greetings": {
+                "good_morning": "Günaydın",
+                "good_afternoon": "Tünaydın",
+                "good_evening": "İyi akşamlar"
+            },
+            "motivation_messages": {
+                "start_learning": "Öğrenme yolculuğunuza bugün başlayın! 🌟",
+                "great_start": "Harika başlangıç! Her kelime önemli 💪",
+                "building_momentum": "Hızlanıyorsunuz! Devam edin 🚀",
+                "on_fire": "Harika gidiyorsunuz! İnanılmaz ilerleme 🔥",
+                "language_master": "Dil ustası! Bugün inanılmaz iş çıkardınız 🏆"
+            },
+            "labels": {
+                "ready_to_learn": "Öğrenmeye hazır mısınız?",
+                "welcome_back": "Tekrar hoş geldiniz ",
+                "daily_words": "Günlük Kelimeler",
+                "words_learned_today": "Bugün öğrenilen kelimeler",
+                "day_streak": "Gün serisi",
+                "daily_progress": "Günlük İlerleme",
+                "start_of_day": "Gün başlangıcı",
+                "daily_goal": "Günlük hedef",
+                "total_learned": "Toplam Öğrenilen",
+                "active_languages": "Aktif Diller",
+                "daily_streak": "Günlük Seri",
+                "go_to_profile": "Profile Git",
+                "toggle_stats": "İstatistikleri Aç/Kapat"
+            },
+            "loading_messages": {
+                "load_daily_streak_error": "Günlük seri yüklenemedi",
+                "fetch_daily_streak_error": "Günlük seri alınırken hata",
+                "load_active_language_error": "Aktif dil yüklenemedi",
+                "fetch_active_language_error": "Aktif dil alınırken hata",
+                "load_native_language_error": "Ana dil yüklenemedi"
+            },
+            "placeholders": {
+                "no_words_today": "0",
+                "no_streak": "0",
+                "no_active_languages": "0"
+            }
+        },
+        "LanguagesStatisticsComponents": {
+            "titles": {
+                "start_journey": "Yolculuğunuza Başlayın",
+                "your_progress": "İlerlemeniz",
+                "track_journey": "Dil öğrenme yolculuğunuzu takip edin"
+            },
+            "messages": {
+                "begin_learning": "İlerlemenizi takip etmek ve dil istatistiklerinizi görmek için kelime öğrenmeye başlayın.",
+                "start_learning": "Öğrenmeye Başla",
+                "continue_learning": "Öğrenmeye Devam Et"
+            },
+            "labels": {
+                "progress": "İlerleme",
+                "total": "Toplam",
+                "learned": "Öğrenilen",
+                "starred": "Yıldızlı"
+            },
+            "buttons": {
+                "start_learning": "Öğrenmeye Başla",
+                "continue_learning": "Öğrenmeye Devam Et"
+            },
+            "statistics": {
+                "languages_count": "{count} dil{languages_plural}"
+            }
+        },
+        "ChooseLangComponent": {
+            "loading": {
+                "loading_languages": "Diller yükleniyor..."
+            },
+            "empty_state": {
+                "all_languages_added": "Tüm Diller Eklendi",
+                "learning_all_languages": "Mevcut tüm dilleri öğreniyorsunuz!",
+                "continue_learning": "Öğrenmeye Devam Et"
+            },
+            "header": {
+                "learn_new_language": "Yeni Dil Öğren",
+                "expand_skills": "Dil becerilerinizi genişletin"
+            },
+            "language_items": {
+                "start_learning": "{{language_name}} öğrenmeye başla"
+            },
+            "footer": {
+                "languages_available": "Öğrenmek için {{count}} dil {{languages_plural}} mevcut"
+            },
+            "buttons": {
+                "continue_learning": "Öğrenmeye Devam Et"
+            }
+        }
+    },
+    "WordsScreen": {
+        "main_screen": {
+            "loading": {
+                "loading_more_words": "Daha fazla kelime yükleniyor...",
+                "loading_words": "Kelimeler yükleniyor...",
+                "this_may_take_moment": "Bu biraz zaman alabilir",
+                "loading_n_more_words": "{count} Kelime Daha Yükleniyor...",
+                "load_n_more_words": "{count} Kelime Daha Yükle"
+            },
+            "pagination": {
+                "words_loaded": "{loaded}/{total} kelime yüklendi",
+                "words_remaining": "{remaining} kaldı",
+                "back_to_top": "↑ Yukarı Çık"
+            },
+            "buttons": {
+                "load_more": "{count} Kelime Daha Yükle",
+                "scroll_to_bottom": "Aşağı Kaydır"
+            },
+            "labels": {
+                "category": "Kategori: {category_name}",
+                "pos_name": "Sözcük türü: {pos_name}",
+                "no_words_found": "Kelime Bulunamadı"
+            },
+            "messages": {
+                "no_learned_words": "Henüz hiç kelime öğrenmediniz. Öğrenmeye başlayın ve burada görün!",
+                "no_words_available": "Mevcut seçim için kelime mevcut değil.",
+                "choose_language": "Dil seç",
+                "select_language_tip": "Kelime öğrenmeye başlamak için bir dil seçin."
+            },
+            "empty_states": {
+                "starred_empty": "Yıldızlı kelime mevcut değil"
+            }
+        },
+        "EmptyStarredComponent": {
+            "title": "Henüz Değil, Ama Yakında!",
+            "message": "Henüz {language_name} dilinde hiç kelime yıldızlamadınız."
+        }
+    },
+    "LearnedScreen": {
+        "main_screen": {
+            "titles": {
+                "learned_words": "Öğrenilen Kelimeler",
+                "review_practice": "Öğrendiğiniz kelimeleri gözden geçirin ve pratik yapın",
+                "learning_progress": "Öğrenme İlerlemesi",
+                "quick_actions": "Hızlı İşlemler"
+            },
+            "stats": {
+                "total_learned": "Toplam Öğrenilen",
+                "languages": "Diller",
+                "loaded": "Yüklendi",
+                "learned_words": "Öğrenilen",
+                "progress_header": "Harika iş çıkarıyorsunuz!"
+            },
+            "loading": {
+                "loading_learned_words": "Öğrenilen kelimeler yükleniyor...",
+                "loading_more_words": "Daha fazla kelime yükleniyor...",
+                "this_may_take_moment": "Bu biraz zaman alabilir",
+                "loading": "Yükleniyor..."
+            },
+            "pagination": {
+                "load_more_words": "Daha Fazla Kelime Yükle",
+                "showing_of_words": "{loaded}/{total} öğrenilen kelime gösteriliyor",
+                "scroll_to_load_more": "Daha fazlasını yüklemek için aşağı kaydırın",
+                "back_to_top": "↑ Yukarı Çık"
+            },
+            "labels": {
+                "category": "Kategori: {category_name}",
+                "pos_name": "Sözcük türü: {pos_name}",
+                "all_words": "Tüm Kelimeler",
+                "browse_vocabulary": "Tam kelime dağarcığını gözden geçir"
+            },
+            "empty_states": {
+                "select_language": "Bir Dil Seç",
+                "choose_language_prompt": "Öğrenilen kelimelerinizi görüntülemek ve ilerlemenizi takip etmek için bir dil seçin.",
+                "no_words": "Öğrenilen kelime mevcut değil"
+            },
+            "buttons": {
+                "back": "←"
+            }
+        }
+    },
+    "TranslateScreen": {
+        "main_screen": {
+            "header": {
+                "title": "Çeviri",
+                "favorites": "Favoriler",
+                "view_favorites": "Favorileri Görüntüle"
+            },
+            "buttons": {
+                "swap_languages": "Dilleri değiştir",
+                "clear": "Temizle",
+                "copy": "Kopyala",
+                "copy_text": "Metni kopyala",
+                "translate": "Çevir",
+                "copied": "Kopyalandı!",
+                "ask_ai_about_text": "Bu metin hakkında Yapay Zeka'ya sor",
+                "ask_ai_about_translation": "Bu çeviri hakkında Yapay Zeka'ya sor"
+            },
+            "favorites": {
+                "add_to_favorites": "Favorilere ekle",
+                "remove_from_favorites": "Favorilerden kaldır"
+            },
+            "placeholders": {
+                "type_text_to_translate": "Çevirmek için metin yazın...",
+                "translation_will_appear": "Çeviri burada görünecek...",
+                "select_language": "Şu dilden çevir",
+                "translate_to": "Şu dile çevir"
+            },
+            "language_picker": {
+                "translate_from": "Şu dilden çevir",
+                "translate_to": "Şu dile çevir"
+            },
+            "validation": {
+                "select_language_error": "Lütfen dil seçin",
+                "character_count": "{count}/500"
+            },
+            "accessibility": {
+                "translate_from_lang": "{language_name} dilinden çevir",
+                "translate_to_lang": "{language_name} diline çevir"
+            }
+        },
+        "language_picker": {
+            "modal": {
+                "title": "Dil Seç",
+                "search_placeholder": "Dilleri ara...",
+                "no_languages_found": "Dil bulunamadı"
+            },
+            "buttons": {
+                "close": "×",
+                "clear_search": "×"
+            },
+            "icons": {
+                "search": "🔍",
+                "checkmark": "✓"
+            },
+            "language_list": {
+                "language_names": "Aşağıda çıkarılan dil adlarını görün"
+            }
+        }
+    },
+    "CardDetailScreen": {
+        "main_screen": {
+            "navigation": {
+                "back": "Geri"
+            },
+            "action_buttons": {
+                "star": "Yıldızla",
+                "starred": "Yıldızlı",
+                "learn": "Öğren",
+                "learned": "Öğrenildi",
+                "ai_tutor": "Yapay Zeka Öğretmen"
+            },
+            "headers": {
+                "meanings_examples": "Anlamlar ve Örnekler",
+                "more_examples": "Daha Fazla Örnek",
+                "usage_in_context": "Bağlam içinde kullanım:"
+            },
+            "labels": {
+                "frequency": "Sıklık",
+                "strength": "Güç",
+                "no_translation": "Çeviri mevcut değil",
+                "language_code_translation": "{language_code}: {translated_text}"
+            },
+            "example_formatting": {
+                "example_quote": "\"{example}\""
+            },
+            "ai_chat": {
+                "input_placeholder": "Yapay Zeka'ya sor",
+                "enter_question": "Sorunuzu buraya girin..."
+            },
+            "loading": {
+                "loading": "Yükleniyor..."
+            }
+        }
+    },
+    "CategoryWordsScreen": {
+        "main_screen": {
+            "modals": {
+                "bulk_move_title": "\"{word_text}\" taşı",
+                "bulk_move_description": "Hedef kategoriyi seçin:",
+                "moving_word": "Kelime taşınıyor...",
+                "no_other_categories": "Başka kategori bulunamadı"
+            },
+            "word_actions": {
+                "generate_ai": "Yapay Zeka Oluştur",
+                "move_to_category": "Başka kategoriye taşı",
+                "remove_from_favorites": "Favorilerden kaldır",
+                "delete_confirm": "\"{word_text}\" kelimesini kaldırmak istediğinizden emin misiniz?",
+                "word_removed_success": "Kelime favorilerden kaldırıldı",
+                "word_removed_error": "Kelime kaldırılamadı",
+                "word_moved_success": "Kelime yeni kategoriye taşındı",
+                "word_moved_error": "Kelime taşınamadı"
+            },
+            "category_actions": {
+                "delete_category": "Kategoriyi Sil",
+                "delete_confirm_category": "\"{category_name}\" kategorisini silmek istediğinizden emin misiniz?",
+                "category_deleted_success": "Kategori Başarıyla Silindi.",
+                "category_delete_error": "Hata: {error_message}"
+            },
+            "headers": {
+                "words_count": "{displayed}/{total} kelime",
+                "search_results": "\"{search_query}\" ile eşleşen"
+            },
+            "search": {
+                "placeholder": "{category_name} içinde ara...",
+                "searching": "Arıyor...",
+                "no_matching_words": "Eşleşen kelime yok",
+                "search_suggestion": "{category_name} içinde farklı anahtar kelimeler deneyin"
+            },
+            "empty_states": {
+                "no_words_in_category": "Bu kategoride kelime yok",
+                "add_words_hint": "Çeviri ekranından bu kategoriye kelime ekleyin"
+            },
+            "labels": {
+                "added_date": "Eklendi: {formatted_date}",
+                "language_pair": "{from_lang}→{to_lang}"
+            },
+            "buttons": {
+                "back": "←",
+                "clear_search": "×",
+                "close_modal": "×",
+                "add_fab": "+"
+            },
+            "notifications": {
+                "success": "başarılı",
+                "error": "hata"
+            }
+        }
+    },
+    "FavoritesScreen": {
+        "main_screen": {
+            "header": {
+                "title": "Favoriler"
+            },
+            "search": {
+                "placeholder": "Tüm kategorilerde ara...",
+                "searching": "Arıyor...",
+                "no_results_found": "Sonuç bulunamadı",
+                "search_suggestion": "Farklı anahtar kelimeler deneyin veya yazımı kontrol edin"
+            },
+            "category_labels": {
+                "word_count": "{count} kelime{words_plural}",
+                "added_info": "{category_name} içinde • {formatted_date}",
+                "no_categories_yet": "Henüz kategori yok",
+                "create_first_category": "Favori kelimeleri düzenlemek için ilk kategorinizi oluşturun",
+                "create_category_button": "Kategori Oluştur"
+            },
+            "modals": {
+                "create_category_title": "Yeni Kategori Oluştur",
+                "create_category_placeholder": "Kategori adını girin",
+                "cancel": "İptal",
+                "create": "Oluştur"
+            },
+            "buttons": {
+                "back": "←",
+                "add_category": "+"
+            },
+            "error_messages": {
+                "category_creation_failed": "Kategori oluşturma başarısız"
+            },
+            "empty_states": {
+                "no_categories": "Henüz kategori yok",
+                "create_category_prompt": "Favori kelimeleri düzenlemek için ilk kategorinizi oluşturun"
+            }
+        }
+    },
+    "SearchScreen": {
+        "main_screen": {
+            "search": {
+                "placeholder": "Kelimeleri veya çevirileri ara...",
+                "searching": "Kelime dağarcığı aranıyor...",
+                "cancel": "İptal",
+                "clear": "×"
+            },
+            "language_filter": {
+                "selected_language": "Seçilen Dil",
+                "choose_language": "Lütfen dili seçin",
+                "dashboard_link": "Kontrol Paneli"
+            },
+            "results": {
+                "no_matching_words": "Eşleşen kelime bulunamadı",
+                "search_for_vocabulary": "Kelime dağarcığı ara",
+                "search_suggestions": "Şunları aramayı deneyin: \"merhaba\", \"gracias\" veya \"öğrenilen\"",
+                "something_went_wrong": "Bir şeyler yanlış gitti"
+            },
+            "error_messages": {
+                "load_native_language_error": "Ana dil yüklenemedi"
+            }
+        },
+        "RenderWordComponent": {
+            "status_badges": {
+                "learned": "Öğrenildi",
+                "starred": "Yıldızlı"
+            },
+            "buttons": {
+                "add_to_favorites": "Favorilere ekle",
+                "remove_from_favorites": "Favorilerden kaldır",
+                "mark_as_learned": "Öğrenildi olarak işaretle",
+                "mark_as_not_learned": "Öğrenilmedi olarak işaretle"
+            },
+            "labels": {
+                "level": "Seviye {level}"
+            },
+            "error_messages": {
+                "update_status_failed": "Durum güncellenemedi"
+            }
+        }
+    },
+    "ProfileScreen": {
+        "main_screen": {
+            "headers": {
+                "profile": "Profil",
+                "learning_statistics": "Öğrenme İstatistikleri",
+                "settings": "Ayarlar"
+            },
+            "user_info": {
+                "default_name": "Dil Öğrencisi",
+                "default_email": "user@example.com",
+                "member_since": "{year} yılından beri üye",
+                "premium_member": "Premium Üye",
+                "free_member": "Ücretsiz Üye",
+                "days_registered": "{days} gün",
+                "account_created": "Hesap Oluşturuldu",
+                "not_available": "Mevcut değil"
+            },
+            "stats": {
+                "words_learned": "Öğrenilen Kelimeler",
+                "learning_days": "Öğrenme Günleri",
+                "active_streak": "Aktif Seri",
+                "total_words_mastered": "Toplam Uzmanlaşılan Kelimeler",
+                "current_learning_streak": "Mevcut Öğrenme Serisi",
+                "days_registered_stat": "Kayıtlı Gün Sayısı"
+            },
+            "settings": {
+                "language": "Dil",
+                "app_language_settings": "Uygulama dil ayarları",
+                "preferences": "Tercihler",
+                "customize_experience": "Deneyiminizi özelleştirin"
+            },
+            "buttons": {
+                "logout": "Çıkış Yap",
+                "try_again": "Tekrar Dene",
+                "logout_confirm": "Çıkış yapmak istediğinizden emin misiniz?"
+            },
+            "loading": {
+                "loading_profile": "Profiliniz yükleniyor..."
+            },
+            "error_messages": {
+                "unable_to_load_statistics": "İstatistikler yüklenemedi",
+                "failed_to_load_statistics": "İstatistikler yüklenemedi",
+                "error_fetching_statistics": "İstatistikler alınırken hata",
+                "failed_to_load_daily_streak": "Günlük seri yüklenemedi",
+                "error_fetching_daily_streak": "Günlük seri alınırken hata",
+                "profile_statistics_error": "Profil istatistikleri hatası"
+            },
+            "app_info": {
+                "app_name": "W9999 Uygulaması",
+                "version": "Sürüm {version}"
+            },
+            "date_formats": {
+                "account_created_format": "{year} {month} {day}"
+            }
+        }
+    },
+    "NotesScreen": {
+        "main_screen": {
+            "main_screen": {
+                "headers": {
+                    "my_learning_notes": "Öğrenme Notlarım",
+                    "language_learning_insights": "Dil öğrenme içgörüleri"
+                },
+                "buttons": {
+                    "go_to_direct_chat": "Doğrudan Sohbete Git",
+                    "refresh": "Yenile",
+                    "refresh_notes": "Notları yenile",
+                    "new_note": "Yeni Not",
+                    "create_your_first_note": "İlk Notunuzu Oluşturun",
+                    "clear_all": "Tümünü Temizle",
+                    "edit_note": "Notu düzenle",
+                    "delete_note": "Notu sil"
+                },
+                "filters": {
+                    "search_notes": "Notları ara",
+                    "search_placeholder": "Başlık, içerik veya etiketlere göre ara...",
+                    "language": "Dil",
+                    "all_languages": "Tüm Diller",
+                    "no_language": "Dil Yok",
+                    "spanish": "İspanyolca (ES)",
+                    "english": "İngilizce (EN)",
+                    "russian": "Rusça (RU)",
+                    "turkish": "Türkçe (TR)",
+                    "note_type": "Not Türü",
+                    "all_types": "Tüm Türler",
+                    "vocabulary": "Kelime Dağarcığı",
+                    "grammar": "Dilbilgisi",
+                    "general": "Genel",
+                    "active_filters": "Aktif filtreler:"
+                },
+                "active_filters": {
+                    "search": "Arama: \"{search_term}\"",
+                    "language": "Dil: {language_value}",
+                    "type": "Tür: {type_value}"
+                },
+                "loading": {
+                    "loading_your_notes": "Notlarınız yükleniyor...",
+                    "updating_your_notes": "Notlarınız güncelleniyor...",
+                    "this_will_just_take_moment": "Bu sadece bir dakika sürecek"
+                },
+                "empty_states": {
+                    "no_matching_notes": "Eşleşen not bulunamadı",
+                    "no_notes_yet": "Henüz not yok",
+                    "adjust_search_terms": "Aradığınızı bulmak için arama terimlerinizi veya filtrelerinizi ayarlamayı deneyin.",
+                    "start_documenting": "Dil öğrenme yolculuğunuzu ilk notunuzla belgelemeye başlayın!"
+                },
+                "error_messages": {
+                    "error_loading_notes": "Notlar Yüklenirken Hata",
+                    "unexpected_error": "Beklenmeyen bir hata oluştu",
+                    "failed_to_fetch_notes": "Notlar alınamadı:",
+                    "failed_to_delete_note": "Not silinemedi. Lütfen tekrar deneyin.",
+                    "delete_confirmation": "Bu notu silmek istediğinizden emin misiniz?"
+                },
+                "note_display": {
+                    "notes_count": "{count} not{notes_plural}",
+                    "showing_notes": "{count} not{notes_plural}{filtered_text} gösteriliyor",
+                    "filtered": " (filtrelendi)",
+                    "tag_count": "+{count}"
+                },
+                "authentication": {
+                    "user_not_authenticated": "Kullanıcı kimliği doğrulanmadı"
+                },
+                "time_formats": {
+                    "time_format": "{hour}:{minute}"
+                }
+            }
+        }
+    },
+    "CreateNoteScreen": {
+        "main_screen": {
+            "headers": {
+                "create_new_note": "Yeni Not Oluştur",
+                "back_to_ai_chat": "Yapay Zeka Doğrudan Sohbete Geri Dön",
+                "tips_for_effective_notes": "💡 Etkili Dil Notları İçin İpuçları"
+            },
+            "form": {
+                "note_title": "Not Başlığı *",
+                "note_title_placeholder": "ör. İspanyolca Subjunctive Kuralları, Önemli Fiiller, vb.",
+                "language": "Dil",
+                "select_language_hint": "Bu notun hangi dille ilgili olduğunu seçin",
+                "note_type": "Not Türü *",
+                "tags": "Etiketler",
+                "content": "İçerik *",
+                "format": "Biçim:",
+                "preview": "Önizleme (Markdown kaydedildiğinde dönüştürülecek)",
+                "no_content_to_preview": "Önizlenecek içerik yok",
+                "how_it_will_look": "Nasıl görünecek:"
+            },
+            "buttons": {
+                "add": "Ekle",
+                "cancel": "İptal",
+                "save_note": "Notu Kaydet",
+                "creating": "Oluşturuluyor...",
+                "bold": "Kalın (Ctrl+B)",
+                "italic": "İtalik (Ctrl+I)",
+                "list": "Liste",
+                "link": "Bağlantı"
+            },
+            "validation": {
+                "note_name_required": "Not adı gereklidir",
+                "content_required": "İçerik gereklidir",
+                "content_too_long": "İçerik çok uzun (maks. 50.000 karakter)",
+                "failed_to_create_note": "Not oluşturulamadı",
+                "cancel_confirmation": "Emin misiniz? Değişiklikleriniz kaybolacak."
+            },
+            "tags": {
+                "add_tag_placeholder": "Bir etiket ekleyin ve Enter'a basın",
+                "click_to_remove": "Kaldırmak için ×'e tıklayın"
+            },
+            "character_counts": {
+                "characters": "{current}/{max} karakter",
+                "tags_count": "{current}/20 etiket"
+            },
+            "language_options": {
+                "no_specific_language": "Belirli bir dil yok",
+                "spanish": "İspanyolca (ES)",
+                "english": "İngilizce (EN)",
+                "russian": "Rusça (RU)",
+                "turkish": "Türkçe (TR)"
+            },
+            "note_type_options": {
+                "vocabulary": "Kelime Dağarcığı",
+                "grammar": "Dilbilgisi",
+                "general": "Genel"
+            },
+            "content_placeholder": "Notunuzu buraya yazın. Biçimlendirme için markdown kullanabilirsiniz:\n• **Kalın metin** önemli noktalar için\n• *İtalik metin* vurgu için\n• - Örnekler için listeler\n• [Bağlantılar](url) referanslar için",
+            "formatting_help": "**kalın**, *italik*, - listeler, [bağlantılar](url) kullanın",
+            "tips": {
+                "vocabulary_title": "Kelime Dağarcığı Notları İçin:",
+                "vocabulary_items": [
+                    "Örnek cümleler ekleyin",
+                    "Telaffuz ipuçlarını not edin",
+                    "Eş anlamlı ve zıt anlamlıları ekleyin",
+                    "İlgili kelimeleri ekleyin"
+                ],
+                "grammar_title": "Dilbilgisi Notları İçin:",
+                "grammar_items": [
+                    "Örneklerle açık kurallar yazın",
+                    "Kaçınılması gereken yaygın hataları not edin",
+                    "Kullanım zamanları vs kullanılmama zamanlarını ekleyin",
+                    "Pratik cümleler ekleyin"
+                ]
+            },
+            "authentication": {
+                "user_not_authenticated": "Kullanıcı kimliği doğrulanmadı"
+            }
+        }
+    },
+    "EditNoteScreen": {
+        "main_screen": {
+            "headers": {
+                "edit_note": "Notu Düzenle",
+                "update_your_learning_note": "Öğrenme notunuzu güncelleyin",
+                "back_to_note": "Nota Geri Dön",
+                "note_statistics": "Not İstatistikleri"
+            },
+            "form": {
+                "note_title": "Not Başlığı *",
+                "note_title_placeholder": "ör. İspanyolca Subjunctive Kuralları, Önemli Fiiller, vb.",
+                "title_is_set": "✓ Başlık ayarlandı",
+                "title_is_required": "Başlık gereklidir",
+                "language": "Dil",
+                "select_language_hint": "Bu notun hangi dille ilgili olduğunu seçin",
+                "note_type": "Not Türü *",
+                "current": "Mevcut: {type}",
+                "tags": "Etiketler",
+                "content": "İçerik *",
+                "formatting": "Biçimlendirme:",
+                "show_preview": "Önizlemeyi Göster",
+                "hide_preview": "Önizlemeyi Gizle",
+                "preview": "Önizleme:",
+                "markdown_formatting_help": "Markdown Biçimlendirme Yardımı"
+            },
+            "buttons": {
+                "copy": "Kopyala",
+                "add": "Ekle",
+                "cancel": "İptal",
+                "view_note": "Notu Görüntüle",
+                "update_note": "Notu Güncelle",
+                "updating": "Güncelleniyor...",
+                "back_to_notes": "Notlara Geri Dön",
+                "bold": "Kalın (Ctrl+B)",
+                "italic": "İtalik (Ctrl+I)",
+                "list": "Liste",
+                "link": "Bağlantı",
+                "reset_to_original": "Orijinale Sıfırla"
+            },
+            "validation": {
+                "note_title_required": "Not başlığı gereklidir",
+                "note_title_too_long": "Not başlığı 200 karakteri geçemez",
+                "content_required": "İçerik gereklidir",
+                "content_too_long": "İçerik çok uzun (maks. 50.000 karakter)",
+                "too_many_tags": "Maksimum 20 etiket",
+                "failed_to_update_note": "Not güncellenemedi"
+            },
+            "tags": {
+                "add_tag_placeholder": "Bir etiket ekleyin ve Enter'a basın",
+                "click_to_remove": "Kaldırmak için ×'e tıklayın",
+                "remove_tag": "Etiketi kaldır"
+            },
+            "loading": {
+                "loading_note": "Not yükleniyor..."
+            },
+            "error_messages": {
+                "update_note_error": "Not güncelleme hatası:"
+            },
+            "confirmation": {
+                "cancel_changes": "Emin misiniz? Değişiklikleriniz kaybolacak.",
+                "reset_to_original": "Emin misiniz? Bu tüm değişiklikleri iptal edecektir."
+            },
+            "character_counts": {
+                "characters": "{current}/200 karakter",
+                "content_characters": "{current}/{max} karakter",
+                "percentage_used": "(%{percentage} kullanıldı)",
+                "tags_count": "{current}/20 etiket"
+            },
+            "language_options": {
+                "no_specific_language": "Belirli bir dil yok",
+                "spanish": "İspanyolca (ES)",
+                "english": "İngilizce (EN)",
+                "russian": "Rusça (RU)",
+                "turkish": "Türkçe (TR)"
+            },
+            "note_type_options": {
+                "vocabulary": "Kelime Dağarcığı",
+                "grammar": "Dilbilgisi",
+                "general": "Genel"
+            },
+            "content_placeholder": "Notunuzu buraya yazın. Biçimlendirme için markdown kullanabilirsiniz:\n• **Kalın metin** önemli noktalar için\n• *İtalik metin* vurgu için\n• - Örnekler için listeler\n• [Bağlantılar](url) referanslar için\n\nİpucu: Metni seçin ve yukarıdaki biçimlendirme düğmelerini kullanın.",
+            "markdown_help": {
+                "bold_example": "**kalın** → kalın",
+                "italic_example": "*italik* → italik",
+                "list_example": "- öğe → • öğe",
+                "link_example": "[bağlantı](url) → bağlantı",
+                "header_example": "## başlık → Başlık",
+                "code_example": "`kod` → kod"
+            },
+            "statistics": {
+                "characters": "Karakterler",
+                "words": "Kelimeler",
+                "tags": "Etiketler",
+                "capacity_used": "Kullanılan Kapasite"
+            },
+            "dates": {
+                "last_edited": "Son düzenleme: {date}",
+                "created": "Oluşturulma: {date}"
+            },
+            "authentication": {
+                "user_not_authenticated": "Kullanıcı kimliği doğrulanmadı"
+            }
+        }
+    },
+    "NoteDetailScreen": {
+        "main_screen": {
+            "headers": {
+                "viewing_note": "Not görüntüleniyor",
+                "note_not_found": "Not bulunamadı",
+                "raw_markdown": "Ham Markdown",
+                "view_and_copy": "Orijinal markdown içeriğini görüntüleyin ve kopyalayın",
+                "content": "İçerik"
+            },
+            "buttons": {
+                "back_to_notes": "Notlara Geri Dön",
+                "back": "Geri",
+                "copy": "Kopyala",
+                "edit_note": "Notu Düzenle",
+                "edit": "Düzenle",
+                "delete": "Sil",
+                "deleting": "Siliniyor...",
+                "copy_markdown": "Markdown'ı kopyala",
+                "copy_content": "İçeriği Kopyala",
+                "quick_edit": "Hızlı Düzenleme",
+                "show": "Göster",
+                "hide": "Gizle"
+            },
+            "labels": {
+                "tags": "Etiketler",
+                "note_id": "Not ID:",
+                "created": "Oluşturulma:",
+                "updated": "Güncellenme:",
+                "version": "Sürüm {version}",
+                "last_saved": "Son kaydetme: {relative_time}",
+                "characters": "{count} karakter",
+                "min_read": "{minutes} dakika okuma",
+                "user_id": "Kullanıcı ID:"
+            },
+            "loading": {
+                "loading_note": "Not yükleniyor..."
+            },
+            "error_messages": {
+                "failed_to_delete_note": "Not silinemedi. Lütfen tekrar deneyin.",
+                "failed_to_copy": "Kopyalanamadı:",
+                "delete_confirmation": "Bu notu silmek istediğinizden emin misiniz?",
+                "copy_success": "Not içeriği panoya kopyalandı!"
+            },
+            "metadata": {
+                "language": "{language_code}",
+                "note_type": "{type}",
+                "tag_format": "#{tag}"
+            },
+            "relative_time": {
+                "just_now": "şimdi",
+                "minutes_ago": "{minutes} dakika{plural} önce",
+                "hours_ago": "{hours} saat{plural} önce",
+                "days_ago": "{days} gün{plural} önce"
+            },
+            "note_types": {
+                "vocabulary": "Kelime Dağarcığı",
+                "grammar": "Dilbilgisi",
+                "general": "Genel"
+            },
+            "authentication": {
+                "user_not_authenticated": "Kullanıcı kimliği doğrulanmadı"
+            }
+        }
+    }
+}

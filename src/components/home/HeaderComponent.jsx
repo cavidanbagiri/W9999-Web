@@ -35,7 +35,8 @@ const COLORS = {
   border: '#E2E8F0',
 };
 
-export default function HeaderComponent({ username }) {
+export default function HeaderComponent({ username, t }) {
+
   const dispatch = useDispatch();
 
   const { is_auth } = useSelector((state) => state.authSlice);
@@ -137,11 +138,12 @@ export default function HeaderComponent({ username }) {
 
   const getMotivationMessage = () => {
     const wordsToday = dailyStatistics?.daily_learned_words || 0;
-    if (wordsToday === 0) return "Start your learning journey today! 🌟";
-    if (wordsToday < 5) return "Great start! Every word counts 💪";
-    if (wordsToday < 10) return "Building momentum! Keep going 🚀";
-    if (wordsToday < 15) return "You're on fire! Amazing progress 🔥";
-    return "Language master! Incredible work today 🏆";
+    // if (wordsToday === 0) return "Start your learning journey today! 🌟";
+    if (wordsToday === 0) return `${t('Dashboard.HeaderComponent.motivation_messages.start_learning')}`;
+    if (wordsToday < 5) return `${t('Dashboard.HeaderComponent.motivation_messages.great_start')}`;
+    if (wordsToday < 10) return `${t('Dashboard.HeaderComponent.motivation_messages.building_momentum')}`;
+    if (wordsToday < 15) return `${t('Dashboard.HeaderComponent.motivation_messages.on_fire')}`;
+    return `${t('Dashboard.HeaderComponent.motivation_messages.language_master')}`;
   };
 
 
@@ -180,7 +182,7 @@ export default function HeaderComponent({ username }) {
             </div>
             
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-2 leading-tight">
-              {username ? `Welcome back, ${username}!` : 'Ready to learn?'}
+              {username ? `${t('Dashboard.HeaderComponent.labels.welcome_back')}, ${username}!` : `${t('Dashboard.HeaderComponent.labels.ready_to_learn')}?`}
               <span className="block text-lg sm:text-xl font-normal text-blue-100 mt-1">
                 {getMotivationMessage()}
               </span>
@@ -217,7 +219,7 @@ export default function HeaderComponent({ username }) {
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-white font-semibold flex items-center gap-2">
                 <IoFlash className="text-yellow-400" />
-                Daily Words
+                {t('Dashboard.HeaderComponent.labels.daily_words')}
               </h3>
               {loading && (
                 <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -235,13 +237,13 @@ export default function HeaderComponent({ username }) {
                   {dailyStatistics?.daily_learned_words || 0}
                   <span className="text-lg text-blue-100 ml-1">/20</span>
                 </div>
-                <p className="text-blue-100 text-sm">Words learned today</p>
+                <p className="text-blue-100 text-sm">{t('Dashboard.HeaderComponent.labels.words_learned_today')}</p>
               </div>
               <div className="text-right">
                 <div className="text-2xl font-bold text-white">
                   {dailyStreak?.daily_streak || 0}
                 </div>
-                <p className="text-blue-100 text-sm">Day streak</p>
+                <p className="text-blue-100 text-sm">{t('Dashboard.HeaderComponent.labels.day_streak')}</p>
               </div>
             </div>
           </div>
@@ -251,7 +253,7 @@ export default function HeaderComponent({ username }) {
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-white font-semibold flex items-center gap-2">
                 <IoRocket className="text-green-400" />
-                Daily Progress
+                {t('Dashboard.HeaderComponent.labels.daily_progress')}
               </h3>
               {/* <span className="text-white font-semibold text-sm">
                 {Math.round(progressWidth)}%
@@ -267,9 +269,9 @@ export default function HeaderComponent({ username }) {
               </div>
               
               <div className="flex justify-between text-sm">
-                <span className="text-blue-100">Start of day</span>
-                <span className="text-white font-medium">{dailyStatistics?.daily_learned_words || 0}/20 words</span>
-                <span className="text-blue-100">Daily goal</span>
+                <span className="text-blue-100">{t('Dashboard.HeaderComponent.labels.start_of_day')}</span>
+                <span className="text-white font-medium">{dailyStatistics?.daily_learned_words || 0}/20 {t('Dashboard.HeaderComponent.labels.words_learned_today')}</span>
+                <span className="text-blue-100">{t('Dashboard.HeaderComponent.labels.daily_goal')}</span>
               </div>
             </div>
           </div>
@@ -278,7 +280,7 @@ export default function HeaderComponent({ username }) {
         {/* Progress Bar - Simplified for mobile */}
         <div className={`${!isStatsExpanded ? 'block' : 'hidden'} lg:hidden mt-4`}>
           <div className="flex justify-between items-center mb-2">
-            <span className="text-blue-100 text-sm font-medium">Daily Progress</span>
+            <span className="text-blue-100 text-sm font-medium">{t('Dashboard.HeaderComponent.labels.daily_progress')}</span>
             <span className="text-white font-semibold">
               {dailyStatistics?.daily_learned_words || 0}/20
             </span>
@@ -298,21 +300,21 @@ export default function HeaderComponent({ username }) {
       {[
         { 
           icon: <IoBook className="text-2xl text-white"/>, 
-          label: 'Total Learned', 
+          label: t('Dashboard.HeaderComponent.labels.total_learned'),
           value: totalLearnedWords || '0',
           color: 'from-blue-500 to-blue-600',
           bgColor: 'bg-gradient-to-br from-blue-300 to-blue-400'
         },
         { 
           icon: <IoGlobe className="text-2xl text-white"/>, 
-          label: 'Active Languages', 
+          label: t('Dashboard.HeaderComponent.labels.active_languages'), 
           value: activeLanguage?.active || '0',
           color: 'from-emerald-500 to-green-600',
           bgColor: 'bg-gradient-to-br from-emerald-300 to-green-400'
         },
         { 
           icon: <IoTime className="text-2xl text-white"/>, 
-          label: 'Daily Streak', 
+          label: t('Dashboard.HeaderComponent.labels.daily_streak'), 
           value: dailyStreak?.daily_streak,
           color: 'from-purple-500 to-purple-600',
           bgColor: 'bg-gradient-to-br from-purple-300 to-purple-400'
@@ -327,7 +329,7 @@ export default function HeaderComponent({ username }) {
                 </div>
               </div>
               <div className="text-right">
-                <div className="text-xs text-gray-500">{stat.label}</div>
+                <div className="text-sm text-gray-500">{stat.label}</div>
                 <div className="text-2xl font-bold text-gray-900">{stat.value}</div>
               </div>
             </div>

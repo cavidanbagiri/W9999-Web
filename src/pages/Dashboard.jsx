@@ -9,7 +9,12 @@ import LanguagesStatisticsComponents from '../components/home/LanguagesStatistic
 import HeaderComponent from '../components/home/HeaderComponent';
 import ChooseLangComponent from '../components/home/ChooseLangComponent';
 
+import { useTranslation } from 'react-i18next';
+
 export default function HomeScreen() {
+
+  const { t } = useTranslation();
+
   const dispatch = useDispatch();
 
   const [username, setUsername] = useState('');
@@ -62,13 +67,13 @@ export default function HomeScreen() {
       {is_auth ? (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           {/* Enhanced Header */}
-          <HeaderComponent username={username} />
+          <HeaderComponent username={username} t={t} />
           
           {/* Main Dashboard Grid */}
           <div className="mt-8 grid grid-cols-1 xl:grid-cols-3 gap-8">
             {/* Left Column - Language Statistics */}
             <div className="xl:col-span-2">
-              <LanguagesStatisticsComponents />
+              <LanguagesStatisticsComponents t={t} />
             </div>
             
             {/* Right Column - Language Selection */}
@@ -76,6 +81,7 @@ export default function HomeScreen() {
               <ChooseLangComponent 
                 selectedLanguage={choosenLanguage}
                 setSelectedLanguage={setChoosenLanguage}
+                t={t}
               />
             </div>
           </div>

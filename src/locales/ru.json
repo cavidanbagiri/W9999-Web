@@ -1,934 +1,956 @@
 {
-    "ru": {
-        "Layout": {
-            "FilterComponent": {
-                "main_screen": {
-                    "search": {
-                        "search_placeholder": "Поиск слов...",
-                        "search_aria_label": "Поиск слов",
-                        "search_title": "Открывает экран поиска для нахождения словарного запаса"
-                    },
-                    "labels": {
-                        "select_language": "Выбрать язык",
-                        "part_of_speech": "Часть речи",
-                        "category": "Категория",
-                        "refresh": "Обновить"
-                    },
-                    "filter_toggles": {
-                        "starred": "Избранные",
-                        "all_words": "Все слова"
-                    },
-                    "buttons": {
-                        "refresh": "Обновить"
-                    },
-                    "icons": {
-                        "search": "🔍",
-                        "chevron": "›"
-                    }
-                },
-                "LanguageSelected": {
-                    "accessibility": {
-                        "flag_alt_text": "Флаг {language_name}"
-                    },
-                    "buttons": {
-                        "toggle_dropdown": "Выбрать язык"
-                    }
-                },
-                "Categories": {
-                    "header": {
-                        "title": "Категории слов",
-                        "subtitle": "Освойте лексику по темам"
-                    },
-                    "stats": {
-                        "categories": "Категории",
-                        "words_learned": "Слов изучено",
-                        "completed": "Завершено"
-                    },
-                    "search": {
-                        "placeholder": "Поиск категорий...",
-                        "no_results_found": "Категории не найдены",
-                        "no_matching_categories": "Нет категорий, соответствующих \"{search_term}\"",
-                        "try_different_language": "Попробуйте выбрать другой язык, чтобы увидеть доступные категории"
-                    },
-                    "loading": {
-                        "loading_categories": "Загрузка ваших категорий..."
-                    },
-                    "category_status": {
-                        "mastered": "Освоено",
-                        "in_progress": "В процессе",
-                        "start_learning": "Начать учить"
-                    },
-                    "progress": {
-                        "learned": "{learned_count} изучено",
-                        "total": "{total_count} всего",
-                        "progress_percentage": "{percentage}%"
-                    },
-                    "footer": {
-                        "summary": "{learned_words} слов освоено в {category_count} категориях"
-                    },
-                    "buttons": {
-                        "close": "✕"
-                    }
-                },
-                "PosStatistics": {
-                    "header": {
-                        "title": "Грамматическая статистика",
-                        "subtitle": "Отслеживайте прогресс по частям речи"
-                    },
-                    "stats": {
-                        "pos_types": "Типы ЧР",
-                        "words_learned": "Слов изучено",
-                        "mastered": "Освоено",
-                        "overall": "Общий"
-                    },
-                    "search": {
-                        "placeholder": "Поиск частей речи...",
-                        "no_matching_pos": "Нет подходящих частей речи",
-                        "no_matching_results": "Нет частей речи, соответствующих \"{search_term}\"",
-                        "no_data_available": "Данные недоступны",
-                        "select_language_prompt": "Выберите язык, чтобы увидеть статистику прогресса по грамматике",
-                        "no_statistics_available": "Статистика по грамматике недоступна"
-                    },
-                    "loading": {
-                        "loading_statistics": "Загрузка грамматической статистики..."
-                    },
-                    "pos_status": {
-                        "mastered": "Освоено",
-                        "in_progress": "В процессе",
-                        "start_learning": "Начать учить"
-                    },
-                    "progress": {
-                        "learned": "{learned_count} изучено",
-                        "total": "{total_count} всего",
-                        "progress_percentage": "{percentage}%"
-                    },
-                    "footer": {
-                        "summary": "{learned_words} слов освоено по {pos_count} частям речи"
-                    },
-                    "buttons": {
-                        "close": "✕"
-                    }
-                }
-            },
-            "WordList": {
-                "loading": {
-                    "loading_words": "Загрузка ваших слов..."
-                }
-            },
-            "VocabCard": {
-                "labels": {
-                    "level": "Ур. {level}",
-                    "translation_not_available": "Перевод недоступен",
-                    "starred": "В избранном",
-                    "learned": "Изучено"
-                },
-                "buttons": {
-                    "create_note": "Создать заметку",
-                    "generate_ai": "Сгенерировать ИИ"
-                },
-                "accessibility": {
-                    "star_button_remove": "Убрать из избранного",
-                    "star_button_add": "Добавить в избранное",
-                    "learned_button_mark_not_learned": "Отметить как не изученное",
-                    "learned_button_mark_learned": "Отметить как изученное"
-                },
-                "default_values": {
-                    "level_default": "1",
-                    "frequency_default": "–"
-                }
-            },
-            "VoiceButtonComponent": {
-                "buttons": {
-                    "play_pronunciation": "Воспроизвести произношение",
-                    "playing_pronunciation": "Проигрывается произношение",
-                    "playing": "Играет...",
-                    "loading": "Загрузка..."
-                },
-                "error_messages": {
-                    "no_audio_received": "Аудио не получено",
-                    "audio_playback_failed": "Не удалось воспроизвести аудио",
-                    "failed_to_play_sound": "Не удалось воспроизвести звук",
-                    "audio_error_alert": "Не удалось воспроизвести аудио. Пожалуйста, попробуйте снова."
-                },
-                "accessibility": {
-                    "playing_aria_label": "Проигрывается произношение",
-                    "play_aria_label": "Воспроизвести произношение"
-                }
-            }
-        },
-        "Dashboard": {
-            "HeaderComponent": {
-                "greetings": {
-                    "good_morning": "Доброе утро",
-                    "good_afternoon": "Добрый день",
-                    "good_evening": "Добрый вечер"
-                },
-                "motivation_messages": {
-                    "start_learning": "Начните свое учебное путешествие сегодня! 🌟",
-                    "great_start": "Отличное начало! Каждое слово имеет значение 💪",
-                    "building_momentum": "Набираем обороты! Продолжайте в том же духе 🚀",
-                    "on_fire": "Вы в ударе! Потрясающий прогресс 🔥",
-                    "language_master": "Мастер языка! Невероятная работа сегодня 🏆"
-                },
-                "labels": {
-                    "ready_to_learn": "Готовы учиться?",
-                    "welcome_back": "С возвращением, ",
-                    "daily_words": "Слова на сегодня",
-                    "words_learned_today": "Слов изучено сегодня",
-                    "day_streak": "Дней подряд",
-                    "daily_progress": "Дневной прогресс",
-                    "start_of_day": "Начало дня",
-                    "daily_goal": "Дневная цель",
-                    "total_learned": "Всего изучено",
-                    "active_languages": "Активные языки",
-                    "daily_streak": "Ежедневная серия",
-                    "go_to_profile": "Перейти в профиль",
-                    "toggle_stats": "Переключить статистику"
-                },
-                "loading_messages": {
-                    "load_daily_streak_error": "Не удалось загрузить ежедневную серию",
-                    "fetch_daily_streak_error": "Ошибка получения ежедневной серии",
-                    "load_active_language_error": "Не удалось загрузить активный язык",
-                    "fetch_active_language_error": "Ошибка получения активного языка",
-                    "load_native_language_error": "Не удалось загрузить родной язык"
-                },
-                "placeholders": {
-                    "no_words_today": "0",
-                    "no_streak": "0",
-                    "no_active_languages": "0"
-                }
-            },
-            "LanguagesStatisticsComponents": {
-                "titles": {
-                    "start_journey": "Начните свое путешествие",
-                    "your_progress": "Ваш прогресс",
-                    "track_journey": "Отслеживайте свой путь изучения языка"
-                },
-                "messages": {
-                    "begin_learning": "Начните изучать слова, чтобы отслеживать свой прогресс и видеть статистику языка здесь.",
-                    "start_learning": "Начать обучение",
-                    "continue_learning": "Продолжить обучение"
-                },
-                "labels": {
-                    "progress": "Прогресс",
-                    "total": "Всего",
-                    "learned": "Изучено",
-                    "starred": "В избранном"
-                },
-                "buttons": {
-                    "start_learning": "Начать обучение",
-                    "continue_learning": "Продолжить обучение"
-                },
-                "statistics": {
-                    "languages_count": "{count} язык{languages_plural}"
-                }
-            },
-            "ChooseLangComponent": {
-                "loading": {
-                    "loading_languages": "Загрузка языков..."
-                },
-                "empty_state": {
-                    "all_languages_added": "Все языки добавлены",
-                    "learning_all_languages": "Вы изучаете все доступные языки!",
-                    "continue_learning": "Продолжить обучение"
-                },
-                "header": {
-                    "learn_new_language": "Изучить новый язык",
-                    "expand_skills": "Расширьте свои языковые навыки"
-                },
-                "language_items": {
-                    "start_learning": "Начать изучать {language_name}"
-                },
-                "footer": {
-                    "languages_available": "{count} язык{languages_plural} доступно для изучения"
-                },
-                "buttons": {
-                    "continue_learning": "Продолжить обучение"
-                }
-            }
-        },
-        "WordsScreen": {
+    "loading": {
+        "initializing": "Инициализация",
+        "please_wait": "Пожалуйста, подождите...",
+        "saving_language": "Сохранение языка..."
+    },
+    "native_language": {
+        "welcome": "Добро пожаловать в W9999",
+        "get_started": "Давайте начнем с выбора вашего родного языка",
+        "select_title": "Выберите ваш родной язык",
+        "select_description": "Это поможет нам персонализировать ваше обучение",
+        "features_title": "Что вы получите:",
+        "one_time_selection": "Вы сможете выбрать родной язык только один раз.",
+        "saving": "Установка вашего языка",
+        "saving_message": "Пожалуйста, подождите, пока мы сохраняем предпочтение вашего родного языка..."
+    },
+    "features": {
+        "progress_tracking": "Отслеживание прогресса",
+        "fast_translations": "Быстрый перевод",
+        "ai_tutor": "AI-наставник",
+        "word_library": "Библиотека слов"
+    },
+    "errors": {
+        "save_language_failed": "Не удалось сохранить языковые настройки. Пожалуйста, попробуйте снова."
+    },
+    "Layout": {
+        "FilterComponent": {
             "main_screen": {
-                "loading": {
-                    "loading_more_words": "Загрузка дополнительных слов...",
-                    "loading_words": "Загрузка слов...",
-                    "this_may_take_moment": "Это может занять некоторое время",
-                    "loading_n_more_words": "Загрузка еще {count} слов...",
-                    "load_n_more_words": "Загрузить еще {count} слов"
-                },
-                "pagination": {
-                    "words_loaded": "{loaded} из {total} слов загружено",
-                    "words_remaining": "Осталось {remaining}",
-                    "back_to_top": "↑ Наверх"
-                },
-                "buttons": {
-                    "load_more": "Загрузить еще {count} слов",
-                    "scroll_to_bottom": "Прокрутить вниз"
+                "search": {
+                    "search_placeholder": "Поиск слов...",
+                    "search_aria_label": "Поиск слов",
+                    "search_title": "Открывает экран поиска для нахождения словарного запаса"
                 },
                 "labels": {
-                    "category": "Категория: {category_name}",
-                    "pos_name": "Ч.Р.: {pos_name}",
-                    "no_words_found": "Слова не найдены"
+                    "select_language": "Выбрать язык",
+                    "part_of_speech": "Часть речи",
+                    "category": "Категория",
+                    "refresh": "Обновить"
                 },
-                "messages": {
-                    "no_learned_words": "Вы еще не изучили ни одного слова. Начните обучение, чтобы увидеть их здесь!",
-                    "no_words_available": "Нет доступных слов для текущего выбора.",
-                    "choose_language": "Выберите язык",
-                    "select_language_tip": "Выберите язык, чтобы начать изучать слова."
-                },
-                "empty_states": {
-                    "starred_empty": "Нет доступных избранных слов"
-                }
-            },
-            "EmptyStarredComponent": {
-                "title": "Еще нет, но скоро!",
-                "message": "Вы еще не добавили ни одного слова в избранное для {language_name}."
-            }
-        },
-        "LearnedScreen": {
-            "main_screen": {
-                "titles": {
-                    "learned_words": "Изученные слова",
-                    "review_practice": "Повторите и попрактикуйте слова, которые вы изучили",
-                    "learning_progress": "Прогресс обучения",
-                    "quick_actions": "Быстрые действия"
-                },
-                "stats": {
-                    "total_learned": "Всего изучено",
-                    "languages": "Языки",
-                    "loaded": "Загружено",
-                    "learned_words": "Изучено",
-                    "progress_header": "Продолжайте в том же духе!"
-                },
-                "loading": {
-                    "loading_learned_words": "Загрузка изученных слов...",
-                    "loading_more_words": "Загрузка дополнительных слов...",
-                    "this_may_take_moment": "Это может занять некоторое время",
-                    "loading": "Загрузка..."
-                },
-                "pagination": {
-                    "load_more_words": "Загрузить больше слов",
-                    "showing_of_words": "Показано {loaded} из {total} изученных слов",
-                    "scroll_to_load_more": "Прокрутите вниз, чтобы загрузить больше",
-                    "back_to_top": "↑ Наверх"
-                },
-                "labels": {
-                    "category": "Категория: {category_name}",
-                    "pos_name": "Ч.Р.: {pos_name}",
-                    "all_words": "Все слова",
-                    "browse_vocabulary": "Просмотреть весь словарный запас"
-                },
-                "empty_states": {
-                    "select_language": "Выберите язык",
-                    "choose_language_prompt": "Выберите язык, чтобы просмотреть изученные слова и отслеживать свой прогресс.",
-                    "no_words": "Нет изученных слов"
+                "filter_toggles": {
+                    "starred": "Избранные",
+                    "all_words": "Все слова"
                 },
                 "buttons": {
-                    "back": "←"
-                }
-            }
-        },
-        "TranslateScreen": {
-            "main_screen": {
-                "header": {
-                    "title": "Перевод",
-                    "favorites": "Избранное",
-                    "view_favorites": "Просмотреть избранное"
-                },
-                "buttons": {
-                    "swap_languages": "Поменять языки местами",
-                    "clear": "Очистить",
-                    "copy": "Копировать",
-                    "copy_text": "Копировать текст",
-                    "translate": "Перевести",
-                    "copied": "Скопировано!",
-                    "ask_ai_about_text": "Спросить ИИ об этом тексте",
-                    "ask_ai_about_translation": "Спросить ИИ об этом переводе"
-                },
-                "favorites": {
-                    "add_to_favorites": "Добавить в избранное",
-                    "remove_from_favorites": "Удалить из избранного"
-                },
-                "placeholders": {
-                    "type_text_to_translate": "Введите текст для перевода...",
-                    "translation_will_appear": "Здесь появится перевод...",
-                    "select_language": "Перевести с",
-                    "translate_to": "Перевести на"
-                },
-                "language_picker": {
-                    "translate_from": "Перевести с",
-                    "translate_to": "Перевести на"
-                },
-                "validation": {
-                    "select_language_error": "Пожалуйста, выберите язык",
-                    "character_count": "{count}/500"
-                },
-                "accessibility": {
-                    "translate_from_lang": "Перевести с {language_name}",
-                    "translate_to_lang": "Перевести на {language_name}"
-                }
-            },
-            "language_picker": {
-                "modal": {
-                    "title": "Выбрать язык",
-                    "search_placeholder": "Поиск языков...",
-                    "no_languages_found": "Языки не найдены"
-                },
-                "buttons": {
-                    "close": "×",
-                    "clear_search": "×"
+                    "refresh": "Обновить"
                 },
                 "icons": {
                     "search": "🔍",
-                    "checkmark": "✓"
-                },
-                "language_list": {
-                    "language_names": "См. извлеченные названия языков ниже"
-                }
-            }
-        },
-        "CardDetailScreen": {
-            "main_screen": {
-                "navigation": {
-                    "back": "Назад"
-                },
-                "action_buttons": {
-                    "star": "В избранное",
-                    "starred": "В избранном",
-                    "learn": "Учить",
-                    "learned": "Изучено",
-                    "ai_tutor": "ИИ-репетитор"
-                },
-                "headers": {
-                    "meanings_examples": "Значения и примеры",
-                    "more_examples": "Еще примеры",
-                    "usage_in_context": "Использование в контексте:"
-                },
-                "labels": {
-                    "frequency": "Частота",
-                    "strength": "Уровень знания",
-                    "no_translation": "Перевод недоступен",
-                    "language_code_translation": "{language_code}: {translated_text}"
-                },
-                "example_formatting": {
-                    "example_quote": "\"{example}\""
-                },
-                "ai_chat": {
-                    "input_placeholder": "Спросить у ИИ",
-                    "enter_question": "Введите свой вопрос здесь..."
-                },
-                "loading": {
-                    "loading": "Загрузка..."
-                }
-            }
-        },
-        "CategoryWordsScreen": {
-            "main_screen": {
-                "modals": {
-                    "bulk_move_title": "Переместить \"{word_text}\"",
-                    "bulk_move_description": "Выберите категорию назначения:",
-                    "moving_word": "Перемещение слова...",
-                    "no_other_categories": "Другие категории не найдены"
-                },
-                "word_actions": {
-                    "generate_ai": "Сгенерировать ИИ",
-                    "move_to_category": "Переместить в другую категорию",
-                    "remove_from_favorites": "Удалить из избранного",
-                    "delete_confirm": "Вы уверены, что хотите удалить \"{word_text}\"?",
-                    "word_removed_success": "Слово удалено из избранного",
-                    "word_removed_error": "Не удалось удалить слово",
-                    "word_moved_success": "Слово перемещено в новую категорию",
-                    "word_moved_error": "Не удалось переместить слово"
-                },
-                "category_actions": {
-                    "delete_category": "Удалить категорию",
-                    "delete_confirm_category": "Вы уверены, что хотите удалить \"{category_name}\"?",
-                    "category_deleted_success": "Категория успешно удалена.",
-                    "category_delete_error": "Ошибка: {error_message}"
-                },
-                "headers": {
-                    "words_count": "{displayed} из {total} слов",
-                    "search_results": "соответствуют \"{search_query}\""
-                },
-                "search": {
-                    "placeholder": "Поиск в {category_name}...",
-                    "searching": "Поиск...",
-                    "no_matching_words": "Нет подходящих слов",
-                    "search_suggestion": "Попробуйте другие ключевые слова в {category_name}"
-                },
-                "empty_states": {
-                    "no_words_in_category": "В этой категории нет слов",
-                    "add_words_hint": "Добавляйте слова в эту категорию с экрана перевода"
-                },
-                "labels": {
-                    "added_date": "Добавлено: {formatted_date}",
-                    "language_pair": "{from_lang}→{to_lang}"
-                },
-                "buttons": {
-                    "back": "←",
-                    "clear_search": "×",
-                    "close_modal": "×",
-                    "add_fab": "+"
-                },
-                "notifications": {
-                    "success": "успешно",
-                    "error": "ошибка"
-                }
-            }
-        },
-        "FavoritesScreen": {
-            "main_screen": {
-                "header": {
-                    "title": "Избранное"
-                },
-                "search": {
-                    "placeholder": "Поиск по всем категориям...",
-                    "searching": "Поиск...",
-                    "no_results_found": "Результаты не найдены",
-                    "search_suggestion": "Попробуйте другие ключевые слова или проверьте правописание"
-                },
-                "category_labels": {
-                    "word_count": "{count} слово{words_plural}",
-                    "added_info": "в {category_name} • {formatted_date}",
-                    "no_categories_yet": "Категорий пока нет",
-                    "create_first_category": "Создайте свою первую категорию для организации избранных слов",
-                    "create_category_button": "Создать категорию"
-                },
-                "modals": {
-                    "create_category_title": "Создать новую категорию",
-                    "create_category_placeholder": "Введите название категории",
-                    "cancel": "Отмена",
-                    "create": "Создать"
-                },
-                "buttons": {
-                    "back": "←",
-                    "add_category": "+"
-                },
-                "error_messages": {
-                    "category_creation_failed": "Не удалось создать категорию"
-                },
-                "empty_states": {
-                    "no_categories": "Категорий пока нет",
-                    "create_category_prompt": "Создайте свою первую категорию для организации избранных слов"
-                }
-            }
-        },
-        "SearchScreen": {
-            "main_screen": {
-                "search": {
-                    "placeholder": "Поиск слов или переводов...",
-                    "searching": "Поиск по словарю...",
-                    "cancel": "Отмена",
-                    "clear": "×"
-                },
-                "language_filter": {
-                    "selected_language": "Выбранный язык",
-                    "choose_language": "Пожалуйста, выберите язык",
-                    "dashboard_link": "Панель управления"
-                },
-                "results": {
-                    "no_matching_words": "Подходящие слова не найдены",
-                    "search_for_vocabulary": "Поиск по словарному запасу",
-                    "search_suggestions": "Попробуйте поискать: \"привет\", \"gracias\" или \"изученные\"",
-                    "something_went_wrong": "Что-то пошло не так"
-                },
-                "error_messages": {
-                    "load_native_language_error": "Не удалось загрузить родной язык"
+                    "chevron": "›"
                 }
             },
-            "RenderWordComponent": {
-                "status_badges": {
-                    "learned": "Изучено",
-                    "starred": "В избранном"
+            "LanguageSelected": {
+                "accessibility": {
+                    "flag_alt_text": "Флаг {language_name}"
                 },
                 "buttons": {
-                    "add_to_favorites": "Добавить в избранное",
-                    "remove_from_favorites": "Удалить из избранного",
-                    "mark_as_learned": "Отметить как изученное",
-                    "mark_as_not_learned": "Отметить как не изученное"
-                },
-                "labels": {
-                    "level": "Уровень {level}"
-                },
-                "error_messages": {
-                    "update_status_failed": "Не удалось обновить статус"
+                    "toggle_dropdown": "Выбрать язык"
                 }
-            }
-        },
-        "ProfileScreen": {
-            "main_screen": {
-                "headers": {
-                    "profile": "Профиль",
-                    "learning_statistics": "Статистика обучения",
-                    "settings": "Настройки"
-                },
-                "user_info": {
-                    "default_name": "Изучающий язык",
-                    "default_email": "user@example.com",
-                    "member_since": "Участник с {year}",
-                    "premium_member": "Премиум участник",
-                    "free_member": "Бесплатный участник",
-                    "days_registered": "{days} дней",
-                    "account_created": "Аккаунт создан",
-                    "not_available": "Недоступно"
+            },
+            "Categories": {
+                "header": {
+                    "title": "Категории слов",
+                    "subtitle": "Освойте лексику по темам"
                 },
                 "stats": {
+                    "categories": "Категории",
                     "words_learned": "Слов изучено",
-                    "learning_days": "Дней обучения",
-                    "active_streak": "Активная серия",
-                    "total_words_mastered": "Всего слов освоено",
-                    "current_learning_streak": "Текущая учебная серия",
-                    "days_registered_stat": "Дней с регистрации"
+                    "completed": "Завершено"
                 },
-                "settings": {
-                    "language": "Язык",
-                    "app_language_settings": "Настройки языка приложения",
-                    "preferences": "Предпочтения",
-                    "customize_experience": "Настройте свой опыт"
-                },
-                "buttons": {
-                    "logout": "Выйти",
-                    "try_again": "Попробовать снова",
-                    "logout_confirm": "Вы уверены, что хотите выйти?"
+                "search": {
+                    "placeholder": "Поиск категорий...",
+                    "no_results_found": "Категории не найдены",
+                    "no_matching_categories": "Нет категорий, соответствующих \"{search_term}\"",
+                    "try_different_language": "Попробуйте выбрать другой язык, чтобы увидеть доступные категории"
                 },
                 "loading": {
-                    "loading_profile": "Загрузка вашего профиля..."
+                    "loading_categories": "Загрузка ваших категорий..."
                 },
-                "error_messages": {
-                    "unable_to_load_statistics": "Не удалось загрузить статистику",
-                    "failed_to_load_statistics": "Не удалось загрузить статистику",
-                    "error_fetching_statistics": "Ошибка получения статистики",
-                    "failed_to_load_daily_streak": "Не удалось загрузить ежедневную серию",
-                    "error_fetching_daily_streak": "Ошибка получения ежедневной серии",
-                    "profile_statistics_error": "Ошибка статистики профиля"
+                "category_status": {
+                    "mastered": "Освоено",
+                    "in_progress": "В процессе",
+                    "start_learning": "Начать учить"
                 },
-                "app_info": {
-                    "app_name": "Приложение W9999",
-                    "version": "Версия {version}"
+                "progress": {
+                    "learned": "{learned_count} изучено",
+                    "total": "{total_count} всего",
+                    "progress_percentage": "{percentage}%"
                 },
-                "date_formats": {
-                    "account_created_format": "{year} {month} {day}"
-                }
-            }
-        },
-        "NotesScreen": {
-            "main_screen": {
-                "main_screen": {
-                    "headers": {
-                        "my_learning_notes": "Мои учебные заметки",
-                        "language_learning_insights": "Инсайты изучения языка"
-                    },
-                    "buttons": {
-                        "go_to_direct_chat": "Перейти в прямой чат",
-                        "refresh": "Обновить",
-                        "refresh_notes": "Обновить заметки",
-                        "new_note": "Новая заметка",
-                        "create_your_first_note": "Создайте свою первую заметку",
-                        "clear_all": "Очистить все",
-                        "edit_note": "Редактировать заметку",
-                        "delete_note": "Удалить заметку"
-                    },
-                    "filters": {
-                        "search_notes": "Поиск заметок",
-                        "search_placeholder": "Поиск по заголовку, содержанию или тегам...",
-                        "language": "Язык",
-                        "all_languages": "Все языки",
-                        "no_language": "Без языка",
-                        "spanish": "Испанский (ES)",
-                        "english": "Английский (EN)",
-                        "russian": "Русский (RU)",
-                        "turkish": "Турецкий (TR)",
-                        "note_type": "Тип заметки",
-                        "all_types": "Все типы",
-                        "vocabulary": "Лексика",
-                        "grammar": "Грамматика",
-                        "general": "Общее",
-                        "active_filters": "Активные фильтры:"
-                    },
-                    "active_filters": {
-                        "search": "Поиск: \"{search_term}\"",
-                        "language": "Язык: {language_value}",
-                        "type": "Тип: {type_value}"
-                    },
-                    "loading": {
-                        "loading_your_notes": "Загрузка ваших заметок...",
-                        "updating_your_notes": "Обновление ваших заметок...",
-                        "this_will_just_take_moment": "Это займет всего минуту"
-                    },
-                    "empty_states": {
-                        "no_matching_notes": "Подходящие заметки не найдены",
-                        "no_notes_yet": "Заметок пока нет",
-                        "adjust_search_terms": "Попробуйте изменить условия поиска или фильтры, чтобы найти то, что ищете.",
-                        "start_documenting": "Начните документировать свой путь изучения языка с первой заметки!"
-                    },
-                    "error_messages": {
-                        "error_loading_notes": "Ошибка загрузки заметок",
-                        "unexpected_error": "Произошла непредвиденная ошибка",
-                        "failed_to_fetch_notes": "Не удалось получить заметки:",
-                        "failed_to_delete_note": "Не удалось удалить заметку. Пожалуйста, попробуйте снова.",
-                        "delete_confirmation": "Вы уверены, что хотите удалить эту заметку?"
-                    },
-                    "note_display": {
-                        "notes_count": "{count} заметк{notes_plural}",
-                        "showing_notes": "Показано {count} замет{notes_plural}{filtered_text}",
-                        "filtered": " (отфильтровано)",
-                        "tag_count": "+{count}"
-                    },
-                    "authentication": {
-                        "user_not_authenticated": "Пользователь не аутентифицирован"
-                    },
-                    "time_formats": {
-                        "time_format": "{hour}:{minute}"
-                    }
-                }
-            }
-        },
-        "CreateNoteScreen": {
-            "main_screen": {
-                "headers": {
-                    "create_new_note": "Создать новую заметку",
-                    "back_to_ai_chat": "Назад к прямому чату с ИИ",
-                    "tips_for_effective_notes": "💡 Советы по созданию эффективных языковых заметок"
-                },
-                "form": {
-                    "note_title": "Заголовок заметки *",
-                    "note_title_placeholder": "напр., Правила сослагательного наклонения в испанском, Важные глаголы и т.д.",
-                    "language": "Язык",
-                    "select_language_hint": "Выберите язык, к которому относится заметка",
-                    "note_type": "Тип заметки *",
-                    "tags": "Теги",
-                    "content": "Содержание *",
-                    "format": "Формат:",
-                    "preview": "Предпросмотр (Markdown будет преобразован при сохранении)",
-                    "no_content_to_preview": "Нет содержания для предпросмотра",
-                    "how_it_will_look": "Как это будет выглядеть:"
+                "footer": {
+                    "summary": "{learned_words} слов освоено в {category_count} категориях"
                 },
                 "buttons": {
-                    "add": "Добавить",
-                    "cancel": "Отмена",
-                    "save_note": "Сохранить заметку",
-                    "creating": "Создание...",
-                    "bold": "Жирный (Ctrl+B)",
-                    "italic": "Курсив (Ctrl+I)",
-                    "list": "Список",
-                    "link": "Ссылка"
+                    "close": "✕"
+                }
+            },
+            "PosStatistics": {
+                "header": {
+                    "title": "Грамматическая статистика",
+                    "subtitle": "Отслеживайте прогресс по частям речи"
                 },
-                "validation": {
-                    "note_name_required": "Название заметки обязательно",
-                    "content_required": "Содержание обязательно",
-                    "content_too_long": "Содержание слишком длинное (макс. 50 000 символов)",
-                    "failed_to_create_note": "Не удалось создать заметку",
-                    "cancel_confirmation": "Вы уверены? Ваши изменения будут потеряны."
+                "stats": {
+                    "pos_types": "Типы ЧР",
+                    "words_learned": "Слов изучено",
+                    "mastered": "Освоено",
+                    "overall": "Общий"
                 },
-                "tags": {
-                    "add_tag_placeholder": "Добавьте тег и нажмите Enter",
-                    "click_to_remove": "Нажмите × для удаления"
+                "search": {
+                    "placeholder": "Поиск частей речи...",
+                    "no_matching_pos": "Нет подходящих частей речи",
+                    "no_matching_results": "Нет частей речи, соответствующих \"{search_term}\"",
+                    "no_data_available": "Данные недоступны",
+                    "select_language_prompt": "Выберите язык, чтобы увидеть статистику прогресса по грамматике",
+                    "no_statistics_available": "Статистика по грамматике недоступна"
                 },
-                "character_counts": {
-                    "characters": "{current}/{max} символов",
-                    "tags_count": "{current}/20 тегов"
+                "loading": {
+                    "loading_statistics": "Загрузка грамматической статистики..."
                 },
-                "language_options": {
-                    "no_specific_language": "Без конкретного языка",
+                "pos_status": {
+                    "mastered": "Освоено",
+                    "in_progress": "В процессе",
+                    "start_learning": "Начать учить"
+                },
+                "progress": {
+                    "learned": "{learned_count} изучено",
+                    "total": "{total_count} всего",
+                    "progress_percentage": "{percentage}%"
+                },
+                "footer": {
+                    "summary": "{learned_words} слов освоено по {pos_count} частям речи"
+                },
+                "buttons": {
+                    "close": "✕"
+                }
+            }
+        },
+        "WordList": {
+            "loading": {
+                "loading_words": "Загрузка ваших слов..."
+            }
+        },
+        "VocabCard": {
+            "labels": {
+                "level": "Ур. {level}",
+                "translation_not_available": "Перевод недоступен",
+                "starred": "В избранном",
+                "learned": "Изучено"
+            },
+            "buttons": {
+                "create_note": "Создать заметку",
+                "generate_ai": "Сгенерировать ИИ"
+            },
+            "accessibility": {
+                "star_button_remove": "Убрать из избранного",
+                "star_button_add": "Добавить в избранное",
+                "learned_button_mark_not_learned": "Отметить как не изученное",
+                "learned_button_mark_learned": "Отметить как изученное"
+            },
+            "default_values": {
+                "level_default": "1",
+                "frequency_default": "–"
+            }
+        },
+        "VoiceButtonComponent": {
+            "buttons": {
+                "play_pronunciation": "Воспроизвести произношение",
+                "playing_pronunciation": "Проигрывается произношение",
+                "playing": "Играет...",
+                "loading": "Загрузка..."
+            },
+            "error_messages": {
+                "no_audio_received": "Аудио не получено",
+                "audio_playback_failed": "Не удалось воспроизвести аудио",
+                "failed_to_play_sound": "Не удалось воспроизвести звук",
+                "audio_error_alert": "Не удалось воспроизвести аудио. Пожалуйста, попробуйте снова."
+            },
+            "accessibility": {
+                "playing_aria_label": "Проигрывается произношение",
+                "play_aria_label": "Воспроизвести произношение"
+            }
+        }
+    },
+    "Dashboard": {
+        "HeaderComponent": {
+            "greetings": {
+                "good_morning": "Доброе утро",
+                "good_afternoon": "Добрый день",
+                "good_evening": "Добрый вечер"
+            },
+            "motivation_messages": {
+                "start_learning": "Начните свое учебное путешествие сегодня! 🌟",
+                "great_start": "Отличное начало! Каждое слово имеет значение 💪",
+                "building_momentum": "Набираем обороты! Продолжайте в том же духе 🚀",
+                "on_fire": "Вы в ударе! Потрясающий прогресс 🔥",
+                "language_master": "Мастер языка! Невероятная работа сегодня 🏆"
+            },
+            "labels": {
+                "ready_to_learn": "Готовы учиться?",
+                "welcome_back": "С возвращением ",
+                "daily_words": "Слова на сегодня",
+                "words_learned_today": "Слов изучено сегодня",
+                "day_streak": "Дней подряд",
+                "daily_progress": "Дневной прогресс",
+                "start_of_day": "Начало дня",
+                "daily_goal": "Дневная цель",
+                "total_learned": "Всего изучено",
+                "active_languages": "Активные языки",
+                "daily_streak": "Ежедневная серия",
+                "go_to_profile": "Перейти в профиль",
+                "toggle_stats": "Переключить статистику"
+            },
+            "loading_messages": {
+                "load_daily_streak_error": "Не удалось загрузить ежедневную серию",
+                "fetch_daily_streak_error": "Ошибка получения ежедневной серии",
+                "load_active_language_error": "Не удалось загрузить активный язык",
+                "fetch_active_language_error": "Ошибка получения активного языка",
+                "load_native_language_error": "Не удалось загрузить родной язык"
+            },
+            "placeholders": {
+                "no_words_today": "0",
+                "no_streak": "0",
+                "no_active_languages": "0"
+            }
+        },
+        "LanguagesStatisticsComponents": {
+            "titles": {
+                "start_journey": "Начните свое путешествие",
+                "your_progress": "Ваш прогресс",
+                "track_journey": "Отслеживайте свой путь изучения языка"
+            },
+            "messages": {
+                "begin_learning": "Начните изучать слова, чтобы отслеживать свой прогресс и видеть статистику языка здесь.",
+                "start_learning": "Начать обучение",
+                "continue_learning": "Продолжить обучение"
+            },
+            "labels": {
+                "progress": "Прогресс",
+                "total": "Всего",
+                "learned": "Изучено",
+                "starred": "В избранном"
+            },
+            "buttons": {
+                "start_learning": "Начать обучение",
+                "continue_learning": "Продолжить обучение"
+            },
+            "statistics": {
+                "languages_count": "{count} язык{languages_plural}"
+            }
+        },
+        "ChooseLangComponent": {
+            "loading": {
+                "loading_languages": "Загрузка языков..."
+            },
+            "empty_state": {
+                "all_languages_added": "Все языки добавлены",
+                "learning_all_languages": "Вы изучаете все доступные языки!",
+                "continue_learning": "Продолжить обучение"
+            },
+            "header": {
+                "learn_new_language": "Изучить новый язык",
+                "expand_skills": "Расширьте свои языковые навыки"
+            },
+            "language_items": {
+                "start_learning": "Начать изучать {{language_name}}"
+            },
+            "footer": {
+                "languages_available": "{{count}} Язык {{languages_plural}} доступно для изучения"
+            },
+            "buttons": {
+                "continue_learning": "Продолжить обучение"
+            }
+        }
+    },
+    "WordsScreen": {
+        "main_screen": {
+            "loading": {
+                "loading_more_words": "Загрузка дополнительных слов...",
+                "loading_words": "Загрузка слов...",
+                "this_may_take_moment": "Это может занять некоторое время",
+                "loading_n_more_words": "Загрузка еще {count} слов...",
+                "load_n_more_words": "Загрузить еще {count} слов"
+            },
+            "pagination": {
+                "words_loaded": "{loaded} из {total} слов загружено",
+                "words_remaining": "Осталось {remaining}",
+                "back_to_top": "↑ Наверх"
+            },
+            "buttons": {
+                "load_more": "Загрузить еще {count} слов",
+                "scroll_to_bottom": "Прокрутить вниз"
+            },
+            "labels": {
+                "category": "Категория: {category_name}",
+                "pos_name": "Ч.Р.: {pos_name}",
+                "no_words_found": "Слова не найдены"
+            },
+            "messages": {
+                "no_learned_words": "Вы еще не изучили ни одного слова. Начните обучение, чтобы увидеть их здесь!",
+                "no_words_available": "Нет доступных слов для текущего выбора.",
+                "choose_language": "Выберите язык",
+                "select_language_tip": "Выберите язык, чтобы начать изучать слова."
+            },
+            "empty_states": {
+                "starred_empty": "Нет доступных избранных слов"
+            }
+        },
+        "EmptyStarredComponent": {
+            "title": "Еще нет, но скоро!",
+            "message": "Вы еще не добавили ни одного слова в избранное для {language_name}."
+        }
+    },
+    "LearnedScreen": {
+        "main_screen": {
+            "titles": {
+                "learned_words": "Изученные слова",
+                "review_practice": "Повторите и попрактикуйте слова, которые вы изучили",
+                "learning_progress": "Прогресс обучения",
+                "quick_actions": "Быстрые действия"
+            },
+            "stats": {
+                "total_learned": "Всего изучено",
+                "languages": "Языки",
+                "loaded": "Загружено",
+                "learned_words": "Изучено",
+                "progress_header": "Продолжайте в том же духе!"
+            },
+            "loading": {
+                "loading_learned_words": "Загрузка изученных слов...",
+                "loading_more_words": "Загрузка дополнительных слов...",
+                "this_may_take_moment": "Это может занять некоторое время",
+                "loading": "Загрузка..."
+            },
+            "pagination": {
+                "load_more_words": "Загрузить больше слов",
+                "showing_of_words": "Показано {loaded} из {total} изученных слов",
+                "scroll_to_load_more": "Прокрутите вниз, чтобы загрузить больше",
+                "back_to_top": "↑ Наверх"
+            },
+            "labels": {
+                "category": "Категория: {category_name}",
+                "pos_name": "Ч.Р.: {pos_name}",
+                "all_words": "Все слова",
+                "browse_vocabulary": "Просмотреть весь словарный запас"
+            },
+            "empty_states": {
+                "select_language": "Выберите язык",
+                "choose_language_prompt": "Выберите язык, чтобы просмотреть изученные слова и отслеживать свой прогресс.",
+                "no_words": "Нет изученных слов"
+            },
+            "buttons": {
+                "back": "←"
+            }
+        }
+    },
+    "TranslateScreen": {
+        "main_screen": {
+            "header": {
+                "title": "Перевод",
+                "favorites": "Избранное",
+                "view_favorites": "Просмотреть избранное"
+            },
+            "buttons": {
+                "swap_languages": "Поменять языки местами",
+                "clear": "Очистить",
+                "copy": "Копировать",
+                "copy_text": "Копировать текст",
+                "translate": "Перевести",
+                "copied": "Скопировано!",
+                "ask_ai_about_text": "Спросить ИИ об этом тексте",
+                "ask_ai_about_translation": "Спросить ИИ об этом переводе"
+            },
+            "favorites": {
+                "add_to_favorites": "Добавить в избранное",
+                "remove_from_favorites": "Удалить из избранного"
+            },
+            "placeholders": {
+                "type_text_to_translate": "Введите текст для перевода...",
+                "translation_will_appear": "Здесь появится перевод...",
+                "select_language": "Перевести с",
+                "translate_to": "Перевести на"
+            },
+            "language_picker": {
+                "translate_from": "Перевести с",
+                "translate_to": "Перевести на"
+            },
+            "validation": {
+                "select_language_error": "Пожалуйста, выберите язык",
+                "character_count": "{count}/500"
+            },
+            "accessibility": {
+                "translate_from_lang": "Перевести с {language_name}",
+                "translate_to_lang": "Перевести на {language_name}"
+            }
+        },
+        "language_picker": {
+            "modal": {
+                "title": "Выбрать язык",
+                "search_placeholder": "Поиск языков...",
+                "no_languages_found": "Языки не найдены"
+            },
+            "buttons": {
+                "close": "×",
+                "clear_search": "×"
+            },
+            "icons": {
+                "search": "🔍",
+                "checkmark": "✓"
+            },
+            "language_list": {
+                "language_names": "См. извлеченные названия языков ниже"
+            }
+        }
+    },
+    "CardDetailScreen": {
+        "main_screen": {
+            "navigation": {
+                "back": "Назад"
+            },
+            "action_buttons": {
+                "star": "В избранное",
+                "starred": "В избранном",
+                "learn": "Учить",
+                "learned": "Изучено",
+                "ai_tutor": "ИИ-репетитор"
+            },
+            "headers": {
+                "meanings_examples": "Значения и примеры",
+                "more_examples": "Еще примеры",
+                "usage_in_context": "Использование в контексте:"
+            },
+            "labels": {
+                "frequency": "Частота",
+                "strength": "Уровень знания",
+                "no_translation": "Перевод недоступен",
+                "language_code_translation": "{language_code}: {translated_text}"
+            },
+            "example_formatting": {
+                "example_quote": "\"{example}\""
+            },
+            "ai_chat": {
+                "input_placeholder": "Спросить у ИИ",
+                "enter_question": "Введите свой вопрос здесь..."
+            },
+            "loading": {
+                "loading": "Загрузка..."
+            }
+        }
+    },
+    "CategoryWordsScreen": {
+        "main_screen": {
+            "modals": {
+                "bulk_move_title": "Переместить \"{word_text}\"",
+                "bulk_move_description": "Выберите категорию назначения:",
+                "moving_word": "Перемещение слова...",
+                "no_other_categories": "Другие категории не найдены"
+            },
+            "word_actions": {
+                "generate_ai": "Сгенерировать ИИ",
+                "move_to_category": "Переместить в другую категорию",
+                "remove_from_favorites": "Удалить из избранного",
+                "delete_confirm": "Вы уверены, что хотите удалить \"{word_text}\"?",
+                "word_removed_success": "Слово удалено из избранного",
+                "word_removed_error": "Не удалось удалить слово",
+                "word_moved_success": "Слово перемещено в новую категорию",
+                "word_moved_error": "Не удалось переместить слово"
+            },
+            "category_actions": {
+                "delete_category": "Удалить категорию",
+                "delete_confirm_category": "Вы уверены, что хотите удалить \"{category_name}\"?",
+                "category_deleted_success": "Категория успешно удалена.",
+                "category_delete_error": "Ошибка: {error_message}"
+            },
+            "headers": {
+                "words_count": "{displayed} из {total} слов",
+                "search_results": "соответствуют \"{search_query}\""
+            },
+            "search": {
+                "placeholder": "Поиск в {category_name}...",
+                "searching": "Поиск...",
+                "no_matching_words": "Нет подходящих слов",
+                "search_suggestion": "Попробуйте другие ключевые слова в {category_name}"
+            },
+            "empty_states": {
+                "no_words_in_category": "В этой категории нет слов",
+                "add_words_hint": "Добавляйте слова в эту категорию с экрана перевода"
+            },
+            "labels": {
+                "added_date": "Добавлено: {formatted_date}",
+                "language_pair": "{from_lang}→{to_lang}"
+            },
+            "buttons": {
+                "back": "←",
+                "clear_search": "×",
+                "close_modal": "×",
+                "add_fab": "+"
+            },
+            "notifications": {
+                "success": "успешно",
+                "error": "ошибка"
+            }
+        }
+    },
+    "FavoritesScreen": {
+        "main_screen": {
+            "header": {
+                "title": "Избранное"
+            },
+            "search": {
+                "placeholder": "Поиск по всем категориям...",
+                "searching": "Поиск...",
+                "no_results_found": "Результаты не найдены",
+                "search_suggestion": "Попробуйте другие ключевые слова или проверьте правописание"
+            },
+            "category_labels": {
+                "word_count": "{count} слово{words_plural}",
+                "added_info": "в {category_name} • {formatted_date}",
+                "no_categories_yet": "Категорий пока нет",
+                "create_first_category": "Создайте свою первую категорию для организации избранных слов",
+                "create_category_button": "Создать категорию"
+            },
+            "modals": {
+                "create_category_title": "Создать новую категорию",
+                "create_category_placeholder": "Введите название категории",
+                "cancel": "Отмена",
+                "create": "Создать"
+            },
+            "buttons": {
+                "back": "←",
+                "add_category": "+"
+            },
+            "error_messages": {
+                "category_creation_failed": "Не удалось создать категорию"
+            },
+            "empty_states": {
+                "no_categories": "Категорий пока нет",
+                "create_category_prompt": "Создайте свою первую категорию для организации избранных слов"
+            }
+        }
+    },
+    "SearchScreen": {
+        "main_screen": {
+            "search": {
+                "placeholder": "Поиск слов или переводов...",
+                "searching": "Поиск по словарю...",
+                "cancel": "Отмена",
+                "clear": "×"
+            },
+            "language_filter": {
+                "selected_language": "Выбранный язык",
+                "choose_language": "Пожалуйста, выберите язык",
+                "dashboard_link": "Панель управления"
+            },
+            "results": {
+                "no_matching_words": "Подходящие слова не найдены",
+                "search_for_vocabulary": "Поиск по словарному запасу",
+                "search_suggestions": "Попробуйте поискать: \"привет\", \"gracias\" или \"изученные\"",
+                "something_went_wrong": "Что-то пошло не так"
+            },
+            "error_messages": {
+                "load_native_language_error": "Не удалось загрузить родной язык"
+            }
+        },
+        "RenderWordComponent": {
+            "status_badges": {
+                "learned": "Изучено",
+                "starred": "В избранном"
+            },
+            "buttons": {
+                "add_to_favorites": "Добавить в избранное",
+                "remove_from_favorites": "Удалить из избранного",
+                "mark_as_learned": "Отметить как изученное",
+                "mark_as_not_learned": "Отметить как не изученное"
+            },
+            "labels": {
+                "level": "Уровень {level}"
+            },
+            "error_messages": {
+                "update_status_failed": "Не удалось обновить статус"
+            }
+        }
+    },
+    "ProfileScreen": {
+        "main_screen": {
+            "headers": {
+                "profile": "Профиль",
+                "learning_statistics": "Статистика обучения",
+                "settings": "Настройки"
+            },
+            "user_info": {
+                "default_name": "Изучающий язык",
+                "default_email": "user@example.com",
+                "member_since": "Участник с {year}",
+                "premium_member": "Премиум участник",
+                "free_member": "Бесплатный участник",
+                "days_registered": "{days} дней",
+                "account_created": "Аккаунт создан",
+                "not_available": "Недоступно"
+            },
+            "stats": {
+                "words_learned": "Слов изучено",
+                "learning_days": "Дней обучения",
+                "active_streak": "Активная серия",
+                "total_words_mastered": "Всего слов освоено",
+                "current_learning_streak": "Текущая учебная серия",
+                "days_registered_stat": "Дней с регистрации"
+            },
+            "settings": {
+                "language": "Язык",
+                "app_language_settings": "Настройки языка приложения",
+                "preferences": "Предпочтения",
+                "customize_experience": "Настройте свой опыт"
+            },
+            "buttons": {
+                "logout": "Выйти",
+                "try_again": "Попробовать снова",
+                "logout_confirm": "Вы уверены, что хотите выйти?"
+            },
+            "loading": {
+                "loading_profile": "Загрузка вашего профиля..."
+            },
+            "error_messages": {
+                "unable_to_load_statistics": "Не удалось загрузить статистику",
+                "failed_to_load_statistics": "Не удалось загрузить статистику",
+                "error_fetching_statistics": "Ошибка получения статистики",
+                "failed_to_load_daily_streak": "Не удалось загрузить ежедневную серию",
+                "error_fetching_daily_streak": "Ошибка получения ежедневной серии",
+                "profile_statistics_error": "Ошибка статистики профиля"
+            },
+            "app_info": {
+                "app_name": "Приложение W9999",
+                "version": "Версия {version}"
+            },
+            "date_formats": {
+                "account_created_format": "{year} {month} {day}"
+            }
+        }
+    },
+    "NotesScreen": {
+        "main_screen": {
+            "main_screen": {
+                "headers": {
+                    "my_learning_notes": "Мои учебные заметки",
+                    "language_learning_insights": "Инсайты изучения языка"
+                },
+                "buttons": {
+                    "go_to_direct_chat": "Перейти в прямой чат",
+                    "refresh": "Обновить",
+                    "refresh_notes": "Обновить заметки",
+                    "new_note": "Новая заметка",
+                    "create_your_first_note": "Создайте свою первую заметку",
+                    "clear_all": "Очистить все",
+                    "edit_note": "Редактировать заметку",
+                    "delete_note": "Удалить заметку"
+                },
+                "filters": {
+                    "search_notes": "Поиск заметок",
+                    "search_placeholder": "Поиск по заголовку, содержанию или тегам...",
+                    "language": "Язык",
+                    "all_languages": "Все языки",
+                    "no_language": "Без языка",
                     "spanish": "Испанский (ES)",
                     "english": "Английский (EN)",
                     "russian": "Русский (RU)",
-                    "turkish": "Турецкий (TR)"
-                },
-                "note_type_options": {
+                    "turkish": "Турецкий (TR)",
+                    "note_type": "Тип заметки",
+                    "all_types": "Все типы",
                     "vocabulary": "Лексика",
                     "grammar": "Грамматика",
-                    "general": "Общее"
+                    "general": "Общее",
+                    "active_filters": "Активные фильтры:"
                 },
-                "content_placeholder": "Напишите свою заметку здесь. Вы можете использовать markdown для форматирования:\n• **Жирный текст** для важных моментов\n• *Курсивный текст* для выделения\n• - Списки для примеров\n• [Ссылки](url) для ссылок",
-                "formatting_help": "Используйте **жирный**, *курсив*, - списки, [ссылки](url)",
-                "tips": {
-                    "vocabulary_title": "Для заметок по лексике:",
-                    "vocabulary_items": [
-                        "Включайте примеры предложений",
-                        "Отмечайте советы по произношению",
-                        "Добавляйте синонимы и антонимы",
-                        "Включайте связанные слова"
-                    ],
-                    "grammar_title": "Для заметок по грамматике:",
-                    "grammar_items": [
-                        "Пишите четкие правила с примерами",
-                        "Отмечайте распространенные ошибки",
-                        "Включайте когда использовать vs когда не использовать",
-                        "Добавляйте практические предложения"
-                    ]
-                },
-                "authentication": {
-                    "user_not_authenticated": "Пользователь не аутентифицирован"
-                }
-            }
-        },
-        "EditNoteScreen": {
-            "main_screen": {
-                "headers": {
-                    "edit_note": "Редактировать заметку",
-                    "update_your_learning_note": "Обновите свою учебную заметку",
-                    "back_to_note": "Назад к заметке",
-                    "note_statistics": "Статистика заметки"
-                },
-                "form": {
-                    "note_title": "Заголовок заметки *",
-                    "note_title_placeholder": "напр., Правила сослагательного наклонения в испанском, Важные глаголы и т.д.",
-                    "title_is_set": "✓ Заголовок установлен",
-                    "title_is_required": "Заголовок обязателен",
-                    "language": "Язык",
-                    "select_language_hint": "Выберите язык, к которому относится заметка",
-                    "note_type": "Тип заметки *",
-                    "current": "Текущий: {type}",
-                    "tags": "Теги",
-                    "content": "Содержание *",
-                    "formatting": "Форматирование:",
-                    "show_preview": "Показать предпросмотр",
-                    "hide_preview": "Скрыть предпросмотр",
-                    "preview": "Предпросмотр:",
-                    "markdown_formatting_help": "Помощь по форматированию Markdown"
-                },
-                "buttons": {
-                    "copy": "Копировать",
-                    "add": "Добавить",
-                    "cancel": "Отмена",
-                    "view_note": "Просмотреть заметку",
-                    "update_note": "Обновить заметку",
-                    "updating": "Обновление...",
-                    "back_to_notes": "Назад к заметкам",
-                    "bold": "Жирный (Ctrl+B)",
-                    "italic": "Курсив (Ctrl+I)",
-                    "list": "Список",
-                    "link": "Ссылка",
-                    "reset_to_original": "Сбросить к оригиналу"
-                },
-                "validation": {
-                    "note_title_required": "Заголовок заметки обязателен",
-                    "note_title_too_long": "Заголовок заметки не может превышать 200 символов",
-                    "content_required": "Содержание обязательно",
-                    "content_too_long": "Содержание слишком длинное (макс. 50 000 символов)",
-                    "too_many_tags": "Максимум 20 тегов",
-                    "failed_to_update_note": "Не удалось обновить заметку"
-                },
-                "tags": {
-                    "add_tag_placeholder": "Добавьте тег и нажмите Enter",
-                    "click_to_remove": "Нажмите × для удаления",
-                    "remove_tag": "Удалить тег"
+                "active_filters": {
+                    "search": "Поиск: \"{search_term}\"",
+                    "language": "Язык: {language_value}",
+                    "type": "Тип: {type_value}"
                 },
                 "loading": {
-                    "loading_note": "Загрузка заметки..."
+                    "loading_your_notes": "Загрузка ваших заметок...",
+                    "updating_your_notes": "Обновление ваших заметок...",
+                    "this_will_just_take_moment": "Это займет всего минуту"
+                },
+                "empty_states": {
+                    "no_matching_notes": "Подходящие заметки не найдены",
+                    "no_notes_yet": "Заметок пока нет",
+                    "adjust_search_terms": "Попробуйте изменить условия поиска или фильтры, чтобы найти то, что ищете.",
+                    "start_documenting": "Начните документировать свой путь изучения языка с первой заметки!"
                 },
                 "error_messages": {
-                    "update_note_error": "Ошибка обновления заметки:"
-                },
-                "confirmation": {
-                    "cancel_changes": "Вы уверены? Ваши изменения будут потеряны.",
-                    "reset_to_original": "Вы уверены? Это отменит все изменения."
-                },
-                "character_counts": {
-                    "characters": "{current}/200 символов",
-                    "content_characters": "{current}/{max} символов",
-                    "percentage_used": "({percentage}% использовано)",
-                    "tags_count": "{current}/20 тегов"
-                },
-                "language_options": {
-                    "no_specific_language": "Без конкретного языка",
-                    "spanish": "Испанский (ES)",
-                    "english": "Английский (EN)",
-                    "russian": "Русский (RU)",
-                    "turkish": "Турецкий (TR)"
-                },
-                "note_type_options": {
-                    "vocabulary": "Лексика",
-                    "grammar": "Грамматика",
-                    "general": "Общее"
-                },
-                "content_placeholder": "Напишите свою заметку здесь. Вы можете использовать markdown для форматирования:\n• **Жирный текст** для важных моментов\n• *Курсивный текст* для выделения\n• - Списки для примеров\n• [Ссылки](url) для ссылок\n\nСовет: Выделите текст и используйте кнопки форматирования выше.",
-                "markdown_help": {
-                    "bold_example": "**жирный** → жирный",
-                    "italic_example": "*курсив* → курсив",
-                    "list_example": "- элемент → • элемент",
-                    "link_example": "[ссылка](url) → ссылка",
-                    "header_example": "## заголовок → Заголовок",
-                    "code_example": "`код` → код"
-                },
-                "statistics": {
-                    "characters": "Символы",
-                    "words": "Слова",
-                    "tags": "Теги",
-                    "capacity_used": "Емкость использована"
-                },
-                "dates": {
-                    "last_edited": "Последнее редактирование: {date}",
-                    "created": "Создано: {date}"
-                },
-                "authentication": {
-                    "user_not_authenticated": "Пользователь не аутентифицирован"
-                }
-            }
-        },
-        "NoteDetailScreen": {
-            "main_screen": {
-                "headers": {
-                    "viewing_note": "Просмотр заметки",
-                    "note_not_found": "Заметка не найдена",
-                    "raw_markdown": "Исходный Markdown",
-                    "view_and_copy": "Просмотр и копирование исходного содержимого markdown",
-                    "content": "Содержание"
-                },
-                "buttons": {
-                    "back_to_notes": "Назад к заметкам",
-                    "back": "Назад",
-                    "copy": "Копировать",
-                    "edit_note": "Редактировать заметку",
-                    "edit": "Редактировать",
-                    "delete": "Удалить",
-                    "deleting": "Удаление...",
-                    "copy_markdown": "Копировать markdown",
-                    "copy_content": "Копировать содержимое",
-                    "quick_edit": "Быстрое редактирование",
-                    "show": "Показать",
-                    "hide": "Скрыть"
-                },
-                "labels": {
-                    "tags": "Теги",
-                    "note_id": "ID заметки:",
-                    "created": "Создано:",
-                    "updated": "Обновлено:",
-                    "version": "Версия {version}",
-                    "last_saved": "Последнее сохранение: {relative_time}",
-                    "characters": "{count} символов",
-                    "min_read": "{minutes} мин чтения",
-                    "user_id": "ID пользователя:"
-                },
-                "loading": {
-                    "loading_note": "Загрузка заметки..."
-                },
-                "error_messages": {
+                    "error_loading_notes": "Ошибка загрузки заметок",
+                    "unexpected_error": "Произошла непредвиденная ошибка",
+                    "failed_to_fetch_notes": "Не удалось получить заметки:",
                     "failed_to_delete_note": "Не удалось удалить заметку. Пожалуйста, попробуйте снова.",
-                    "failed_to_copy": "Не удалось скопировать:",
-                    "delete_confirmation": "Вы уверены, что хотите удалить эту заметку?",
-                    "copy_success": "Содержимое заметки скопировано в буфер обмена!"
+                    "delete_confirmation": "Вы уверены, что хотите удалить эту заметку?"
                 },
-                "metadata": {
-                    "language": "{language_code}",
-                    "note_type": "{type}",
-                    "tag_format": "#{tag}"
-                },
-                "relative_time": {
-                    "just_now": "только что",
-                    "minutes_ago": "{minutes} минут{plural} назад",
-                    "hours_ago": "{hours} час{plural} назад",
-                    "days_ago": "{days} дн{plural} назад"
-                },
-                "note_types": {
-                    "vocabulary": "Лексика",
-                    "grammar": "Грамматика",
-                    "general": "Общее"
+                "note_display": {
+                    "notes_count": "{count} заметк{notes_plural}",
+                    "showing_notes": "Показано {count} замет{notes_plural}{filtered_text}",
+                    "filtered": " (отфильтровано)",
+                    "tag_count": "+{count}"
                 },
                 "authentication": {
                     "user_not_authenticated": "Пользователь не аутентифицирован"
+                },
+                "time_formats": {
+                    "time_format": "{hour}:{minute}"
                 }
+            }
+        }
+    },
+    "CreateNoteScreen": {
+        "main_screen": {
+            "headers": {
+                "create_new_note": "Создать новую заметку",
+                "back_to_ai_chat": "Назад к прямому чату с ИИ",
+                "tips_for_effective_notes": "💡 Советы по созданию эффективных языковых заметок"
+            },
+            "form": {
+                "note_title": "Заголовок заметки *",
+                "note_title_placeholder": "напр., Правила сослагательного наклонения в испанском, Важные глаголы и т.д.",
+                "language": "Язык",
+                "select_language_hint": "Выберите язык, к которому относится заметка",
+                "note_type": "Тип заметки *",
+                "tags": "Теги",
+                "content": "Содержание *",
+                "format": "Формат:",
+                "preview": "Предпросмотр (Markdown будет преобразован при сохранении)",
+                "no_content_to_preview": "Нет содержания для предпросмотра",
+                "how_it_will_look": "Как это будет выглядеть:"
+            },
+            "buttons": {
+                "add": "Добавить",
+                "cancel": "Отмена",
+                "save_note": "Сохранить заметку",
+                "creating": "Создание...",
+                "bold": "Жирный (Ctrl+B)",
+                "italic": "Курсив (Ctrl+I)",
+                "list": "Список",
+                "link": "Ссылка"
+            },
+            "validation": {
+                "note_name_required": "Название заметки обязательно",
+                "content_required": "Содержание обязательно",
+                "content_too_long": "Содержание слишком длинное (макс. 50 000 символов)",
+                "failed_to_create_note": "Не удалось создать заметку",
+                "cancel_confirmation": "Вы уверены? Ваши изменения будут потеряны."
+            },
+            "tags": {
+                "add_tag_placeholder": "Добавьте тег и нажмите Enter",
+                "click_to_remove": "Нажмите × для удаления"
+            },
+            "character_counts": {
+                "characters": "{current}/{max} символов",
+                "tags_count": "{current}/20 тегов"
+            },
+            "language_options": {
+                "no_specific_language": "Без конкретного языка",
+                "spanish": "Испанский (ES)",
+                "english": "Английский (EN)",
+                "russian": "Русский (RU)",
+                "turkish": "Турецкий (TR)"
+            },
+            "note_type_options": {
+                "vocabulary": "Лексика",
+                "grammar": "Грамматика",
+                "general": "Общее"
+            },
+            "content_placeholder": "Напишите свою заметку здесь. Вы можете использовать markdown для форматирования:\n• **Жирный текст** для важных моментов\n• *Курсивный текст* для выделения\n• - Списки для примеров\n• [Ссылки](url) для ссылок",
+            "formatting_help": "Используйте **жирный**, *курсив*, - списки, [ссылки](url)",
+            "tips": {
+                "vocabulary_title": "Для заметок по лексике:",
+                "vocabulary_items": [
+                    "Включайте примеры предложений",
+                    "Отмечайте советы по произношению",
+                    "Добавляйте синонимы и антонимы",
+                    "Включайте связанные слова"
+                ],
+                "grammar_title": "Для заметок по грамматике:",
+                "grammar_items": [
+                    "Пишите четкие правила с примерами",
+                    "Отмечайте распространенные ошибки",
+                    "Включайте когда использовать vs когда не использовать",
+                    "Добавляйте практические предложения"
+                ]
+            },
+            "authentication": {
+                "user_not_authenticated": "Пользователь не аутентифицирован"
+            }
+        }
+    },
+    "EditNoteScreen": {
+        "main_screen": {
+            "headers": {
+                "edit_note": "Редактировать заметку",
+                "update_your_learning_note": "Обновите свою учебную заметку",
+                "back_to_note": "Назад к заметке",
+                "note_statistics": "Статистика заметки"
+            },
+            "form": {
+                "note_title": "Заголовок заметки *",
+                "note_title_placeholder": "напр., Правила сослагательного наклонения в испанском, Важные глаголы и т.д.",
+                "title_is_set": "✓ Заголовок установлен",
+                "title_is_required": "Заголовок обязателен",
+                "language": "Язык",
+                "select_language_hint": "Выберите язык, к которому относится заметка",
+                "note_type": "Тип заметки *",
+                "current": "Текущий: {type}",
+                "tags": "Теги",
+                "content": "Содержание *",
+                "formatting": "Форматирование:",
+                "show_preview": "Показать предпросмотр",
+                "hide_preview": "Скрыть предпросмотр",
+                "preview": "Предпросмотр:",
+                "markdown_formatting_help": "Помощь по форматированию Markdown"
+            },
+            "buttons": {
+                "copy": "Копировать",
+                "add": "Добавить",
+                "cancel": "Отмена",
+                "view_note": "Просмотреть заметку",
+                "update_note": "Обновить заметку",
+                "updating": "Обновление...",
+                "back_to_notes": "Назад к заметкам",
+                "bold": "Жирный (Ctrl+B)",
+                "italic": "Курсив (Ctrl+I)",
+                "list": "Список",
+                "link": "Ссылка",
+                "reset_to_original": "Сбросить к оригиналу"
+            },
+            "validation": {
+                "note_title_required": "Заголовок заметки обязателен",
+                "note_title_too_long": "Заголовок заметки не может превышать 200 символов",
+                "content_required": "Содержание обязательно",
+                "content_too_long": "Содержание слишком длинное (макс. 50 000 символов)",
+                "too_many_tags": "Максимум 20 тегов",
+                "failed_to_update_note": "Не удалось обновить заметку"
+            },
+            "tags": {
+                "add_tag_placeholder": "Добавьте тег и нажмите Enter",
+                "click_to_remove": "Нажмите × для удаления",
+                "remove_tag": "Удалить тег"
+            },
+            "loading": {
+                "loading_note": "Загрузка заметки..."
+            },
+            "error_messages": {
+                "update_note_error": "Ошибка обновления заметки:"
+            },
+            "confirmation": {
+                "cancel_changes": "Вы уверены? Ваши изменения будут потеряны.",
+                "reset_to_original": "Вы уверены? Это отменит все изменения."
+            },
+            "character_counts": {
+                "characters": "{current}/200 символов",
+                "content_characters": "{current}/{max} символов",
+                "percentage_used": "({percentage}% использовано)",
+                "tags_count": "{current}/20 тегов"
+            },
+            "language_options": {
+                "no_specific_language": "Без конкретного языка",
+                "spanish": "Испанский (ES)",
+                "english": "Английский (EN)",
+                "russian": "Русский (RU)",
+                "turkish": "Турецкий (TR)"
+            },
+            "note_type_options": {
+                "vocabulary": "Лексика",
+                "grammar": "Грамматика",
+                "general": "Общее"
+            },
+            "content_placeholder": "Напишите свою заметку здесь. Вы можете использовать markdown для форматирования:\n• **Жирный текст** для важных моментов\n• *Курсивный текст* для выделения\n• - Списки для примеров\n• [Ссылки](url) для ссылок\n\nСовет: Выделите текст и используйте кнопки форматирования выше.",
+            "markdown_help": {
+                "bold_example": "**жирный** → жирный",
+                "italic_example": "*курсив* → курсив",
+                "list_example": "- элемент → • элемент",
+                "link_example": "[ссылка](url) → ссылка",
+                "header_example": "## заголовок → Заголовок",
+                "code_example": "`код` → код"
+            },
+            "statistics": {
+                "characters": "Символы",
+                "words": "Слова",
+                "tags": "Теги",
+                "capacity_used": "Емкость использована"
+            },
+            "dates": {
+                "last_edited": "Последнее редактирование: {date}",
+                "created": "Создано: {date}"
+            },
+            "authentication": {
+                "user_not_authenticated": "Пользователь не аутентифицирован"
+            }
+        }
+    },
+    "NoteDetailScreen": {
+        "main_screen": {
+            "headers": {
+                "viewing_note": "Просмотр заметки",
+                "note_not_found": "Заметка не найдена",
+                "raw_markdown": "Исходный Markdown",
+                "view_and_copy": "Просмотр и копирование исходного содержимого markdown",
+                "content": "Содержание"
+            },
+            "buttons": {
+                "back_to_notes": "Назад к заметкам",
+                "back": "Назад",
+                "copy": "Копировать",
+                "edit_note": "Редактировать заметку",
+                "edit": "Редактировать",
+                "delete": "Удалить",
+                "deleting": "Удаление...",
+                "copy_markdown": "Копировать markdown",
+                "copy_content": "Копировать содержимое",
+                "quick_edit": "Быстрое редактирование",
+                "show": "Показать",
+                "hide": "Скрыть"
+            },
+            "labels": {
+                "tags": "Теги",
+                "note_id": "ID заметки:",
+                "created": "Создано:",
+                "updated": "Обновлено:",
+                "version": "Версия {version}",
+                "last_saved": "Последнее сохранение: {relative_time}",
+                "characters": "{count} символов",
+                "min_read": "{minutes} мин чтения",
+                "user_id": "ID пользователя:"
+            },
+            "loading": {
+                "loading_note": "Загрузка заметки..."
+            },
+            "error_messages": {
+                "failed_to_delete_note": "Не удалось удалить заметку. Пожалуйста, попробуйте снова.",
+                "failed_to_copy": "Не удалось скопировать:",
+                "delete_confirmation": "Вы уверены, что хотите удалить эту заметку?",
+                "copy_success": "Содержимое заметки скопировано в буфер обмена!"
+            },
+            "metadata": {
+                "language": "{language_code}",
+                "note_type": "{type}",
+                "tag_format": "#{tag}"
+            },
+            "relative_time": {
+                "just_now": "только что",
+                "minutes_ago": "{minutes} минут{plural} назад",
+                "hours_ago": "{hours} час{plural} назад",
+                "days_ago": "{days} дн{plural} назад"
+            },
+            "note_types": {
+                "vocabulary": "Лексика",
+                "grammar": "Грамматика",
+                "general": "Общее"
+            },
+            "authentication": {
+                "user_not_authenticated": "Пользователь не аутентифицирован"
             }
         }
     }

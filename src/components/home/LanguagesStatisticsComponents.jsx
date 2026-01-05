@@ -5,6 +5,7 @@ import { useCallback, useEffect } from 'react';
 import WordService from '../../services/WordService';
 import { setSelectedLanguage } from '../../store/word_store';
 import { IoArrowForward, IoCheckmark, IoStar, IoBook } from "react-icons/io5";
+// import { useTranslation } from 'react-i18next';
 
 const getLanguageGradient = (langCode) => {
   const gradients = {
@@ -19,7 +20,10 @@ const getLanguageGradient = (langCode) => {
   return gradients[langCode] || gradients.default;
 };
 
-export default function LanguagesStatisticsComponents() {
+export default function LanguagesStatisticsComponents({t}) {
+
+  // const { t } = useTranslation();
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -51,15 +55,15 @@ export default function LanguagesStatisticsComponents() {
         <div className="w-24 h-24 bg-gradient-to-r from-blue-100 to-purple-100 rounded-3xl flex items-center justify-center mx-auto mb-6">
           <IoBook className="text-4xl text-blue-600" />
         </div>
-        <h3 className="text-2xl font-bold text-gray-900 mb-3">Start Your Journey</h3>
+        <h3 className="text-2xl font-bold text-gray-900 mb-3">{t('Dashboard.LanguagesStatisticsComponents.titles.start_journey')}</h3>
         <p className="text-gray-600 text-lg mb-6 max-w-md mx-auto">
-          Begin learning words to track your progress and see your language statistics here.
+          {t('Dashboard.LanguagesStatisticsComponents.messages.begin_learning')}
         </p>
         <button 
           onClick={() => navigate('/words')}
           className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-3 rounded-2xl font-semibold hover:shadow-lg transition-all"
         >
-          Start Learning
+          {t('Dashboard.LanguagesStatisticsComponents.buttons.start_learning')}
         </button>
       </div>
     );
@@ -69,15 +73,15 @@ export default function LanguagesStatisticsComponents() {
     <div className="bg-white rounded-3xl shadow-xl p-6 border border-gray-100">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Your Progress</h2>
-          <p className="text-gray-600 mt-1">Track your language learning journey</p>
+          <h2 className="text-2xl font-bold text-gray-900">{t('Dashboard.LanguagesStatisticsComponents.titles.your_progress')}</h2>
+          <p className="text-gray-600 mt-1">{t('Dashboard.LanguagesStatisticsComponents.titles.track_journey')}</p>
         </div>
         {/* <div className="text-sm text-gray-500">
           {statistics.length} language{statistics.length !== 1 ? 's' : ''}
         </div> */}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {statistics.map((item, index) => {
           const progressPercentage = (item.learned_words / item.total_words) * 100;
           const gradientColors = getLanguageGradient(item.language_code);
@@ -104,7 +108,7 @@ export default function LanguagesStatisticsComponents() {
               {/* Progress Bar */}
               <div className="mb-4">
                 <div className="flex justify-between items-center mb-2">
-                  <span className="text-gray-600 text-sm">Progress</span>
+                  <span className="text-gray-600 text-sm">{t('Dashboard.LanguagesStatisticsComponents.labels.progress')}</span>
                   <span className="text-gray-900 font-semibold text-sm">
                     {item.learned_words}/{item.total_words}
                   </span>
@@ -125,23 +129,23 @@ export default function LanguagesStatisticsComponents() {
                 <div className="text-center p-3 bg-blue-50 rounded-xl">
                   <IoBook className="text-blue-600 text-lg mx-auto mb-1" />
                   <div className="text-gray-900 font-bold">{item.total_words}</div>
-                  <div className="text-gray-500 text-xs">Total</div>
+                  <div className="text-gray-500 text-xs">{t('Dashboard.LanguagesStatisticsComponents.labels.total')}</div>
                 </div>
                 <div className="text-center p-3 bg-green-50 rounded-xl">
                   <IoCheckmark className="text-green-600 text-lg mx-auto mb-1" />
                   <div className="text-gray-900 font-bold">{item.learned_words}</div>
-                  <div className="text-gray-500 text-xs">Learned</div>
+                  <div className="text-gray-500 text-xs">{t('Dashboard.LanguagesStatisticsComponents.labels.learned')}</div>
                 </div>
                 <div className="text-center p-3 bg-yellow-50 rounded-xl">
                   <IoStar className="text-yellow-600 text-lg mx-auto mb-1" />
                   <div className="text-gray-900 font-bold">{item.starred_words}</div>
-                  <div className="text-gray-500 text-xs">Starred</div>
+                  <div className="text-gray-500 text-xs">{t('Dashboard.LanguagesStatisticsComponents.labels.starred')}</div>
                 </div>
               </div>
 
               {/* CTA Button */}
               <button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-xl font-semibold flex items-center justify-center space-x-2 hover:shadow-lg transition-all group-hover:scale-105">
-                <span>Continue Learning</span>
+                <span>{t('Dashboard.LanguagesStatisticsComponents.buttons.continue_learning')}</span>
                 <IoArrowForward className="text-lg group-hover:translate-x-1 transition-transform" />
               </button>
             </div>
