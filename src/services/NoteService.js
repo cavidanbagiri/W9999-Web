@@ -9,7 +9,7 @@ class NoteService {
         '/words/notes/createNote',
         async (noteData, thunkAPI) => {
             try {
-                const response = await $api.post(`${API_URL}/words/notes/create`, noteData);
+                const response = await $api.post(`${API_URL}/notes/notes/create`, noteData);
                 return response.data;
             } catch (error) {
                 const errorData = error.response?.data || { message: error.message };
@@ -43,8 +43,8 @@ class NoteService {
                 
                 const queryString = params.toString();
                 const url = queryString 
-                    ? `${API_URL}/words/notes/fetch?${queryString}`
-                    : `${API_URL}/words/notes/fetch`;
+                    ? `${API_URL}/notes/notes/fetch?${queryString}`
+                    : `${API_URL}/notes/notes/fetch`;
                 
                 const response = await $api.get(url);
                 return response.data;
@@ -65,7 +65,7 @@ class NoteService {
         'notes/getNoteById',
         async (noteId, thunkAPI) => {
             try {
-                const response = await $api.get(`${API_URL}/words/notes/${noteId}`);
+                const response = await $api.get(`${API_URL}/notes/notes/${noteId}`);
                 return response.data;
             } catch (error) {
                 const errorData = error.response?.data || { message: error.message };
@@ -83,7 +83,7 @@ class NoteService {
         'notes/updateNote',
         async ({ noteId, noteData }, thunkAPI) => {
             try {
-                const response = await $api.put(`${API_URL}/words/notes/${noteId}`, noteData);
+                const response = await $api.put(`${API_URL}/notes/notes/${noteId}`, noteData);
                 return response.data;
             } catch (error) {
                 const errorData = error.response?.data || { message: error.message };
@@ -101,7 +101,7 @@ class NoteService {
         'notes/deleteNote',
         async (noteId, thunkAPI) => {
             try {
-                await $api.delete(`${API_URL}/words/notes/${noteId}`);
+                await $api.delete(`${API_URL}/notes/notes/${noteId}`);
                 return noteId; // Return the deleted note ID
             } catch (error) {
                 const errorData = error.response?.data || { message: error.message };

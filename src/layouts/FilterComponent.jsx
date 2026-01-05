@@ -8,18 +8,9 @@ import LanguageSelected from './LanguageSelected';
 import Categories from './Categories';
 import PosStatistics from './PosStatistics';
 
-import { CiStar } from "react-icons/ci";
-import { FaStar } from "react-icons/fa";
-import { BiCategoryAlt } from "react-icons/bi";
 import { TbCategoryPlus, TbChartPie } from "react-icons/tb";
 import { IoMdRefresh } from "react-icons/io";
 import { FaRegStar } from "react-icons/fa";
-
-
-
-
-
-import { SlRefresh } from "react-icons/sl";
 
 
 const FilterComponent = ({ filter, setFilter, screen }) => {

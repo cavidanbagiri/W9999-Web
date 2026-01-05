@@ -1,0 +1,935 @@
+{
+    "es": {
+        "Layout": {
+            "FilterComponent": {
+                "main_screen": {
+                    "search": {
+                        "search_placeholder": "Buscar palabras...",
+                        "search_aria_label": "Buscar palabras",
+                        "search_title": "Abre la pantalla de búsqueda para encontrar vocabulario"
+                    },
+                    "labels": {
+                        "select_language": "Seleccionar idioma",
+                        "part_of_speech": "Parte del discurso",
+                        "category": "Categoría",
+                        "refresh": "Actualizar"
+                    },
+                    "filter_toggles": {
+                        "starred": "Favoritas",
+                        "all_words": "Todas las palabras"
+                    },
+                    "buttons": {
+                        "refresh": "Actualizar"
+                    },
+                    "icons": {
+                        "search": "🔍",
+                        "chevron": "›"
+                    }
+                },
+                "LanguageSelected": {
+                    "accessibility": {
+                        "flag_alt_text": "Bandera de {language_name}"
+                    },
+                    "buttons": {
+                        "toggle_dropdown": "Seleccionar idioma"
+                    }
+                },
+                "Categories": {
+                    "header": {
+                        "title": "Categorías de palabras",
+                        "subtitle": "Domina el vocabulario por temas"
+                    },
+                    "stats": {
+                        "categories": "Categorías",
+                        "words_learned": "Palabras aprendidas",
+                        "completed": "Completadas"
+                    },
+                    "search": {
+                        "placeholder": "Buscar categorías...",
+                        "no_results_found": "No se encontraron categorías",
+                        "no_matching_categories": "No hay categorías que coincidan con \"{search_term}\"",
+                        "try_different_language": "Intenta seleccionar un idioma diferente para ver las categorías disponibles"
+                    },
+                    "loading": {
+                        "loading_categories": "Cargando tus categorías..."
+                    },
+                    "category_status": {
+                        "mastered": "Dominada",
+                        "in_progress": "En progreso",
+                        "start_learning": "Empezar a aprender"
+                    },
+                    "progress": {
+                        "learned": "{learned_count} aprendidas",
+                        "total": "{total_count} totales",
+                        "progress_percentage": "{percentage}%"
+                    },
+                    "footer": {
+                        "summary": "{learned_words} palabras dominadas en {category_count} categorías"
+                    },
+                    "buttons": {
+                        "close": "✕"
+                    }
+                },
+                "PosStatistics": {
+                    "header": {
+                        "title": "Estadísticas gramaticales",
+                        "subtitle": "Sigue tu progreso por partes del discurso"
+                    },
+                    "stats": {
+                        "pos_types": "Tipos de POS",
+                        "words_learned": "Palabras aprendidas",
+                        "mastered": "Dominadas",
+                        "overall": "General"
+                    },
+                    "search": {
+                        "placeholder": "Buscar partes del discurso...",
+                        "no_matching_pos": "No hay partes del discurso que coincidan",
+                        "no_matching_results": "No hay partes del discurso que coincidan con \"{search_term}\"",
+                        "no_data_available": "No hay datos disponibles",
+                        "select_language_prompt": "Selecciona un idioma para ver tus estadísticas de progreso gramatical",
+                        "no_statistics_available": "No hay estadísticas gramaticales disponibles"
+                    },
+                    "loading": {
+                        "loading_statistics": "Cargando estadísticas gramaticales..."
+                    },
+                    "pos_status": {
+                        "mastered": "Dominada",
+                        "in_progress": "En progreso",
+                        "start_learning": "Empezar a aprender"
+                    },
+                    "progress": {
+                        "learned": "{learned_count} aprendidas",
+                        "total": "{total_count} totales",
+                        "progress_percentage": "{percentage}%"
+                    },
+                    "footer": {
+                        "summary": "{learned_words} palabras dominadas en {pos_count} partes del discurso"
+                    },
+                    "buttons": {
+                        "close": "✕"
+                    }
+                }
+            },
+            "WordList": {
+                "loading": {
+                    "loading_words": "Cargando tus palabras..."
+                }
+            },
+            "VocabCard": {
+                "labels": {
+                    "level": "Nvl {level}",
+                    "translation_not_available": "Traducción no disponible",
+                    "starred": "Favorita",
+                    "learned": "Aprendida"
+                },
+                "buttons": {
+                    "create_note": "Crear nota",
+                    "generate_ai": "Generar IA"
+                },
+                "accessibility": {
+                    "star_button_remove": "Quitar de favoritos",
+                    "star_button_add": "Añadir a favoritos",
+                    "learned_button_mark_not_learned": "Marcar como no aprendida",
+                    "learned_button_mark_learned": "Marcar como aprendida"
+                },
+                "default_values": {
+                    "level_default": "1",
+                    "frequency_default": "–"
+                }
+            },
+            "VoiceButtonComponent": {
+                "buttons": {
+                    "play_pronunciation": "Reproducir pronunciación",
+                    "playing_pronunciation": "Reproduciendo pronunciación",
+                    "playing": "Reproduciendo...",
+                    "loading": "Cargando..."
+                },
+                "error_messages": {
+                    "no_audio_received": "No se recibió audio",
+                    "audio_playback_failed": "Error al reproducir audio",
+                    "failed_to_play_sound": "Error al reproducir sonido",
+                    "audio_error_alert": "No se pudo reproducir el audio. Por favor, inténtalo de nuevo."
+                },
+                "accessibility": {
+                    "playing_aria_label": "Reproduciendo pronunciación",
+                    "play_aria_label": "Reproducir pronunciación"
+                }
+            }
+        },
+        "Dashboard": {
+            "HeaderComponent": {
+                "greetings": {
+                    "good_morning": "Buenos días",
+                    "good_afternoon": "Buenas tardes",
+                    "good_evening": "Buenas noches"
+                },
+                "motivation_messages": {
+                    "start_learning": "¡Comienza tu viaje de aprendizaje hoy! 🌟",
+                    "great_start": "¡Gran comienzo! Cada palabra cuenta 💪",
+                    "building_momentum": "¡Ganando impulso! Sigue así 🚀",
+                    "on_fire": "¡Estás en racha! Progreso increíble 🔥",
+                    "language_master": "¡Maestro del idioma! Trabajo increíble hoy 🏆"
+                },
+                "labels": {
+                    "ready_to_learn": "¿Listo para aprender?",
+                    "welcome_back": "Bienvenido de nuevo, ",
+                    "daily_words": "Palabras diarias",
+                    "words_learned_today": "Palabras aprendidas hoy",
+                    "day_streak": "Racha diaria",
+                    "daily_progress": "Progreso diario",
+                    "start_of_day": "Inicio del día",
+                    "daily_goal": "Meta diaria",
+                    "total_learned": "Total aprendidas",
+                    "active_languages": "Idiomas activos",
+                    "daily_streak": "Racha diaria",
+                    "go_to_profile": "Ir al perfil",
+                    "toggle_stats": "Alternar estadísticas"
+                },
+                "loading_messages": {
+                    "load_daily_streak_error": "Error al cargar la racha diaria",
+                    "fetch_daily_streak_error": "Error al obtener la racha diaria",
+                    "load_active_language_error": "Error al cargar el idioma activo",
+                    "fetch_active_language_error": "Error al obtener el idioma activo",
+                    "load_native_language_error": "Error al cargar el idioma nativo"
+                },
+                "placeholders": {
+                    "no_words_today": "0",
+                    "no_streak": "0",
+                    "no_active_languages": "0"
+                }
+            },
+            "LanguagesStatisticsComponents": {
+                "titles": {
+                    "start_journey": "Comienza tu viaje",
+                    "your_progress": "Tu progreso",
+                    "track_journey": "Sigue tu viaje de aprendizaje de idiomas"
+                },
+                "messages": {
+                    "begin_learning": "Comienza a aprender palabras para seguir tu progreso y ver tus estadísticas de idioma aquí.",
+                    "start_learning": "Empezar a aprender",
+                    "continue_learning": "Continuar aprendiendo"
+                },
+                "labels": {
+                    "progress": "Progreso",
+                    "total": "Total",
+                    "learned": "Aprendidas",
+                    "starred": "Favoritas"
+                },
+                "buttons": {
+                    "start_learning": "Empezar a aprender",
+                    "continue_learning": "Continuar aprendiendo"
+                },
+                "statistics": {
+                    "languages_count": "{count} idioma{idiomas_plural}"
+                }
+            },
+            "ChooseLangComponent": {
+                "loading": {
+                    "loading_languages": "Cargando idiomas..."
+                },
+                "empty_state": {
+                    "all_languages_added": "Todos los idiomas añadidos",
+                    "learning_all_languages": "¡Estás aprendiendo todos los idiomas disponibles!",
+                    "continue_learning": "Continuar aprendiendo"
+                },
+                "header": {
+                    "learn_new_language": "Aprender nuevo idioma",
+                    "expand_skills": "Expande tus habilidades lingüísticas"
+                },
+                "language_items": {
+                    "start_learning": "Empezar a aprender {language_name}"
+                },
+                "footer": {
+                    "languages_available": "{count} idioma{idiomas_plural} disponible{s} para aprender"
+                },
+                "buttons": {
+                    "continue_learning": "Continuar aprendiendo"
+                }
+            }
+        },
+        "WordsScreen": {
+            "main_screen": {
+                "loading": {
+                    "loading_more_words": "Cargando más palabras...",
+                    "loading_words": "Cargando palabras...",
+                    "this_may_take_moment": "Esto puede tomar un momento",
+                    "loading_n_more_words": "Cargando {count} palabras más...",
+                    "load_n_more_words": "Cargar {count} palabras más"
+                },
+                "pagination": {
+                    "words_loaded": "{loaded} de {total} palabras cargadas",
+                    "words_remaining": "{remaining} restantes",
+                    "back_to_top": "↑ Volver arriba"
+                },
+                "buttons": {
+                    "load_more": "Cargar {count} palabras más",
+                    "scroll_to_bottom": "Desplazar hacia abajo"
+                },
+                "labels": {
+                    "category": "Categoría: {category_name}",
+                    "pos_name": "Parte del discurso: {pos_name}",
+                    "no_words_found": "No se encontraron palabras"
+                },
+                "messages": {
+                    "no_learned_words": "No has aprendido ninguna palabra todavía. ¡Empieza a aprender para verlas aquí!",
+                    "no_words_available": "No hay palabras disponibles para la selección actual.",
+                    "choose_language": "Elegir idioma",
+                    "select_language_tip": "Selecciona un idioma para empezar a aprender palabras."
+                },
+                "empty_states": {
+                    "starred_empty": "No hay palabras favoritas disponibles"
+                }
+            },
+            "EmptyStarredComponent": {
+                "title": "¡Aún no, pero pronto!",
+                "message": "Aún no has marcado ninguna palabra en {language_name}."
+            }
+        },
+        "LearnedScreen": {
+            "main_screen": {
+                "titles": {
+                    "learned_words": "Palabras aprendidas",
+                    "review_practice": "Revisa y practica las palabras que has aprendido",
+                    "learning_progress": "Progreso de aprendizaje",
+                    "quick_actions": "Acciones rápidas"
+                },
+                "stats": {
+                    "total_learned": "Total aprendidas",
+                    "languages": "Idiomas",
+                    "loaded": "Cargadas",
+                    "learned_words": "Aprendidas",
+                    "progress_header": "¡Sigue así, buen trabajo!"
+                },
+                "loading": {
+                    "loading_learned_words": "Cargando palabras aprendidas...",
+                    "loading_more_words": "Cargando más palabras...",
+                    "this_may_take_moment": "Esto puede tomar un momento",
+                    "loading": "Cargando..."
+                },
+                "pagination": {
+                    "load_more_words": "Cargar más palabras",
+                    "showing_of_words": "Mostrando {loaded} de {total} palabras aprendidas",
+                    "scroll_to_load_more": "Desplázate hacia abajo para cargar más",
+                    "back_to_top": "↑ Volver arriba"
+                },
+                "labels": {
+                    "category": "Categoría: {category_name}",
+                    "pos_name": "Parte del discurso: {pos_name}",
+                    "all_words": "Todas las palabras",
+                    "browse_vocabulary": "Explorar vocabulario completo"
+                },
+                "empty_states": {
+                    "select_language": "Seleccionar un idioma",
+                    "choose_language_prompt": "Elige un idioma para ver tus palabras aprendidas y seguir tu progreso.",
+                    "no_words": "No hay palabras aprendidas disponibles"
+                },
+                "buttons": {
+                    "back": "←"
+                }
+            }
+        },
+        "TranslateScreen": {
+            "main_screen": {
+                "header": {
+                    "title": "Traducir",
+                    "favorites": "Favoritos",
+                    "view_favorites": "Ver favoritos"
+                },
+                "buttons": {
+                    "swap_languages": "Intercambiar idiomas",
+                    "clear": "Limpiar",
+                    "copy": "Copiar",
+                    "copy_text": "Copiar texto",
+                    "translate": "Traducir",
+                    "copied": "¡Copiado!",
+                    "ask_ai_about_text": "Preguntar a la IA sobre este texto",
+                    "ask_ai_about_translation": "Preguntar a la IA sobre esta traducción"
+                },
+                "favorites": {
+                    "add_to_favorites": "Añadir a favoritos",
+                    "remove_from_favorites": "Quitar de favoritos"
+                },
+                "placeholders": {
+                    "type_text_to_translate": "Escribe texto para traducir...",
+                    "translation_will_appear": "La traducción aparecerá aquí...",
+                    "select_language": "Traducir desde",
+                    "translate_to": "Traducir a"
+                },
+                "language_picker": {
+                    "translate_from": "Traducir desde",
+                    "translate_to": "Traducir a"
+                },
+                "validation": {
+                    "select_language_error": "Por favor, selecciona un idioma",
+                    "character_count": "{count}/500"
+                },
+                "accessibility": {
+                    "translate_from_lang": "Traducir desde {language_name}",
+                    "translate_to_lang": "Traducir a {language_name}"
+                }
+            },
+            "language_picker": {
+                "modal": {
+                    "title": "Seleccionar idioma",
+                    "search_placeholder": "Buscar idiomas...",
+                    "no_languages_found": "No se encontraron idiomas"
+                },
+                "buttons": {
+                    "close": "×",
+                    "clear_search": "×"
+                },
+                "icons": {
+                    "search": "🔍",
+                    "checkmark": "✓"
+                },
+                "language_list": {
+                    "language_names": "Ver lista de nombres de idiomas abajo"
+                }
+            }
+        },
+        "CardDetailScreen": {
+            "main_screen": {
+                "navigation": {
+                    "back": "Atrás"
+                },
+                "action_buttons": {
+                    "star": "Favorita",
+                    "starred": "Favorita",
+                    "learn": "Aprender",
+                    "learned": "Aprendida",
+                    "ai_tutor": "Tutor IA"
+                },
+                "headers": {
+                    "meanings_examples": "Significados y ejemplos",
+                    "more_examples": "Más ejemplos",
+                    "usage_in_context": "Uso en contexto:"
+                },
+                "labels": {
+                    "frequency": "Frecuencia",
+                    "strength": "Fortaleza",
+                    "no_translation": "Traducción no disponible",
+                    "language_code_translation": "{language_code}: {translated_text}"
+                },
+                "example_formatting": {
+                    "example_quote": "\"{example}\""
+                },
+                "ai_chat": {
+                    "input_placeholder": "Preguntar a la IA",
+                    "enter_question": "Escribe tu pregunta aquí..."
+                },
+                "loading": {
+                    "loading": "Cargando..."
+                }
+            }
+        },
+        "CategoryWordsScreen": {
+            "main_screen": {
+                "modals": {
+                    "bulk_move_title": "Mover \"{word_text}\"",
+                    "bulk_move_description": "Selecciona categoría de destino:",
+                    "moving_word": "Moviendo palabra...",
+                    "no_other_categories": "No se encontraron otras categorías"
+                },
+                "word_actions": {
+                    "generate_ai": "Generar IA",
+                    "move_to_category": "Mover a otra categoría",
+                    "remove_from_favorites": "Quitar de favoritos",
+                    "delete_confirm": "¿Estás seguro de que quieres eliminar \"{word_text}\"?",
+                    "word_removed_success": "Palabra eliminada de favoritos",
+                    "word_removed_error": "Error al eliminar la palabra",
+                    "word_moved_success": "Palabra movida a nueva categoría",
+                    "word_moved_error": "Error al mover la palabra"
+                },
+                "category_actions": {
+                    "delete_category": "Eliminar categoría",
+                    "delete_confirm_category": "¿Estás seguro de que quieres eliminar \"{category_name}\"?",
+                    "category_deleted_success": "Categoría eliminada exitosamente.",
+                    "category_delete_error": "Error: {error_message}"
+                },
+                "headers": {
+                    "words_count": "{displayed} de {total} palabras",
+                    "search_results": "coincidencias con \"{search_query}\""
+                },
+                "search": {
+                    "placeholder": "Buscar en {category_name}...",
+                    "searching": "Buscando...",
+                    "no_matching_words": "No hay palabras que coincidan",
+                    "search_suggestion": "Prueba diferentes palabras clave en {category_name}"
+                },
+                "empty_states": {
+                    "no_words_in_category": "No hay palabras en esta categoría",
+                    "add_words_hint": "Añade palabras a esta categoría desde la pantalla de traducción"
+                },
+                "labels": {
+                    "added_date": "Añadida: {formatted_date}",
+                    "language_pair": "{from_lang}→{to_lang}"
+                },
+                "buttons": {
+                    "back": "←",
+                    "clear_search": "×",
+                    "close_modal": "×",
+                    "add_fab": "+"
+                },
+                "notifications": {
+                    "success": "éxito",
+                    "error": "error"
+                }
+            }
+        },
+        "FavoritesScreen": {
+            "main_screen": {
+                "header": {
+                    "title": "Favoritos"
+                },
+                "search": {
+                    "placeholder": "Buscar en todas las categorías...",
+                    "searching": "Buscando...",
+                    "no_results_found": "No se encontraron resultados",
+                    "search_suggestion": "Prueba diferentes palabras clave o revisa la ortografía"
+                },
+                "category_labels": {
+                    "word_count": "{count} palabra{palabras_plural}",
+                    "added_info": "en {category_name} • {formatted_date}",
+                    "no_categories_yet": "Aún no hay categorías",
+                    "create_first_category": "Crea tu primera categoría para organizar palabras favoritas",
+                    "create_category_button": "Crear categoría"
+                },
+                "modals": {
+                    "create_category_title": "Crear nueva categoría",
+                    "create_category_placeholder": "Introduce nombre de categoría",
+                    "cancel": "Cancelar",
+                    "create": "Crear"
+                },
+                "buttons": {
+                    "back": "←",
+                    "add_category": "+"
+                },
+                "error_messages": {
+                    "category_creation_failed": "Error al crear la categoría"
+                },
+                "empty_states": {
+                    "no_categories": "Aún no hay categorías",
+                    "create_category_prompt": "Crea tu primera categoría para organizar palabras favoritas"
+                }
+            }
+        },
+        "SearchScreen": {
+            "main_screen": {
+                "search": {
+                    "placeholder": "Buscar palabras o traducciones...",
+                    "searching": "Buscando vocabulario...",
+                    "cancel": "Cancelar",
+                    "clear": "×"
+                },
+                "language_filter": {
+                    "selected_language": "Idioma seleccionado",
+                    "choose_language": "Por favor, elige el idioma",
+                    "dashboard_link": "Panel de control"
+                },
+                "results": {
+                    "no_matching_words": "No se encontraron palabras que coincidan",
+                    "search_for_vocabulary": "Buscar vocabulario",
+                    "search_suggestions": "Prueba buscando: \"hola\", \"gracias\", o \"aprendidas\"",
+                    "something_went_wrong": "Algo salió mal"
+                },
+                "error_messages": {
+                    "load_native_language_error": "Error al cargar el idioma nativo"
+                }
+            },
+            "RenderWordComponent": {
+                "status_badges": {
+                    "learned": "Aprendida",
+                    "starred": "Favorita"
+                },
+                "buttons": {
+                    "add_to_favorites": "Añadir a favoritos",
+                    "remove_from_favorites": "Quitar de favoritos",
+                    "mark_as_learned": "Marcar como aprendida",
+                    "mark_as_not_learned": "Marcar como no aprendida"
+                },
+                "labels": {
+                    "level": "Nivel {level}"
+                },
+                "error_messages": {
+                    "update_status_failed": "Error al actualizar estado"
+                }
+            }
+        },
+        "ProfileScreen": {
+            "main_screen": {
+                "headers": {
+                    "profile": "Perfil",
+                    "learning_statistics": "Estadísticas de aprendizaje",
+                    "settings": "Configuración"
+                },
+                "user_info": {
+                    "default_name": "Aprendiz de idiomas",
+                    "default_email": "usuario@ejemplo.com",
+                    "member_since": "Miembro desde {year}",
+                    "premium_member": "Miembro Premium",
+                    "free_member": "Miembro Gratuito",
+                    "days_registered": "{days} días",
+                    "account_created": "Cuenta creada",
+                    "not_available": "No disponible"
+                },
+                "stats": {
+                    "words_learned": "Palabras aprendidas",
+                    "learning_days": "Días de aprendizaje",
+                    "active_streak": "Racha activa",
+                    "total_words_mastered": "Total de palabras dominadas",
+                    "current_learning_streak": "Racha de aprendizaje actual",
+                    "days_registered_stat": "Días registrado"
+                },
+                "settings": {
+                    "language": "Idioma",
+                    "app_language_settings": "Configuración de idioma de la app",
+                    "preferences": "Preferencias",
+                    "customize_experience": "Personaliza tu experiencia"
+                },
+                "buttons": {
+                    "logout": "Cerrar sesión",
+                    "try_again": "Intentar de nuevo",
+                    "logout_confirm": "¿Estás seguro de que quieres cerrar sesión?"
+                },
+                "loading": {
+                    "loading_profile": "Cargando tu perfil..."
+                },
+                "error_messages": {
+                    "unable_to_load_statistics": "No se pudieron cargar las estadísticas",
+                    "failed_to_load_statistics": "Error al cargar estadísticas",
+                    "error_fetching_statistics": "Error al obtener estadísticas",
+                    "failed_to_load_daily_streak": "Error al cargar la racha diaria",
+                    "error_fetching_daily_streak": "Error al obtener la racha diaria",
+                    "profile_statistics_error": "Error en estadísticas del perfil"
+                },
+                "app_info": {
+                    "app_name": "Aplicación W9999",
+                    "version": "Versión {version}"
+                },
+                "date_formats": {
+                    "account_created_format": "{day} de {month} de {year}"
+                }
+            }
+        },
+        "NotesScreen": {
+            "main_screen": {
+                "main_screen": {
+                    "headers": {
+                        "my_learning_notes": "Mis notas de aprendizaje",
+                        "language_learning_insights": "Perspectivas del aprendizaje de idiomas"
+                    },
+                    "buttons": {
+                        "go_to_direct_chat": "Ir al chat directo",
+                        "refresh": "Actualizar",
+                        "refresh_notes": "Actualizar notas",
+                        "new_note": "Nueva nota",
+                        "create_your_first_note": "Crea tu primera nota",
+                        "clear_all": "Limpiar todo",
+                        "edit_note": "Editar nota",
+                        "delete_note": "Eliminar nota"
+                    },
+                    "filters": {
+                        "search_notes": "Buscar notas",
+                        "search_placeholder": "Buscar por título, contenido o etiquetas...",
+                        "language": "Idioma",
+                        "all_languages": "Todos los idiomas",
+                        "no_language": "Sin idioma",
+                        "spanish": "Español (ES)",
+                        "english": "Inglés (EN)",
+                        "russian": "Ruso (RU)",
+                        "turkish": "Turco (TR)",
+                        "note_type": "Tipo de nota",
+                        "all_types": "Todos los tipos",
+                        "vocabulary": "Vocabulario",
+                        "grammar": "Gramática",
+                        "general": "General",
+                        "active_filters": "Filtros activos:"
+                    },
+                    "active_filters": {
+                        "search": "Búsqueda: \"{search_term}\"",
+                        "language": "Idioma: {language_value}",
+                        "type": "Tipo: {type_value}"
+                    },
+                    "loading": {
+                        "loading_your_notes": "Cargando tus notas...",
+                        "updating_your_notes": "Actualizando tus notas...",
+                        "this_will_just_take_moment": "Esto solo tomará un momento"
+                    },
+                    "empty_states": {
+                        "no_matching_notes": "No se encontraron notas que coincidan",
+                        "no_notes_yet": "Aún no hay notas",
+                        "adjust_search_terms": "Intenta ajustar tus términos de búsqueda o filtros para encontrar lo que buscas.",
+                        "start_documenting": "¡Comienza a documentar tu viaje de aprendizaje de idiomas con tu primera nota!"
+                    },
+                    "error_messages": {
+                        "error_loading_notes": "Error al cargar notas",
+                        "unexpected_error": "Ocurrió un error inesperado",
+                        "failed_to_fetch_notes": "Error al obtener notas:",
+                        "failed_to_delete_note": "Error al eliminar la nota. Por favor, inténtalo de nuevo.",
+                        "delete_confirmation": "¿Estás seguro de que quieres eliminar esta nota?"
+                    },
+                    "note_display": {
+                        "notes_count": "{count} nota{notas_plural}",
+                        "showing_notes": "Mostrando {count} nota{notas_plural}{filtered_text}",
+                        "filtered": " (filtradas)",
+                        "tag_count": "+{count}"
+                    },
+                    "authentication": {
+                        "user_not_authenticated": "Usuario no autenticado"
+                    },
+                    "time_formats": {
+                        "time_format": "{hour}:{minute}"
+                    }
+                }
+            }
+        },
+        "CreateNoteScreen": {
+            "main_screen": {
+                "headers": {
+                    "create_new_note": "Crear nueva nota",
+                    "back_to_ai_chat": "Volver al chat de IA",
+                    "tips_for_effective_notes": "💡 Consejos para notas efectivas de idiomas"
+                },
+                "form": {
+                    "note_title": "Título de nota *",
+                    "note_title_placeholder": "ej., Reglas del subjuntivo español, Verbos importantes, etc.",
+                    "language": "Idioma",
+                    "select_language_hint": "Selecciona el idioma de esta nota",
+                    "note_type": "Tipo de nota *",
+                    "tags": "Etiquetas",
+                    "content": "Contenido *",
+                    "format": "Formato:",
+                    "preview": "Vista previa (Markdown se convertirá al guardar)",
+                    "no_content_to_preview": "No hay contenido para previsualizar",
+                    "how_it_will_look": "Cómo se verá:"
+                },
+                "buttons": {
+                    "add": "Añadir",
+                    "cancel": "Cancelar",
+                    "save_note": "Guardar nota",
+                    "creating": "Creando...",
+                    "bold": "Negrita (Ctrl+B)",
+                    "italic": "Cursiva (Ctrl+I)",
+                    "list": "Lista",
+                    "link": "Enlace"
+                },
+                "validation": {
+                    "note_name_required": "El nombre de la nota es requerido",
+                    "content_required": "El contenido es requerido",
+                    "content_too_long": "El contenido es demasiado largo (máx. 50,000 caracteres)",
+                    "failed_to_create_note": "Error al crear la nota",
+                    "cancel_confirmation": "¿Estás seguro? Tus cambios se perderán."
+                },
+                "tags": {
+                    "add_tag_placeholder": "Añade una etiqueta y presiona Enter",
+                    "click_to_remove": "Haz clic en × para eliminar"
+                },
+                "character_counts": {
+                    "characters": "{current}/{max} caracteres",
+                    "tags_count": "{current}/20 etiquetas"
+                },
+                "language_options": {
+                    "no_specific_language": "Sin idioma específico",
+                    "spanish": "Español (ES)",
+                    "english": "Inglés (EN)",
+                    "russian": "Ruso (RU)",
+                    "turkish": "Turco (TR)"
+                },
+                "note_type_options": {
+                    "vocabulary": "Vocabulario",
+                    "grammar": "Gramática",
+                    "general": "General"
+                },
+                "content_placeholder": "Escribe tu nota aquí. Puedes usar markdown para formatear:\n• **Texto en negrita** para puntos importantes\n• *Texto en cursiva* para énfasis\n• - Listas para ejemplos\n• [Enlaces](url) para referencias",
+                "formatting_help": "Usa **negrita**, *cursiva*, - listas, [enlaces](url)",
+                "tips": {
+                    "vocabulary_title": "Para notas de vocabulario:",
+                    "vocabulary_items": [
+                        "Incluye oraciones de ejemplo",
+                        "Nota consejos de pronunciación",
+                        "Añade sinónimos y antónimos",
+                        "Incluye palabras relacionadas"
+                    ],
+                    "grammar_title": "Para notas de gramática:",
+                    "grammar_items": [
+                        "Escribe reglas claras con ejemplos",
+                        "Nota errores comunes a evitar",
+                        "Incluye cuándo usar vs cuándo no usar",
+                        "Añade oraciones de práctica"
+                    ]
+                },
+                "authentication": {
+                    "user_not_authenticated": "Usuario no autenticado"
+                }
+            }
+        },
+        "EditNoteScreen": {
+            "main_screen": {
+                "headers": {
+                    "edit_note": "Editar nota",
+                    "update_your_learning_note": "Actualiza tu nota de aprendizaje",
+                    "back_to_note": "Volver a la nota",
+                    "note_statistics": "Estadísticas de la nota"
+                },
+                "form": {
+                    "note_title": "Título de nota *",
+                    "note_title_placeholder": "ej., Reglas del subjuntivo español, Verbos importantes, etc.",
+                    "title_is_set": "✓ Título establecido",
+                    "title_is_required": "El título es requerido",
+                    "language": "Idioma",
+                    "select_language_hint": "Selecciona el idioma de esta nota",
+                    "note_type": "Tipo de nota *",
+                    "current": "Actual: {type}",
+                    "tags": "Etiquetas",
+                    "content": "Contenido *",
+                    "formatting": "Formateo:",
+                    "show_preview": "Mostrar vista previa",
+                    "hide_preview": "Ocultar vista previa",
+                    "preview": "Vista previa:",
+                    "markdown_formatting_help": "Ayuda de formateo Markdown"
+                },
+                "buttons": {
+                    "copy": "Copiar",
+                    "add": "Añadir",
+                    "cancel": "Cancelar",
+                    "view_note": "Ver nota",
+                    "update_note": "Actualizar nota",
+                    "updating": "Actualizando...",
+                    "back_to_notes": "Volver a notas",
+                    "bold": "Negrita (Ctrl+B)",
+                    "italic": "Cursiva (Ctrl+I)",
+                    "list": "Lista",
+                    "link": "Enlace",
+                    "reset_to_original": "Restablecer al original"
+                },
+                "validation": {
+                    "note_title_required": "El título de la nota es requerido",
+                    "note_title_too_long": "El título de la nota no puede exceder 200 caracteres",
+                    "content_required": "El contenido es requerido",
+                    "content_too_long": "El contenido es demasiado largo (máx. 50,000 caracteres)",
+                    "too_many_tags": "Máximo 20 etiquetas permitidas",
+                    "failed_to_update_note": "Error al actualizar la nota"
+                },
+                "tags": {
+                    "add_tag_placeholder": "Añade una etiqueta y presiona Enter",
+                    "click_to_remove": "Haz clic en × para eliminar",
+                    "remove_tag": "Eliminar etiqueta"
+                },
+                "loading": {
+                    "loading_note": "Cargando nota..."
+                },
+                "error_messages": {
+                    "update_note_error": "Error al actualizar nota:"
+                },
+                "confirmation": {
+                    "cancel_changes": "¿Estás seguro? Tus cambios se perderán.",
+                    "reset_to_original": "¿Estás seguro? Esto descartará todos los cambios."
+                },
+                "character_counts": {
+                    "characters": "{current}/200 caracteres",
+                    "content_characters": "{current}/{max} caracteres",
+                    "percentage_used": "({percentage}% usado)",
+                    "tags_count": "{current}/20 etiquetas"
+                },
+                "language_options": {
+                    "no_specific_language": "Sin idioma específico",
+                    "spanish": "Español (ES)",
+                    "english": "Inglés (EN)",
+                    "russian": "Ruso (RU)",
+                    "turkish": "Turco (TR)"
+                },
+                "note_type_options": {
+                    "vocabulary": "Vocabulario",
+                    "grammar": "Gramática",
+                    "general": "General"
+                },
+                "content_placeholder": "Escribe tu nota aquí. Puedes usar markdown para formatear:\n• **Texto en negrita** para puntos importantes\n• *Texto en cursiva* para énfasis\n• - Listas para ejemplos\n• [Enlaces](url) para referencias\n\nConsejo: Selecciona texto y usa los botones de formateo arriba.",
+                "markdown_help": {
+                    "bold_example": "**negrita** → negrita",
+                    "italic_example": "*cursiva* → cursiva",
+                    "list_example": "- elemento → • elemento",
+                    "link_example": "[enlace](url) → enlace",
+                    "header_example": "## encabezado → Encabezado",
+                    "code_example": "`código` → código"
+                },
+                "statistics": {
+                    "characters": "Caracteres",
+                    "words": "Palabras",
+                    "tags": "Etiquetas",
+                    "capacity_used": "Capacidad usada"
+                },
+                "dates": {
+                    "last_edited": "Última edición: {date}",
+                    "created": "Creada: {date}"
+                },
+                "authentication": {
+                    "user_not_authenticated": "Usuario no autenticado"
+                }
+            }
+        },
+        "NoteDetailScreen": {
+            "main_screen": {
+                "headers": {
+                    "viewing_note": "Viendo nota",
+                    "note_not_found": "Nota no encontrada",
+                    "raw_markdown": "Markdown original",
+                    "view_and_copy": "Ver y copiar el contenido markdown original",
+                    "content": "Contenido"
+                },
+                "buttons": {
+                    "back_to_notes": "Volver a notas",
+                    "back": "Atrás",
+                    "copy": "Copiar",
+                    "edit_note": "Editar nota",
+                    "edit": "Editar",
+                    "delete": "Eliminar",
+                    "deleting": "Eliminando...",
+                    "copy_markdown": "Copiar markdown",
+                    "copy_content": "Copiar contenido",
+                    "quick_edit": "Edición rápida",
+                    "show": "Mostrar",
+                    "hide": "Ocultar"
+                },
+                "labels": {
+                    "tags": "Etiquetas",
+                    "note_id": "ID de nota:",
+                    "created": "Creada:",
+                    "updated": "Actualizada:",
+                    "version": "Versión {version}",
+                    "last_saved": "Último guardado: {relative_time}",
+                    "characters": "{count} caracteres",
+                    "min_read": "{minutes} min de lectura",
+                    "user_id": "ID de usuario:"
+                },
+                "loading": {
+                    "loading_note": "Cargando nota..."
+                },
+                "error_messages": {
+                    "failed_to_delete_note": "Error al eliminar la nota. Por favor, inténtalo de nuevo.",
+                    "failed_to_copy": "Error al copiar:",
+                    "delete_confirmation": "¿Estás seguro de que quieres eliminar esta nota?",
+                    "copy_success": "¡Contenido de la nota copiado al portapapeles!"
+                },
+                "metadata": {
+                    "language": "{language_code}",
+                    "note_type": "{type}",
+                    "tag_format": "#{tag}"
+                },
+                "relative_time": {
+                    "just_now": "ahora mismo",
+                    "minutes_ago": "hace {minutes} minuto{plural}",
+                    "hours_ago": "hace {hours} hora{plural}",
+                    "days_ago": "hace {days} día{plural}"
+                },
+                "note_types": {
+                    "vocabulary": "Vocabulario",
+                    "grammar": "Gramática",
+                    "general": "General"
+                },
+                "authentication": {
+                    "user_not_authenticated": "Usuario no autenticado"
+                }
+            }
+        }
+    }
+}

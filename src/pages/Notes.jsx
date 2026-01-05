@@ -24,7 +24,8 @@ import {
   FaShieldAlt,
   FaMobileAlt,
   FaClock,
-  FaExclamationCircle
+  FaExclamationCircle,
+  FaTimes
 } from 'react-icons/fa';
 
 import { IoSparklesOutline } from "react-icons/io5";
