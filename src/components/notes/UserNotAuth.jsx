@@ -9,7 +9,7 @@ import {
   FaMobileAlt,
 } from 'react-icons/fa';
 
-export default function UserNotAuth() {
+export default function UserNotAuth({t}) {
   return (
         <div className="flex flex-col items-center justify-center min-h-[calc(100vh-160px)] px-4 py-12">
           <div className="text-center max-w-md mx-auto">

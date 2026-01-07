@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 
 import UserNotAuth from '../../components/notes/UserNotAuth';
 
@@ -33,6 +34,9 @@ import { IoSparklesOutline } from "react-icons/io5";
 import NoteService from '../../services/NoteService';
 
 function CreateNoteComponent() {
+
+  const { t } = useTranslation();
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { user, is_auth } = useSelector((state) => state.authSlice);
@@ -45,7 +49,7 @@ function CreateNoteComponent() {
 
   // Available languages
   const languages = [
-    { value: '', label: 'No specific language' },
+    { value: '', label: t('CreateNoteScreen.main_screen.language_options.no_specific_language') },
     { value: 'es', label: 'Spanish (ES)' },
     { value: 'en', label: 'English (EN)' },
     { value: 'ru', label: 'Russian (RU)' },
@@ -227,14 +231,6 @@ function CreateNoteComponent() {
   };
 
 
-
-
-
-
-
-
-
-
   // Character count
   const charCount = formData.content.length;
   const charLimit = 50000;
@@ -244,10 +240,12 @@ function CreateNoteComponent() {
       {/* Header */}
       <div className="mb-8 flex flex-row justify-between items-center">
         <h1 className="text-2xl md:text-3xl font-bold text-blue-700 mb-2">
-          Create New Note
+          {t('CreateNoteScreen.main_screen.headers.create_new_note')}
         </h1>
         <button onClick={()=>navigate('/ai-direct-chat')} className="flex  px-4 py-3 rounded-lg bg-gray-200 hover:bg-gray-100 duration-100 cursor-pointer">
-          <span className='mr-2 hidden md:block'>Back to AI Direct Chat</span>
+          <span className='mr-2 hidden md:block'>
+            {t('CreateNoteScreen.main_screen.headers.back_to_ai_chat')}
+          </span>
           <IoSparklesOutline className="text-xl" />
         </button>
       </div>
@@ -268,14 +266,14 @@ function CreateNoteComponent() {
         {/* Note Name */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Note Title *
+            {t('CreateNoteScreen.main_screen.form.note_title')}
           </label>
           <input
             type="text"
             name="note_name"
             value={formData.note_name}
             onChange={handleInputChange}
-            placeholder="e.g., Spanish Subjunctive Rules, Important Verbs, etc."
+            placeholder={t('CreateNoteScreen.main_screen.form.note_title_placeholder')}
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             maxLength={200}
             required
@@ -291,7 +289,7 @@ function CreateNoteComponent() {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               <FaGlobeAmericas className="inline mr-2" />
-              Language
+              {t('CreateNoteScreen.main_screen.form.language')}
             </label>
             <select
               name="target_lang"
@@ -306,7 +304,7 @@ function CreateNoteComponent() {
               ))}
             </select>
             <div className="text-xs text-gray-500 mt-1">
-              Select the language this note is about
+              {t('CreateNoteScreen.main_screen.form.select_language_hint')}
             </div>
           </div>
 
@@ -314,7 +312,7 @@ function CreateNoteComponent() {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               <FaBook className="inline mr-2" />
-              Note Type *
+              {t('CreateNoteScreen.main_screen.form.note_type')}
             </label>
             <div className="flex space-x-2">
               {noteTypes.map((type) => (
@@ -340,7 +338,7 @@ function CreateNoteComponent() {
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             <FaTag className="inline mr-2" />
-            Tags
+            {t('CreateNoteScreen.main_screen.form.tags')}
           </label>
           <div className="flex gap-2 mb-2">
             <input
@@ -348,7 +346,7 @@ function CreateNoteComponent() {
               value={tagInput}
               onChange={handleTagInputChange}
               onKeyPress={handleTagKeyPress}
-              placeholder="Add a tag and press Enter"
+              placeholder={t('CreateNoteScreen.main_screen.tags.add_tag_placeholder')}
               className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               maxLength={50}
             />
@@ -357,7 +355,7 @@ function CreateNoteComponent() {
               onClick={handleAddTag}
               className="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg transition"
             >
-              Add
+              {t('CreateNoteScreen.main_screen.buttons.add')}
             </button>
           </div>
 
@@ -380,7 +378,7 @@ function CreateNoteComponent() {
                 </div>
               ))}
               <div className="text-xs text-gray-500 mt-1">
-                {formData.tags.length}/20 tags • Click × to remove
+                {formData.tags.length}/20 tags • {t('CreateNoteScreen.main_screen.tags.click_to_remove')}
               </div>
             </div>
           )}
@@ -390,7 +388,7 @@ function CreateNoteComponent() {
         <div>
           <div className="flex justify-between items-center mb-2">
             <label className="block text-sm font-medium text-gray-700">
-              Content *
+              {t('CreateNoteScreen.main_screen.form.content')}
             </label>
             <div className="text-sm text-gray-500">
               {charCount}/{charLimit} characters
@@ -443,12 +441,7 @@ function CreateNoteComponent() {
             name="content"
             value={formData.content}
             onChange={handleContentChange}
-            placeholder="Write your note here. You can use markdown for formatting:
-• **Bold text** for important points
-• *Italic text* for emphasis
-• - Lists for examples
-• [Links](url) for references
-"
+            placeholder={t('CreateNoteScreen.main_screen.content_placeholder')}
             className="w-full h-64 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
             required
           />
@@ -457,7 +450,7 @@ function CreateNoteComponent() {
           <div className="mt-4">
             <details className="border border-gray-300 rounded-lg">
               <summary className="px-4 py-3 cursor-pointer hover:bg-gray-50">
-                Preview (Markdown will be converted when saved)
+                {t('CreateNoteScreen.main_screen.form.preview')}
               </summary>
               <div className="p-4 border-t border-gray-300 bg-gray-50 rounded-b-lg">
                 {formData.content ? (
@@ -466,7 +459,7 @@ function CreateNoteComponent() {
                       {formData.content}
                     </pre>
                     <div className="mt-4 p-3 bg-white border rounded">
-                      <h4 className="font-bold mb-2">How it will look:</h4>
+                      <h4 className="font-bold mb-2">{t('CreateNoteScreen.main_screen.form.how_it_will_look')}</h4>
                       <div className="text-gray-700">
                         {formData.content
                           .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
@@ -480,7 +473,7 @@ function CreateNoteComponent() {
                     </div>
                   </div>
                 ) : (
-                  <div className="text-gray-500 italic">No content to preview</div>
+                  <div className="text-gray-500 italic">{t('CreateNoteScreen.main_screen.form.no_content_to_preview')}</div>
                 )}
               </div>
             </details>
@@ -496,7 +489,7 @@ function CreateNoteComponent() {
             disabled={isSubmitting}
           >
             <FaTimes className="mr-2" />
-            Cancel
+            {t('CreateNoteScreen.main_screen.buttons.cancel')}
           </button>
           <button
             type="submit"
@@ -506,44 +499,18 @@ function CreateNoteComponent() {
             {isSubmitting ? (
               <>
                 <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white mr-2"></div>
-                Creating...
+                {t('CreateNoteScreen.main_screen.buttons.creating')}
               </>
             ) : (
               <>
                 <FaSave className="mr-2" />
-                Save Note
+                {t('CreateNoteScreen.main_screen.buttons.save_note')}
               </>
             )}
           </button>
         </div>
       </form>
 
-      {/* Quick Tips */}
-      {/* <div className="mt-12 p-6 bg-blue-50 rounded-xl">
-        <h3 className="text-lg font-semibold text-blue-800 mb-3">
-          💡 Tips for Effective Language Notes
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-          <div>
-            <h4 className="font-medium text-blue-700 mb-1">For Vocabulary Notes:</h4>
-            <ul className="list-disc list-inside text-gray-600 space-y-1">
-              <li>Include example sentences</li>
-              <li>Note pronunciation tips</li>
-              <li>Add synonyms and antonyms</li>
-              <li>Include related words</li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="font-medium text-blue-700 mb-1">For Grammar Notes:</h4>
-            <ul className="list-disc list-inside text-gray-600 space-y-1">
-              <li>Write clear rules with examples</li>
-              <li>Note common mistakes to avoid</li>
-              <li>Include when to use vs when not to use</li>
-              <li>Add practice sentences</li>
-            </ul>
-          </div>
-        </div>
-      </div> */}
     </div>
   );
 }

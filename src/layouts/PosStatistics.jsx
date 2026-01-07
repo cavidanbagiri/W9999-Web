@@ -13,7 +13,7 @@ import {
     FaFutbol, FaUserFriends, FaBriefcase, FaFlask
 } from 'react-icons/fa';
 
-const PosStatistics = ({ isVisible, onClose, screen }) => {
+const PosStatistics = ({ isVisible, onClose, screen, t }) => {
     const dispatch = useDispatch();
     const { selectedLanguage, pos_statistics, loading, currentPosName } = useSelector((state) => state.wordSlice);
     const [searchTerm, setSearchTerm] = useState('');
@@ -178,8 +178,8 @@ const PosStatistics = ({ isVisible, onClose, screen }) => {
                     <div className="relative z-10">
                         <div className="flex flex-row justify-between items-center mb-6">
                             <div>
-                                <h2 className="text-2xl font-bold mb-2">Grammar Statistics</h2>
-                                <p className="text-purple-200 text-lg">Track your progress by parts of speech</p>
+                                <h2 className="text-2xl font-bold mb-2">{t('Layout.FilterComponent.PosStatistics.header.title')}</h2>
+                                <p className="text-purple-200 text-lg">{t('Layout.FilterComponent.PosStatistics.header.subtitle')}</p>
                             </div>
                             <div className='flex items-center justify-center rounded-full text-white bg-white/10 p-5 w-16 h-16'>
                                 <button
@@ -195,19 +195,19 @@ const PosStatistics = ({ isVisible, onClose, screen }) => {
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                             <div className="text-center p-4 bg-white/10 rounded-2xl backdrop-blur-sm">
                                 <div className="text-xl font-bold">{totalStats.totalCategories}</div>
-                                <div className="text-sm text-purple-200">POS Types</div>
+                                <div className="text-sm text-purple-200">{t('Layout.FilterComponent.PosStatistics.stats.pos_types')}</div>
                             </div>
                             <div className="text-center p-4 bg-white/10 rounded-2xl backdrop-blur-sm">
                                 <div className="text-xl font-bold">{totalStats.learnedWords}</div>
-                                <div className="text-sm text-purple-200">Words Learned</div>
+                                <div className="text-sm text-purple-200">{t('Layout.FilterComponent.PosStatistics.stats.words_learned')}</div>
                             </div>
                             <div className="text-center p-4 bg-white/10 rounded-2xl backdrop-blur-sm">
                                 <div className="text-xl font-bold">{totalStats.masteredCategories}</div>
-                                <div className="text-sm text-purple-200">Mastered</div>
+                                <div className="text-sm text-purple-200">{t('Layout.FilterComponent.PosStatistics.stats.mastered')}</div>
                             </div>
                             <div className="text-center p-4 bg-white/10 rounded-2xl backdrop-blur-sm">
                                 <div className="text-xl font-bold">{overallProgress}%</div>
-                                <div className="text-sm text-purple-200">Overall</div>
+                                <div className="text-sm text-purple-200">{t('Layout.FilterComponent.PosStatistics.stats.overall')}</div>
                             </div>
                         </div>
 
@@ -215,7 +215,7 @@ const PosStatistics = ({ isVisible, onClose, screen }) => {
                         <div className="relative">
                             <input
                                 type="text"
-                                placeholder="Search parts of speech..."
+                                placeholder={t('Layout.FilterComponent.PosStatistics.search.placeholder')}
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 className="w-full bg-white/10 border border-white/20 rounded-2xl px-6 py-4 text-white placeholder-purple-200 focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-transparent backdrop-blur-sm"
@@ -232,14 +232,14 @@ const PosStatistics = ({ isVisible, onClose, screen }) => {
                     {loading ? (
                         <div className="flex flex-col items-center justify-center py-16">
                             <div className="animate-spin rounded-full h-16 w-16 border-4 border-purple-500 border-t-transparent mb-4"></div>
-                            <span className="text-gray-600 text-lg font-medium">Loading grammar statistics...</span>
+                            <span className="text-gray-600 text-lg font-medium">{t('Layout.FilterComponent.PosStatistics.loading.loading_statistics')}</span>
                         </div>
                     ) : !pos_statistics ? (
                         <div className="flex flex-col items-center justify-center py-16">
                             <div className="text-8xl mb-6 opacity-20">📊</div>
-                            <h3 className="text-2xl font-bold text-gray-600 mb-3">No data available</h3>
+                            <h3 className="text-2xl font-bold text-gray-600 mb-3">{t('Layout.FilterComponent.PosStatistics.search.no_data_available')}</h3>
                             <p className="text-gray-500 max-w-md mx-auto text-center">
-                                Select a language to see your grammar progress statistics
+                                {t('Layout.FilterComponent.PosStatistics.search.select_language_prompt')}
                             </p>
                         </div>
                     ) : (
@@ -314,8 +314,12 @@ const PosStatistics = ({ isVisible, onClose, screen }) => {
                                                 {/* Progress Bar */}
                                                 <div className="mb-3">
                                                     <div className="flex justify-between text-sm text-gray-600 mb-1">
-                                                        <span>{stats.learned} learned</span>
-                                                        <span>{stats.total} total</span>
+                                                        <span>
+                                                            {t('Layout.FilterComponent.PosStatistics.progress.learned', { learned_count: stats.learned })}
+                                                        </span>
+                                                        <span>
+                                                            {t('Layout.FilterComponent.PosStatistics.progress.total', { total_count: stats.total })}
+                                                        </span>
                                                     </div>
                                                     <div className="w-full bg-gray-200 rounded-full h-2">
                                                         <div
@@ -338,17 +342,17 @@ const PosStatistics = ({ isVisible, onClose, screen }) => {
                                                     {isCompleted ? (
                                                         <>
                                                             <FaCheckCircle className="mr-1" />
-                                                            Mastered
+                                                            {t('Layout.FilterComponent.PosStatistics.pos_status.mastered')}
                                                         </>
                                                     ) : isInProgress ? (
                                                         <>
                                                             <FaChartLine className="mr-1" />
-                                                            In Progress
+                                                            {t('Layout.FilterComponent.PosStatistics.pos_status.in_progress')}
                                                         </>
                                                     ) : (
                                                         <>
                                                             <FaLock className="mr-1" />
-                                                            Start Learning
+                                                            {t('Layout.FilterComponent.PosStatistics.pos_status.start_learning')}
                                                         </>
                                                     )}
                                                 </div>
@@ -364,9 +368,12 @@ const PosStatistics = ({ isVisible, onClose, screen }) => {
                             {filteredPos.length === 0 && !loading && pos_statistics && (
                                 <div className="col-span-2 text-center py-16">
                                     <div className="text-8xl mb-6 opacity-20">🔍</div>
-                                    <h3 className="text-2xl font-bold text-gray-600 mb-3">No matching parts of speech</h3>
+                                    <h3 className="text-2xl font-bold text-gray-600 mb-3">
+                                        {t('Layout.FilterComponent.PosStatistics.search.no_matching_pos')}
+                                    </h3>
                                     <p className="text-gray-500 max-w-md mx-auto">
-                                        {searchTerm ? `No parts of speech matching "${searchTerm}"` : 'No grammar statistics available'}
+                                        {searchTerm ? t('Layout.FilterComponent.PosStatistics.search.no_matching_results', { search_term: searchTerm })
+                                        : t('Layout.FilterComponent.PosStatistics.search.no_data_available')}
                                     </p>
                                 </div>
                             )}
@@ -377,8 +384,7 @@ const PosStatistics = ({ isVisible, onClose, screen }) => {
                 {/* Footer */}
                 <div className="bg-white border-t border-gray-200 p-4 text-center">
                     <p className="text-gray-600 text-sm">
-                        <span className="font-semibold text-purple-600">{totalStats.learnedWords}</span> words mastered across{' '}
-                        <span className="font-semibold text-purple-600">{totalStats.totalCategories}</span> parts of speech
+                        <span className="font-semibold text-black-600">{t('Layout.FilterComponent.PosStatistics.footer.summary', { learned_words: totalStats.learnedWords, pos_count: totalStats.totalCategories })}</span>
                     </p>
                 </div>
             </div>

@@ -12,6 +12,14 @@ Problems
 
 1 - Check the words always calling from backend after the change the screen
 
+2 - Learned and Words Screen pagination need to check for translations
 
+3 - Notes screen, after changing, entire screen reloading. need to fix it. only component reloading need
+
+4 - In edit note detail screen after reload the page, error happened
+
+5 - After selecting starred words, reload but again starred words showed. doesnt respect current fetching words
+
+6 - AiTutor, Translate, Profile need to interfaces langs. 
 
 Today:

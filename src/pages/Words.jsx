@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import {useTranslation} from 'react-i18next';
+
 import { setSelectedLanguage, setLoadingMore } from '../store/word_store.js';
 import WordService from '../services/WordService.js';
 
@@ -8,11 +10,14 @@ import FilterComponent from '../layouts/FilterComponent.jsx';
 import WordList from '../layouts/WordList.jsx';
 import EmptyStarredComponent from '../components/home/EmptyStarredComponent.jsx'
 
+
 import { setCurrentCategory, setCurrentPosName } from '../store/word_store';
 
 import { IoClose, IoArrowDown } from "react-icons/io5";
 
 export default function WordScreen() {
+
+    const { t } = useTranslation();
 
     const dispatch = useDispatch();
 
@@ -210,16 +215,23 @@ export default function WordScreen() {
                         {isFetching ? (
                             <>
                                 <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                <span>Loading {pagination.unlearned.totalWords - unlearned_words.length} More Words...</span>
+                                {/* <span>Loading {pagination.unlearned.totalWords - unlearned_words.length} More Words...</span> */}
+                                <span>
+                                    {t('WordsScreen.main_screen.loading.loading_n_more_words', { count: pagination.unlearned.totalWords - unlearned_words.length })}
+                                </span>
                             </>
                         ) : (
                             <>
-                                <span>📥 Load {pagination.unlearned.totalWords - unlearned_words.length} More Words</span>
+                                {/* <span>📥 Load {pagination.unlearned.totalWords - unlearned_words.length} More Words</span> */}
+                                <span>📥 
+                                    {t('WordsScreen.main_screen.loading.load_n_more_words', { count: pagination.unlearned.totalWords - unlearned_words.length })}
+                                </span>
                             </>
                         )}
                     </button>
                     <p className="text-sm text-gray-600 mt-2">
-                        {unlearned_words.length} of {pagination.unlearned.totalWords} words loaded • {pagination.unlearned.totalWords - unlearned_words.length} remaining
+                        {/* {unlearned_words.length} of {pagination.unlearned.totalWords} words loaded • {pagination.unlearned.totalWords - unlearned_words.length} remaining */}
+                        {t('WordsScreen.main_screen.pagination.words_loaded', { loaded: unlearned_words.length, total: pagination.unlearned.totalWords })}
                     </p>
                 </div>
             )}
@@ -230,7 +242,7 @@ export default function WordScreen() {
                     onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                     className="text-indigo-500 hover:text-indigo-700 text-sm font-medium transition-colors"
                 >
-                    ↑ Back to Top
+                    {t('WordsScreen.main_screen.pagination.back_to_top')}
                 </button>
             )}
         </div>
@@ -247,7 +259,7 @@ export default function WordScreen() {
 
             {/* Check if starred is empty */}
             {filter === 'starred' && unlearned_words?.length === 0 && !words_pending && (
-                <EmptyStarredComponent selectedLanguage={selectedLanguage} />
+                <EmptyStarredComponent selectedLanguage={selectedLanguage} t={t} />
             )}
 
             {
@@ -320,13 +332,13 @@ export default function WordScreen() {
             {/* Words List */}
             {selectedLanguage ? (
                 <div className="flex-1">
-                    <WordList screen={'WordScreen'} />
+                    <WordList screen={'WordScreen'} t={t} />
 
                     {/* Loading More Indicator */}
                     {isFetching && unlearned_words.length > 0 && (
                         <div className="flex justify-center items-center py-8">
                             <div className="w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin mr-3"></div>
-                            <span className="text-gray-600">Loading more words...</span>
+                            <span className="text-gray-600">{t('WordsScreen.main_screen.loading.loading_more_words')}</span>
                         </div>
                     )}
 
@@ -337,8 +349,8 @@ export default function WordScreen() {
                     {words_pending && unlearned_words.length === 0 && (
                         <div className="flex flex-col items-center justify-center py-16">
                             <div className="w-12 h-12 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-                            <div className="text-gray-600 text-lg">Loading words...</div>
-                            <div className="text-gray-500 text-sm mt-2">This may take a moment</div>
+                            <div className="text-gray-600 text-lg">{t('WordsScreen.main_screen.loading.loading_words')}</div>
+                            <div className="text-gray-500 text-sm mt-2">{t('WordsScreen.main_screen.loading.this_may_take_moment')}</div>
                         </div>
                     )}
 
@@ -349,12 +361,12 @@ export default function WordScreen() {
                                 <span className="text-gray-400 text-2xl">📚</span>
                             </div>
                             <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                                No Words Found
+                                {t('WordsScreen.main_screen.labels.no_words_found')}
                             </h3>
                             <p className="text-gray-600 max-w-md">
                                 {filter === 'learned'
-                                    ? "You haven't learned any words yet. Start learning to see them here!"
-                                    : "No words available for the current selection."
+                                    ? t('WordsScreen.main_screen.messages.no_learned_words')
+                                    : t('WordsScreen.main_screen.messages.no_words_available')
                                 }
                             </p>
                         </div>
@@ -369,12 +381,12 @@ export default function WordScreen() {
 
                     {/* Message */}
                     <h2 className="text-2xl font-bold text-gray-800 text-center mb-2 font-sans">
-                        Choose language
+                        {t('WordsScreen.main_screen.messages.choose_language')}
                     </h2>
 
                     {/* Tip */}
-                    <p className="text-sm text-gray-500 text-center mt-6 font-sans">
-                        Select a language to start learning words.
+                    <p className="text-md text-gray-500 text-center mt-6 font-sans">
+                        {t('WordsScreen.main_screen.messages.select_language_tip')}
                     </p>
                 </div>
             )}

@@ -12,8 +12,12 @@ import { TbCategoryPlus, TbChartPie } from "react-icons/tb";
 import { IoMdRefresh } from "react-icons/io";
 import { FaRegStar } from "react-icons/fa";
 
+import { useTranslation } from 'react-i18next';
+
 
 const FilterComponent = ({ filter, setFilter, screen }) => {
+
+  const { t } = useTranslation();
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -115,27 +119,16 @@ const FilterComponent = ({ filter, setFilter, screen }) => {
         <span className="text-gray-500 text-lg">🔍</span>
 
         <span className="ml-3 text-gray-500 text-base font-sans flex-1 text-left">
-          Search words...
+          {t('Layout.FilterComponent.main_screen.search.search_placeholder')}
         </span>
 
         {/* Chevron icon for affordance */}
-        <span className="text-gray-400 text-lg">›</span>
+        <span className="text-gray-400 text-xl">›</span>
       </button>
 
       {/* Filter & Actions Row */}
       <div className="flex items-center justify-between ">
-        {/* Filter Toggle: Starred vs All */}
         
-          
-           {/* {available_lang_toggle && (
-          <div className="flex items-center mr-1  w-full">
-            <span style={{fontFamily: 'Sour Gummy'}}
-             className="hidden md:inline text-md font-medium text-gray-700 mr-1">
-              Select language
-            </span>
-            <LanguageSelected screen={'WordScreen'} />
-          </div>
-          )} */}
             
           
         {/* If Screen is Learned flex will be around */}
@@ -148,6 +141,7 @@ const FilterComponent = ({ filter, setFilter, screen }) => {
                   isVisible={isModalOpen}
                   onClose={() => setIsModalOpen(false)}
                   screen={screen}
+                  t={t}
                 />
             )
           }
@@ -157,6 +151,7 @@ const FilterComponent = ({ filter, setFilter, screen }) => {
             isVisible={showPosStats} 
             onClose={() => setShowPosStats(false)} 
             screen={screen}
+            t = {t}
         />
 
         {screen === 'WordScreen' && (
@@ -167,7 +162,11 @@ const FilterComponent = ({ filter, setFilter, screen }) => {
             >
               <span style={{fontFamily: 'Sour Gummy'}}
                 className='hidden md:inline text-gray-700'
-              >{filter === 'starred' ? 'Starred' : 'All Words'}</span>
+              >{filter === 'starred' ? 
+                t('Layout.FilterComponent.main_screen.filter_toggles.starred') 
+               :
+                t('Layout.FilterComponent.main_screen.filter_toggles.all_words')}
+              </span>
               <span className={`mr-1 w-10 h-10 text-lg bg-gray-50 rounded-full flex items-center justify-center hover:bg-gray-200 active:bg-gray-400 transition-colors cursor-pointer ${filter === 'starred' ? 'text-yellow-500' : 'text-gray-500'}`}>
                 {filter === 'starred' ? <FaRegStar  className='text-yellow-500' /> : <FaRegStar />}
               </span>
@@ -183,7 +182,7 @@ const FilterComponent = ({ filter, setFilter, screen }) => {
               <div className='flex items-center mx-2 lg:ml-8'>
                 <span style={{fontFamily: 'Sour Gummy'}}
                 className="hidden md:inline text-md font-medium ml-2 text-gray-700 mr-1">
-                    Part of speech
+                    {t('Layout.FilterComponent.main_screen.labels.part_of_speech')}
                   </span>
                 <button
                   onClick={() => {
@@ -204,7 +203,7 @@ const FilterComponent = ({ filter, setFilter, screen }) => {
               <div className='flex items-center mx-2 lg:mx-8'>
                 <span style={{fontFamily: 'Sour Gummy'}}
                 className="hidden md:inline text-md font-medium ml-2 text-gray-700 mr-1">
-                    Category
+                    {t('Layout.FilterComponent.main_screen.labels.category')}
                   </span>
                 <button
                   onClick={() => {
@@ -222,7 +221,7 @@ const FilterComponent = ({ filter, setFilter, screen }) => {
           <div className='flex items-center '>
             <span style={{fontFamily: 'Sour Gummy'}}
             className="hidden md:inline text-md font-medium ml-2 text-gray-700 mr-1">
-              Refresh
+              {t('Layout.FilterComponent.main_screen.labels.refresh')}
             </span>
             <button
             onClick={handleRefresh}

@@ -9,8 +9,11 @@ import EmptyWordsComponents from '../components/learned/EmptyWordsComponents.jsx
 import { setCurrentCategory, setLoadingMore, setCurrentPosName } from '../store/word_store';
 import { IoClose } from "react-icons/io5";
 
+import {useTranslation} from 'react-i18next';
+
 export default function LearnedScreen() {
 
+  const { t } = useTranslation();
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -143,11 +146,13 @@ export default function LearnedScreen() {
           {isFetching ? (
             <>
               <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-              <span>Loading...</span>
+              <span>
+                {t('LearnedScreen.main_screen.loading.loading')}
+              </span>
             </>
           ) : (
             <>
-              <span>Load More Words</span>
+              <span>{t('LearnedScreen.main_screen.pagination.load_more_words')}</span>
               <span className="text-blue-100">({learned_words.length} of {totalLearned})</span>
             </>
           )}
@@ -157,8 +162,9 @@ export default function LearnedScreen() {
       {/* Progress Text */}
       {learned_words.length > 0 && (
         <div className="text-center text-gray-600 text-sm">
-          Showing {learned_words.length} of {totalLearned} learned words
-          {pagination.learned.hasMore && ' • Scroll down to load more'}
+          {/* Showing {learned_words.length} of {totalLearned} learned words
+          {pagination.learned.hasMore && ' • Scroll down to load more'} */}
+          {t('LearnedScreen.main_screen.pagination.showing_of_words', { loaded: learned_words.length, total: totalLearned })}
         </div>
       )}
 
@@ -168,7 +174,7 @@ export default function LearnedScreen() {
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           className="text-blue-500 hover:text-blue-700 text-sm font-medium transition-colors"
         >
-          ↑ Back to Top
+          {t('LearnedScreen.main_screen.pagination.back_to_top')}
         </button>
       )}
     </div>
@@ -190,8 +196,12 @@ export default function LearnedScreen() {
                 <span className="text-gray-600 text-xl">←</span>
               </button>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">Learned Words</h1>
-                <p className="text-gray-600">Review and practice words you've learned</p>
+                <h1 className="text-2xl font-bold text-gray-900">
+                  {t('LearnedScreen.main_screen.titles.learned_words')}
+                </h1>
+                <p className="text-gray-600">
+                  {t('LearnedScreen.main_screen.titles.review_practice')}
+                </p>
               </div>
             </div>
 
@@ -200,15 +210,15 @@ export default function LearnedScreen() {
               <div className="flex items-center gap-6">
                 <div className="text-center">
                   <div className="text-2xl font-bold text-blue-600">{totalLearned}</div>
-                  <div className="text-sm text-gray-600">Total Learned</div>
+                  <div className="text-sm text-gray-600">{t('LearnedScreen.main_screen.stats.total_learned')}</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-green-600">{learnedStats.languages}</div>
-                  <div className="text-sm text-gray-600">Languages</div>
+                  <div className="text-sm text-gray-600">{t('LearnedScreen.main_screen.stats.languages')}</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-purple-600">{learned_words.length}</div>
-                  <div className="text-sm text-gray-600">Loaded</div>
+                  <div className="text-sm text-gray-600">{t('LearnedScreen.main_screen.stats.loaded')}</div>
                 </div>
               </div>
             )}
@@ -228,9 +238,12 @@ export default function LearnedScreen() {
                 <span className="text-gray-600 text-xl">←</span>
               </button>
               <div>
-                <h1 className="text-xl font-bold text-gray-900">Learned</h1>
+                <h1 className="text-xl font-bold text-gray-900">
+                  {t('LearnedScreen.main_screen.stats.learned_words')}
+                </h1>
                 <p className="text-sm text-gray-600">
                   {learned_words.length} of {totalLearned} words
+                  {/* {t('LearnedScreen.main_screen.stats.showing_of_words', { loaded: learned_words.length, total: totalLearned })} */}
                 </p>
               </div>
             </div>
@@ -249,48 +262,7 @@ export default function LearnedScreen() {
       <div className="max-w-8xl mx-auto">
         {/* Main Content Area */}
         <div className="flex flex-col lg:flex-row gap-6 p-4 lg:p-6">
-          {/* Left Sidebar - Desktop */}
-          <div className="hidden lg:block w-80 flex-shrink-0">
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 sticky top-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Learning Progress</h2>
-
-              {/* Language Progress */}
-              {statistics?.map((stat) => (
-                <div key={stat.language_code} className="mb-4 last:mb-0">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-sm font-medium text-gray-700 capitalize">
-                      {stat.language_name}
-                    </span>
-                    <span className="text-sm text-gray-600">
-                      {stat.learned_words}/{stat.total_words}
-                    </span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div
-                      className="bg-green-500 h-2 rounded-full transition-all duration-300"
-                      style={{
-                        width: `${(stat.learned_words / stat.total_words) * 100}%`
-                      }}
-                    />
-                  </div>
-                </div>
-              ))}
-
-              {/* Quick Actions */}
-              <div className="mt-6 pt-6 border-t border-gray-200">
-                <h3 className="text-sm font-semibold text-gray-900 mb-3">Quick Actions</h3>
-                <div className="space-y-2">
-                  <button
-                    onClick={() => navigate('/words')}
-                    className="w-full text-left p-3 rounded-lg border border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition-colors"
-                  >
-                    <div className="font-medium text-gray-900">All Words</div>
-                    <div className="text-sm text-gray-600">Browse complete vocabulary</div>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
+          
 
           {/* Main Content */}
           <div className="flex-1">
@@ -309,8 +281,12 @@ export default function LearnedScreen() {
               {selectedLanguage && words_pending && learned_words.length === 0 && (
                 <div className="flex flex-col items-center justify-center py-16">
                   <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-                  <div className="text-gray-600 text-lg">Loading learned words...</div>
-                  <div className="text-gray-500 text-sm mt-2">This may take a moment</div>
+                  <div className="text-gray-600 text-lg">
+                    {t('LearnedScreen.main_screen.loading.loading_learned_words')}
+                  </div>
+                  <div className="text-gray-500 text-sm mt-2">
+                    {t('LearnedScreen.main_screen.loading.this_may_take_moment')}
+                  </div>
                 </div>
               )}
 
@@ -380,8 +356,12 @@ export default function LearnedScreen() {
                   <div className="lg:hidden mb-6 bg-gradient-to-r from-blue-50 to-green-50 rounded-xl p-4 border border-blue-100">
                     <div className="flex items-center justify-between">
                       <div>
-                        <h3 className="font-semibold text-gray-900">Learning Progress</h3>
-                        <p className="text-sm text-gray-600">Keep up the great work!</p>
+                        <h3 className="font-semibold text-gray-900">
+                          {t('LearnedScreen.main_screen.titles.learning_progress')}
+                        </h3>
+                        <p className="text-sm text-gray-600">
+                          {t('LearnedScreen.main_screen.stats.progress_header')}
+                        </p>
                       </div>
                       <div className="text-2xl font-bold text-blue-600">
                         {statistics?.find(stat => stat.language_code === selectedLanguage)?.learned_words || 0}
@@ -389,7 +369,7 @@ export default function LearnedScreen() {
                     </div>
                   </div>
 
-                  <WordList screen={'LearnedScreen'} />
+                  <WordList screen={'LearnedScreen' } t={t} />
 
                   {/* Pagination Controls */}
                   <PaginationControls />
@@ -400,7 +380,9 @@ export default function LearnedScreen() {
               {pagination.learned.isLoadingMore && (
                 <div className="flex justify-center items-center py-8">
                   <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mr-3"></div>
-                  <span className="text-gray-600">Loading more words...</span>
+                  <span className="text-gray-600">
+                    {t('LearnedScreen.main_screen.loading.loading_more_words')}
+                  </span>
                 </div>
               )}
 

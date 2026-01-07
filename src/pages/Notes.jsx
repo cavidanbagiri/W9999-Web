@@ -7,6 +7,8 @@ import { useNavigate } from 'react-router-dom';
 import NoteService from '../services/NoteService';
 import UserNotAuth from '../components/notes/UserNotAuth';
 
+import { useTranslation } from 'react-i18next';
+
 import { addCurrentNoteURL, removeCurrentNoteURL } from '../store/note_store';
 
 import {
@@ -33,6 +35,9 @@ import { IoSparklesOutline } from "react-icons/io5";
 
 
 function NotesScreen() {
+
+  const { t } = useTranslation();
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -125,7 +130,7 @@ function NotesScreen() {
         await dispatch(NoteService.deleteNote(noteId)).unwrap();
         // Notes will be automatically updated in Redux store
       } catch (error) {
-        console.error('Failed to delete note:', error);
+        // console.error('Failed to delete note:', error);
         alert('Failed to delete note. Please try again.');
       }
     }
@@ -142,14 +147,14 @@ function NotesScreen() {
     return (
       <div className="container mx-auto px-4 py-12 text-center">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mx-auto mb-4"></div>
-        <p className="text-gray-600">Loading your notes...</p>
+        <p className="text-gray-600">{t('NotesScreen.main_screen.loading.loading_your_notes')}</p>
       </div>
     );
   }
 
   // User Not Authenticated
   if (!is_auth) {
-   return <UserNotAuth />
+   return <UserNotAuth t={t} />
   }
 
 
@@ -174,10 +179,11 @@ function NotesScreen() {
               </div>
               <div>
                 <h1 className="text-xl sm:text-2xl font-bold text-gray-800">
-                  My Learning Notes
+                  {t('NotesScreen.main_screen.headers.my_learning_notes')}
                 </h1>
                 <p className="text-sm text-gray-600">
-                  {notes.length} note{notes.length !== 1 ? 's' : ''} • Language learning insights
+                  {/* {notes.length} note{notes.length !== 1 ? 's' : ''} •  */}
+                  {t('NotesScreen.main_screen.headers.language_learning_insights')}
                 </p>
               </div>
             </div>
@@ -193,7 +199,9 @@ function NotesScreen() {
                 title="Go To Direct Chat"
               >
                 <IoSparklesOutline className='text-xl' />
-                <span className="hidden xs:inline">Refresh</span>
+                <span className="hidden xl:block">
+                  {t('NotesScreen.main_screen.buttons.direct_ai')}
+                </span>
               </button>
 
               <button
@@ -203,7 +211,9 @@ function NotesScreen() {
                 title="Refresh notes"
               >
                 <FaSync className={`${isRefreshing ? 'animate-spin' : ''}`} />
-                <span className="hidden xs:inline">Refresh</span>
+                <span className="hidden xl:block">
+                  {t('NotesScreen.main_screen.buttons.refresh_notes')}
+                </span>
               </button>
 
               <button
@@ -211,7 +221,9 @@ function NotesScreen() {
                 className="flex-1 sm:flex-none px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700  cursor-pointer text-white rounded-lg flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5"
               >
                 <FaPlus />
-                <span className="hidden xs:inline">New Note</span>
+                <span className="hidden xl:block">
+                  {t('NotesScreen.main_screen.buttons.new_note')}
+                </span>
               </button>
             </div>
           </div>
@@ -227,13 +239,13 @@ function NotesScreen() {
               {/* Search Input */}
               <div className="lg:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Search notes
+                  {t('NotesScreen.main_screen.filters.search_notes')}
                 </label>
                 <div className="relative">
                   <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
                   <input
                     type="text"
-                    placeholder="Search by title, content, or tags..."
+                    placeholder={t('NotesScreen.main_screen.filters.search_placeholder')}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
@@ -246,14 +258,14 @@ function NotesScreen() {
                 <div>
                   <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
                     <FaGlobeAmericas />
-                    Language
+                    {t('NotesScreen.main_screen.filters.language')}
                   </label>
                   <select
                     value={selectedLanguage}
                     onChange={(e) => setSelectedLanguage(e.target.value)}
                     className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
                   >
-                    <option value="all">All Languages</option>
+                    <option value="all">{t('NotesScreen.main_screen.filters.all_languages')}</option>
                     {/* <option value="none">No Language</option> */}
                     <option value="es">Spanish (ES)</option>
                     <option value="en">English (EN)</option>
@@ -265,14 +277,14 @@ function NotesScreen() {
                 <div>
                   <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
                     <FaBook />
-                    Note Type
+                    {t('NotesScreen.main_screen.filters.note_type')}
                   </label>
                   <select
                     value={selectedType}
                     onChange={(e) => setSelectedType(e.target.value)}
                     className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
                   >
-                    <option value="all">All Types</option>
+                    <option value="all">{t('NotesScreen.main_screen.filters.all_types')}</option>
                     <option value="vocabulary">Vocabulary</option>
                     <option value="grammar">Grammar</option>
                     <option value="general">General</option>
@@ -284,10 +296,13 @@ function NotesScreen() {
             {/* Active Filters Display */}
             {(searchTerm || selectedLanguage !== 'all' || selectedType !== 'all') && (
               <div className="flex flex-wrap items-center gap-2 mt-4 pt-4 border-t border-gray-100">
-                <span className="text-sm text-gray-600">Active filters:</span>
+                <span className="text-sm text-gray-600">
+                  {t('NotesScreen.main_screen.filters.active_filters')}
+                </span>
                 {searchTerm && (
                   <span className="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-100 text-blue-800 text-sm rounded-full">
-                    Search: "{searchTerm}"
+                    {/* Search: "{searchTerm}" */}
+                    {t('NotesScreen.main_screen.active_filters.search', { search_term: searchTerm })}
                     <button onClick={() => setSearchTerm('')} className="ml-1 hover:text-blue-900  cursor-pointer">
                       ×
                     </button>
@@ -295,7 +310,8 @@ function NotesScreen() {
                 )}
                 {selectedLanguage !== 'all' && (
                   <span className="inline-flex items-center gap-1 px-3 py-1.5 bg-green-100 text-green-800 text-sm rounded-full">
-                    Language: {selectedLanguage === 'none' ? 'No Language' : selectedLanguage.toUpperCase()}
+                    {/* Language: {selectedLanguage === 'none' ? 'No Language' : selectedLanguage.toUpperCase()} */}
+                    {t('NotesScreen.main_screen.active_filters.language', { language_value: selectedLanguage === 'none' ? 'No Language' : selectedLanguage.toUpperCase() })}
                     <button onClick={() => setSelectedLanguage('all')} className="ml-1 hover:text-green-900  cursor-pointer">
                       ×
                     </button>
@@ -303,7 +319,7 @@ function NotesScreen() {
                 )}
                 {selectedType !== 'all' && (
                   <span className="inline-flex items-center gap-1 px-3 py-1.5 bg-purple-100 text-purple-800 text-sm rounded-full">
-                    Type: {selectedType}
+                    {t('NotesScreen.main_screen.active_filters.type', { type_value: selectedType })}
                     <button onClick={() => setSelectedType('all')} className="ml-1 hover:text-purple-900  cursor-pointer">
                       ×
                     </button>
@@ -317,7 +333,7 @@ function NotesScreen() {
                   }}
                   className="text-sm text-gray-600 hover:text-gray-800 underline  cursor-pointer"
                 >
-                  Clear all
+                  {t('NotesScreen.main_screen.buttons.clear_all')}
                 </button>
               </div>
             )}
@@ -332,7 +348,9 @@ function NotesScreen() {
                 <div className="flex items-center gap-3">
                   <FaExclamationCircle className="text-red-500 text-xl" />
                   <div>
-                    <h4 className="font-medium text-gray-800">Error Loading Notes</h4>
+                    <h4 className="font-medium text-gray-800">
+                      {t('NotesScreen.main_screen.error_messages.error_loading_notes')}
+                    </h4>
                     <p className="text-gray-600 text-sm">
                       {typeof error === 'string' ? error : 'An unexpected error occurred'}
                     </p>
@@ -358,20 +376,20 @@ function NotesScreen() {
               </div>
               <h3 className="text-xl font-semibold text-gray-800 mb-3">
                 {searchTerm || selectedLanguage !== 'all' || selectedType !== 'all'
-                  ? 'No matching notes found'
-                  : 'No notes yet'}
+                  ? t('NotesScreen.main_screen.empty_states.no_matching_notes')
+                  : t('NotesScreen.main_screen.empty_states.no_notes_yet')}
               </h3>
               <p className="text-gray-600 mb-6">
                 {searchTerm || selectedLanguage !== 'all' || selectedType !== 'all'
-                  ? 'Try adjusting your search terms or filters to find what you\'re looking for.'
-                  : 'Start documenting your language learning journey with your first note!'}
+                  ? t('NotesScreen.main_screen.empty_states.adjust_search_terms')
+                  : t('NotesScreen.main_screen.empty_states.start_documenting')}
               </p>
               <button
                 onClick={handleCreateNote}
                 className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600  cursor-pointer to-indigo-600 text-white font-medium rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg hover:shadow-xl"
               >
                 <FaPlus />
-                Create Your First Note
+                {t('NotesScreen.main_screen.buttons.create_your_first_note')}
               </button>
             </div>
           </div>
@@ -511,8 +529,12 @@ function NotesScreen() {
                   <div className="w-16 h-16 border-4 border-blue-200 rounded-full"></div>
                   <div className="absolute top-0 left-0 w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
                 </div>
-                <p className="mt-4 text-gray-700 font-medium">Updating your notes...</p>
-                <p className="text-gray-500 text-sm mt-1">This will just take a moment</p>
+                <p className="mt-4 text-gray-700 font-medium">
+                  {t('NotesScreen.main_screen.loading.updating_your_notes')}
+                </p>
+                <p className="text-gray-500 text-sm mt-1">
+                  {t('NotesScreen.main_screen.loading.this_will_just_take_moment')}
+                </p>
               </div>
             </div>
           </div>

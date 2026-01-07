@@ -6,6 +6,8 @@ import ReactMarkdown from 'react-markdown';
 import NoteService from '../../services/NoteService';
 import UserNotAuth from '../../components/notes/UserNotAuth';
 
+import { useTranslation } from 'react-i18next';
+
 import { removeCurrentNoteURL, addCurrentNoteURL } from '../../store/note_store';
 
 import {
@@ -20,6 +22,9 @@ import {
 import { IoSparklesOutline } from "react-icons/io5";
 
 function NoteDetailScreen() {
+
+    const { t } = useTranslation();
+
     const { id } = useParams();
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -49,7 +54,7 @@ function NoteDetailScreen() {
                 await dispatch(NoteService.deleteNote(parseInt(id))).unwrap();
                 navigate('/notes');
             } catch (error) {
-                console.error('Failed to delete note:', error);
+                // console.error('Failed to delete note:', error);
                 alert('Failed to delete note. Please try again.');
             } finally {
                 setIsDeleting(false);
@@ -77,7 +82,9 @@ function NoteDetailScreen() {
         return (
             <div className="container mx-auto px-4 py-12 text-center">
                 <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mx-auto mb-4"></div>
-                <p className="text-gray-600">Loading note...</p>
+                <p className="text-gray-600">
+                    {t('NoteDetailScreen.main_screen.loading.loading_note')}
+                </p>
             </div>
         );
     }
@@ -92,13 +99,15 @@ function NoteDetailScreen() {
     if (error) {
         return (
             <div className="container mx-auto px-4 py-12 text-center">
-                <h2 className="text-2xl font-bold text-gray-700 mb-4">Note not found</h2>
-                <p className="text-gray-600 mb-6">{error}</p>
+                <h2 className="text-2xl font-bold text-gray-700 mb-4">
+                    {t('NoteDetailScreen.main_screen.headers.note_not_found')}
+                </h2>
+                {/* <p className="text-gray-600 mb-6">{error}</p> */}
                 <button
                     onClick={handleBack}
                     className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700  cursor-pointer"
                 >
-                    Back to Notes
+                    {t('NoteDetailScreen.main_screen.buttons.back_to_notes')}
                 </button>
             </div>
         );
@@ -121,13 +130,17 @@ function NoteDetailScreen() {
                                 className="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-300 hover:bg-gray-50 rounded-xl transition-all hover:shadow-md  cursor-pointer"
                             >
                                 <FaArrowLeft />
-                                <span className="hidden sm:inline">Back to Notes</span>
-                                <span className="sm:hidden">Back</span>
+                                <span className="hidden sm:inline">
+                                    {t('NoteDetailScreen.main_screen.buttons.back_to_notes')}
+                                </span>
+                                {/* <span className="sm:hidden">Back</span> */}
                             </button>
 
                             <div className="hidden md:flex items-center gap-3">
                                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                                <span className="text-sm text-gray-500">Viewing note</span>
+                                <span className="text-sm text-gray-500">
+                                    {t('NoteDetailScreen.main_screen.headers.viewing_note')}
+                                </span>
                             </div>
                         </div>
 
@@ -142,7 +155,9 @@ function NoteDetailScreen() {
                                 title="Copy content"
                             >
                                 <IoSparklesOutline />
-                                <span className="hidden xs:inline">Copy</span>
+                                <span className="hidden xl:block">
+                                    {t('NoteDetailScreen.main_screen.buttons.ai')}
+                                </span>
                             </button>
 
                             <button
@@ -151,7 +166,9 @@ function NoteDetailScreen() {
                                 title="Copy content"
                             >
                                 <FaCopy />
-                                <span className="hidden xs:inline">Copy</span>
+                                <span className="hidden xl:block">
+                                    {t('NoteDetailScreen.main_screen.buttons.copy')}
+                                </span>
                             </button>
 
                             <button
@@ -159,8 +176,10 @@ function NoteDetailScreen() {
                                 className="flex-1 sm:flex-none px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5  cursor-pointer"
                             >
                                 <FaEdit />
-                                <span className="hidden xs:inline">Edit Note</span>
-                                <span className="xs:hidden">Edit</span>
+                                <span className="hidden xl:block">
+                                    {t('NoteDetailScreen.main_screen.buttons.edit_note')}
+                                </span>
+                                {/* <span className="hidden md:block">Edit</span> */}
                             </button>
 
                             <button
@@ -171,12 +190,16 @@ function NoteDetailScreen() {
                                 {isDeleting ? (
                                     <>
                                         <FaSpinner className="animate-spin" />
-                                        <span className="hidden xs:inline">Deleting...</span>
+                                        <span className="hidden xl:block">
+                                            {t('NoteDetailScreen.main_screen.buttons.deleting')}
+                                        </span>
                                     </>
                                 ) : (
                                     <>
                                         <FaTrash />
-                                        <span className="hidden xs:inline">Delete</span>
+                                        <span className="hidden xl:block">
+                                            {t('NoteDetailScreen.main_screen.buttons.delete')}
+                                        </span>
                                     </>
                                 )}
                             </button>
@@ -232,7 +255,9 @@ function NoteDetailScreen() {
                                 <div className="p-2 bg-purple-100 rounded-lg">
                                     <FaTag className="text-purple-600" />
                                 </div>
-                                <h3 className="text-sm font-medium text-gray-700">Tags</h3>
+                                <h3 className="text-sm font-medium text-gray-700">
+                                    {t('NoteDetailScreen.main_screen.labels.tags')}
+                                </h3>
                             </div>
                             <div className="flex flex-wrap gap-2">
                                 {currentNote.tags.map((tag, index) => (
@@ -272,7 +297,7 @@ function NoteDetailScreen() {
                         <div className="px-6 py-4 flex items-center justify-between">
                             <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
                                 <FaFileAlt className="text-blue-500" />
-                                Content
+                                {t('NoteDetailScreen.main_screen.headers.content')}
                             </h2>
                             <div className="flex items-center gap-4 text-sm text-gray-500">
                                 <span className="flex items-center gap-2">
@@ -306,13 +331,21 @@ function NoteDetailScreen() {
                                             <FaCode className="text-gray-600" />
                                         </div>
                                         <div>
-                                            <h3 className="font-medium text-gray-800">Raw Markdown</h3>
-                                            <p className="text-sm text-gray-500">View and copy the original markdown content</p>
+                                            <h3 className="font-medium text-gray-800">
+                                                {t('NoteDetailScreen.main_screen.headers.raw_markdown')}
+                                            </h3>
+                                            <p className="text-sm text-gray-500">
+                                                {t('NoteDetailScreen.main_screen.headers.view_and_copy')}
+                                            </p>
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <span className="text-sm text-gray-500 group-open:hidden">Show</span>
-                                        <span className="text-sm text-gray-500 hidden group-open:inline">Hide</span>
+                                        <span className="text-sm text-gray-500 group-open:hidden">
+                                            {t('NoteDetailScreen.main_screen.buttons.show')}
+                                        </span>
+                                        <span className="text-sm text-gray-500 hidden group-open:inline">
+                                            {t('NoteDetailScreen.main_screen.buttons.hide')}
+                                        </span>
                                         <FaChevronDown className="text-gray-400 transform group-open:rotate-180 transition-transform" />
                                     </div>
                                 </div>
@@ -357,14 +390,14 @@ function NoteDetailScreen() {
                             className="px-4 py-2 border border-gray-300 hover:bg-gray-50 rounded-lg flex items-center gap-2 transition-colors  cursor-pointer"
                         >
                             <FaCopy />
-                            Copy Content
+                            {t('NoteDetailScreen.main_screen.buttons.copy_content')}
                         </button>
                         <button
                             onClick={handleEdit}
                             className="px-4 py-2 bg-gradient-to-r  cursor-pointer from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-lg flex items-center gap-2 shadow-md hover:shadow-lg transition-all"
                         >
                             <FaEdit />
-                            Quick Edit
+                            {t('NoteDetailScreen.main_screen.buttons.quick_edit')}
                         </button>
                     </div>
                 </div>

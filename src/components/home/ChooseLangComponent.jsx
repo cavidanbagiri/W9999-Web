@@ -12,9 +12,9 @@ import Russian_flag from '../../assets/flags/russian.png';
 import English_flag from '../../assets/flags/england.png';
 
 const LANGUAGES = [
+    { name: 'English', image: English_flag, code: 'en' },
     { name: 'Spanish', image: Spanish_flag, code: 'es' },
     { name: 'Russian', image: Russian_flag, code: 'ru' },
-    { name: 'English', image: English_flag, code: 'en' },
 ];
 
 export default function ChooseLangComponent({ selectedLanguage, setSelectedLanguage, t }) {
@@ -84,6 +84,35 @@ export default function ChooseLangComponent({ selectedLanguage, setSelectedLangu
     );
   }
 
+  const getLanguageName = (name) => {
+    if (!name) return '';
+    
+    const languagesObj = t('languages', { returnObjects: true });
+    // Check if languagesObj is actually an object
+    if (!languagesObj || typeof languagesObj !== 'object') {
+        return '';
+    }
+
+    // Find name from LANGUAGES list and return back the key
+    let f_code = '';
+    for (const lang of LANGUAGES) {
+        if (lang.name === name) {
+            f_code = lang.code;
+            break;
+        }
+    }
+    
+
+
+    for (const [code, value] of Object.entries(languagesObj)) {
+        if (code === f_code) {
+            return value;  // Return the language code
+        }
+    }
+    
+    return '';  // Not found
+}
+
   return (
     <div className="bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100">
       {/* Header */}
@@ -139,7 +168,8 @@ export default function ChooseLangComponent({ selectedLanguage, setSelectedLangu
                 <h3 className={`font-semibold text-lg ${
                   selectedLanguage === lang.name ? 'text-blue-700' : 'text-gray-900'
                 }`}>
-                  {lang.name}
+                  {/* {lang.name} cavidan */}
+                  {getLanguageName(lang.name)}
                 </h3>
                 <p className={`text-sm ${
                   selectedLanguage === lang.name ? 'text-blue-600' : 'text-gray-600'
@@ -172,7 +202,7 @@ export default function ChooseLangComponent({ selectedLanguage, setSelectedLangu
         <p className="text-gray-600 text-center text-sm">
           {t('Dashboard.ChooseLangComponent.footer.languages_available', {
             count: filteredLanguages.length,
-            languages_plural: filteredLanguages.length !== 1 ? 's' : ''
+            languages_plural: filteredLanguages.length !== 1 && ''
           })}
         </p>
       </div>

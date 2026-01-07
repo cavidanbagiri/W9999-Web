@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
+import { useTranslation } from 'react-i18next';
+
 import UserNotAuth from '../../components/notes/UserNotAuth';
 
 import { removeCurrentNoteURL,
@@ -36,6 +38,9 @@ import { IoSparklesOutline } from "react-icons/io5";
 import NoteService from '../../services/NoteService';
 
 function EditNoteComponent() {
+
+  const { t } = useTranslation();
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { id } = useParams();
@@ -101,7 +106,9 @@ function EditNoteComponent() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading note...</p>
+          <p className="mt-4 text-gray-600">
+            {t('EditNoteScreen.main_screen.loading.loading_note')}
+          </p>
         </div>
       </div>
     );
@@ -118,7 +125,7 @@ function EditNoteComponent() {
             onClick={() => navigate('/notes')}
             className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
           >
-            Back to Notes
+            {t('EditNoteScreen.main_screen.buttons.back_to_notes')}
           </button>
         </div>
       </div>
@@ -277,7 +284,7 @@ function EditNoteComponent() {
         err?.message ||
         'Failed to update note';
       setError(errorMessage);
-      console.error('Update note error:', err);
+      // console.error('Update note error:', err);
     } finally {
       setIsSubmitting(false);
     }
@@ -327,7 +334,7 @@ function EditNoteComponent() {
             className="flex items-center text-blue-600 hover:text-blue-800 "
           >
             <FaArrowLeft className="mr-2" />
-            Back to Note
+            {t('EditNoteScreen.main_screen.headers.back_to_note')}
           </button>
           <div>
             <button
@@ -346,10 +353,10 @@ function EditNoteComponent() {
         <div className="flex justify-between items-start">
           <div>
             <h1 className="text-3xl font-bold text-blue-700 mb-2">
-              Edit Note
+              {t('EditNoteScreen.main_screen.headers.edit_note')}
             </h1>
             <p className="text-gray-600">
-              Update your learning note
+              {t('EditNoteScreen.main_screen.headers.update_your_learning_note')}
               {currentNote && (
                 <span className="ml-2 text-sm">
                   • Last edited: {new Date(currentNote.updated_at).toLocaleDateString()}
@@ -387,7 +394,7 @@ function EditNoteComponent() {
         {/* Note Name */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Note Title *
+            {t('EditNoteScreen.main_screen.form.note_title')}
           </label>
           <input
             type="text"
@@ -411,7 +418,7 @@ function EditNoteComponent() {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               <FaGlobeAmericas className="inline mr-2" />
-              Language
+              {t('EditNoteScreen.main_screen.form.language')}
             </label>
             <select
               name="target_lang"
@@ -426,7 +433,7 @@ function EditNoteComponent() {
               ))}
             </select>
             <div className="text-xs text-gray-500 mt-1">
-              Select the language this note is about
+              {t('EditNoteScreen.main_screen.form.select_language_hint')}
             </div>
           </div>
 
@@ -434,7 +441,7 @@ function EditNoteComponent() {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               <FaBook className="inline mr-2" />
-              Note Type *
+              {t('EditNoteScreen.main_screen.form.note_type')}
             </label>
             <div className="flex space-x-2">
               {noteTypes.map((type) => (
@@ -455,7 +462,10 @@ function EditNoteComponent() {
               ))}
             </div>
             <div className="text-xs text-gray-500 mt-1">
-              Current: <span className="font-medium">{formData.note_type}</span>
+              {/* Current: <span className="font-medium">{formData.note_type}</span> */}
+              <span>
+                {t('EditNoteScreen.main_screen.form.current', { type: formData.note_type })}
+              </span>
             </div>
           </div>
         </div>
@@ -464,7 +474,7 @@ function EditNoteComponent() {
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             <FaTag className="inline mr-2" />
-            Tags
+            {t('EditNoteScreen.main_screen.form.tags')}
           </label>
           <div className="flex gap-2 mb-2">
             <input
@@ -482,7 +492,7 @@ function EditNoteComponent() {
               className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition"
               disabled={!tagInput.trim()}
             >
-              Add
+              {t('EditNoteScreen.main_screen.buttons.add')}
             </button>
           </div>
 
@@ -518,7 +528,7 @@ function EditNoteComponent() {
         <div>
           <div className="flex justify-between items-center mb-2">
             <label className="block text-sm font-medium text-gray-700">
-              Content *
+              {t('EditNoteScreen.main_screen.form.content')}
             </label>
             <div className="text-sm">
               <span className={`font-medium ${charCount > charLimit * 0.9 ? 'text-red-600' : 'text-gray-500'}`}>
@@ -588,13 +598,7 @@ function EditNoteComponent() {
                 name="content"
                 value={formData.content}
                 onChange={handleContentChange}
-                placeholder="Write your note here. You can use markdown for formatting:
-• **Bold text** for important points
-• *Italic text* for emphasis
-• - Lists for examples
-• [Links](url) for references
-
-Tip: Select text and use the formatting buttons above."
+                placeholder={t('EditNoteScreen.main_screen.content_placeholder')}
                 className="w-full h-96 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono text-sm resize-none"
                 required
               />
@@ -641,7 +645,9 @@ Tip: Select text and use the formatting buttons above."
           {/* Formatting Help */}
           <div className="mt-2 text-xs text-gray-500">
             <details>
-              <summary className="cursor-pointer hover:text-gray-700">Markdown Formatting Help</summary>
+              <summary className="cursor-pointer hover:text-gray-700">
+                {t('EditNoteScreen.main_screen.form.markdown_formatting_help')}
+              </summary>
               <div className="mt-2 p-3 bg-gray-50 rounded">
                 <div className="grid grid-cols-2 gap-2 text-xs">
                   <div><code>**bold**</code> → <strong>bold</strong></div>
@@ -666,7 +672,7 @@ Tip: Select text and use the formatting buttons above."
               disabled={isSubmitting}
             >
               <FaTimes className="mr-2" />
-              Cancel
+              {t('EditNoteScreen.main_screen.buttons.cancel')}
             </button>
           </div>
 
@@ -679,7 +685,7 @@ Tip: Select text and use the formatting buttons above."
               className="px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition  h-full"
               disabled={isSubmitting}
             >
-              View Note
+              {t('EditNoteScreen.main_screen.buttons.view_note')}
             </button>
 
             <button
@@ -690,12 +696,12 @@ Tip: Select text and use the formatting buttons above."
               {isSubmitting ? (
                 <>
                   <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white mr-2"></div>
-                  Updating...
+                  {t('EditNoteScreen.main_screen.buttons.updating')}
                 </>
               ) : (
                 <>
                   <FaSave className="mr-2" />
-                  Update Note
+                  {t('EditNoteScreen.main_screen.buttons.update_note')}
                 </>
               )}
             </button>
@@ -705,7 +711,9 @@ Tip: Select text and use the formatting buttons above."
 
       {/* Stats Section */}
       <div className="mt-8 p-4 bg-gray-50 rounded-lg">
-        <h3 className="font-medium text-gray-700 mb-2">Note Statistics</h3>
+        <h3 className="font-medium text-gray-700 mb-2">
+          {t('EditNoteScreen.main_screen.headers.note_statistics')}
+        </h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
           <div className="text-center p-2 bg-white rounded">
             <div className="font-bold text-blue-600">{charCount}</div>

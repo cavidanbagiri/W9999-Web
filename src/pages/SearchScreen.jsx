@@ -6,6 +6,9 @@ import WordService from '../services/WordService';
 import RenderWordComponent from '../components/search/RenderWordComponent';
 import { setSearchQuery, clearSearchQuery, clearSearchResults } from '../store/word_store';
 
+import {useTranslation} from 'react-i18next';
+
+
 import English from '../assets/flags/england.png';
 import Spanish from '../assets/flags/spanish.png';
 import Russian from '../assets/flags/russian.png';
@@ -20,6 +23,9 @@ const AVAILABLE_LANGUAGES = [
 ];
 
 export default function SearchScreen() {
+
+    const { t } = useTranslation();
+
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
@@ -122,7 +128,7 @@ export default function SearchScreen() {
                                 type="text"
                                 value={search_query}
                                 onChange={(e) => dispatch(setSearchQuery(e.target.value))}
-                                placeholder="Search words or translations..."
+                                placeholder={t('SearchScreen.main_screen.search.placeholder')}
                                 className="flex-1 ml-3 bg-transparent border-none outline-none text-gray-900 placeholder-gray-500 text-base"
                                 autoFocus
                                 onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
@@ -146,7 +152,7 @@ export default function SearchScreen() {
                         onClick={() => navigate(-1)}
                         className="px-4 py-2 text-blue-600 font-medium cursor-pointer hover:bg-blue-50 rounded-lg transition-colors whitespace-nowrap outline-none"
                     >
-                        Cancel
+                        {t('SearchScreen.main_screen.search.cancel')}
                     </button>
 
                 </div>
@@ -158,10 +164,7 @@ export default function SearchScreen() {
                             <span
                                 key={language.code}
                                 className= 'flex items-center gap-1  rounded-full bg-gray-100 p-2'
-                                    
-                                
                             >
-                                
                                 <span className="text-sm font-medium">{language.name}</span>
                                 <img 
                                     src={language.image} 
@@ -172,8 +175,6 @@ export default function SearchScreen() {
                         ))}
                     </div>
                     
-
-                
             </div>
 
             {/* Results Section */}
@@ -181,12 +182,16 @@ export default function SearchScreen() {
                 {targetLanguage && isLoading ? (
                     <div className="flex flex-col items-center justify-center py-16">
                         <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-                        <p className="text-gray-600 mt-4 text-lg">Searching vocabulary...</p>
+                        <p className="text-gray-600 mt-4 text-lg">
+                            {t('SearchScreen.main_screen.search.searching')}
+                        </p>
                     </div>
                 ) : error ? (
                     <div className="flex flex-col items-center justify-center py-16">
                         <span className="text-red-500 text-4xl mb-4">⚠️</span>
-                        <p className="text-gray-900 font-semibold text-lg mb-2">Something went wrong</p>
+                        <p className="text-gray-900 font-semibold text-lg mb-2">
+                            {t('SearchScreen.main_screen.results.something_went_wrong')}
+                        </p>
                         <p className="text-gray-600 text-center">{error.message}</p>
                     </div>
                 ) : (
@@ -202,7 +207,7 @@ export default function SearchScreen() {
                                     <div>
                                         <span className="text-gray-300 text-6xl mb-4">🔍</span>
                                         <p className="text-gray-600 text-lg font-semibold mb-2">
-                                            Please choose the language 
+                                            {t('SearchScreen.main_screen.language_filter.choose_language')}   
                                         </p>
                                         <p onClick={()=>{
                                             navigate('/')
@@ -215,13 +220,15 @@ export default function SearchScreen() {
                                     <div>
                                         <span className="text-gray-300 text-6xl mb-4">🔍</span>
                                         <p className="text-gray-600 text-lg font-semibold mb-2">
-                                            {debouncedQuery ? 'No matching words found' : 'Search for vocabulary'}
+                                            {debouncedQuery ? 
+                                            t('SearchScreen.main_screen.results.no_matching_words') 
+                                            : t('SearchScreen.main_screen.results.search_for_vocabulary')}
                                         </p>
                                     </div>
                                 }
                                 {!debouncedQuery && (
                                     <p className="text-gray-500 text-sm max-w-md">
-                                        Try searching for: "hello", "gracias", or "learned"
+                                        {t('SearchScreen.main_screen.results.search_suggestions')}
                                     </p>
                                 )}
                             </div>

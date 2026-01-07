@@ -5,7 +5,7 @@ import WordService from '../services/WordService.js';
 import VocabCard from '../components/cards/VocabCard.jsx';
 
 
-export function WordList({ screen }) {
+export function WordList({ screen, t}) {
 
     const { words, unlearned_words, learned_words, loading, selectedLanguage, hasMore, currentCategory } = useSelector((state) => state.wordSlice);
    
@@ -17,7 +17,9 @@ export function WordList({ screen }) {
                     ?
                     <div className="flex flex-col justify-center items-center py-4  h-[50vh]">
                         <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                        <span className="text-gray-600 text-lg font-medium">Loading your words...</span>
+                        <span className="text-gray-600 text-lg font-medium">
+                            {t('Layout.WordList.loading.loading_words')}
+                        </span>
                     </div>
                     :
 

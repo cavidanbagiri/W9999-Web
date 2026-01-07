@@ -26,7 +26,7 @@ import { FaRegHandshake } from "react-icons/fa";
 
 
 
-const Categories = ({ isVisible, onClose, screen }) => {
+const Categories = ({ isVisible, onClose, screen, t }) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { selectedLanguage, currentCategory } = useSelector((state) => state.wordSlice);
@@ -304,8 +304,8 @@ const Categories = ({ isVisible, onClose, screen }) => {
                     <div className="relative z-10">
                         <div className="flex flex-row justify-between items-center mb-6 ">
                             <div>
-                                <h2 className="text-2xl font-bold mb-2">Word Categories</h2>
-                                <p className="text-purple-200 text-lg">Master vocabulary by topics</p>
+                                <h2 className="text-2xl font-bold mb-2">{t('Layout.FilterComponent.Categories.header.title')}</h2>
+                                <p className="text-purple-200 text-lg">{t('Layout.FilterComponent.Categories.header.subtitle')}</p>
                             </div>
                             <div className='flex items-center justify-center rounded-full text-white bg-white/10 p-5 w-16 h-16 '>
                                 <button
@@ -321,15 +321,15 @@ const Categories = ({ isVisible, onClose, screen }) => {
                         <div className="grid grid-cols-3 gap-4 mb-6">
                             <div className="text-center p-4 bg-white/10 rounded-2xl backdrop-blur-sm">
                                 <div className="text-xl font-bold">{categories.length}</div>
-                                <div className="text-sm text-purple-200">Categories</div>
+                                <div className="text-sm text-purple-200">{t('Layout.FilterComponent.Categories.stats.categories')}</div>
                             </div>
                             <div className="text-center p-4 bg-white/10 rounded-2xl backdrop-blur-sm">
                                 <div className="text-xl font-bold">{learnedWords}</div>
-                                <div className="text-sm text-purple-200">Words Learned</div>
+                                <div className="text-sm text-purple-200">{t('Layout.FilterComponent.Categories.stats.words_learned')}</div>
                             </div>
                             <div className="text-center p-4 bg-white/10 rounded-2xl backdrop-blur-sm">
                                 <div className="text-xl font-bold">{completedCategories}</div>
-                                <div className="text-sm text-purple-200">Completed</div>
+                                <div className="text-sm text-purple-200">{t('Layout.FilterComponent.Categories.stats.completed')}</div>
                             </div>
                         </div>
 
@@ -337,7 +337,7 @@ const Categories = ({ isVisible, onClose, screen }) => {
                         <div className="relative">
                             <input
                                 type="text"
-                                placeholder="Search categories..."
+                                placeholder={t('Layout.FilterComponent.Categories.search.placeholder')}
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 className="w-full bg-white/10 border border-white/20 rounded-2xl px-6 py-4 text-white placeholder-purple-200 focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-transparent backdrop-blur-sm"
@@ -355,7 +355,9 @@ const Categories = ({ isVisible, onClose, screen }) => {
                         <div className="flex flex-col items-center justify-center py-16">
                             <div className="animate-spin rounded-full h-16 w-16 border-4 border-purple-500 border-t-transparent mb-4"></div>
 
-                            <span className="text-gray-600 text-lg font-medium">Loading your categories...</span>
+                            <span className="text-gray-600 text-lg font-medium">
+                                {t('Layout.FilterComponent.Categories.loading.loading_categories')}
+                            </span>
                         </div>
                     ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -428,8 +430,9 @@ const Categories = ({ isVisible, onClose, screen }) => {
                                                 {/* Progress Bar */}
                                                 <div className="mb-3">
                                                     <div className="flex justify-between text-sm text-gray-600 mb-1">
-                                                        <span>{learnedWords} learned</span>
-                                                        <span>{totalWords} total</span>
+                                                        {/* <span>{learnedWords} learned</span> */}
+                                                        <span>{t('Layout.FilterComponent.Categories.progress.learned', { learned_count: learnedWords })}</span>
+                                                        <span>{t('Layout.FilterComponent.Categories.progress.total', { total_count: totalWords })}</span>
                                                     </div>
                                                     <div className="w-full bg-gray-200 rounded-full h-2">
                                                         <div 
@@ -454,17 +457,17 @@ const Categories = ({ isVisible, onClose, screen }) => {
                                                     {isCompleted ? (
                                                         <>
                                                             <FaCheckCircle className="mr-1" />
-                                                            Mastered
+                                                            {t('Layout.FilterComponent.Categories.category_status.mastered')}
                                                         </>
                                                     ) : isInProgress ? (
                                                         <>
                                                             <FaChartLine className="mr-1" />
-                                                            In Progress
+                                                            {t('Layout.FilterComponent.Categories.category_status.in_progress')}
                                                         </>
                                                     ) : (
                                                         <>
                                                             <FaLock className="mr-1" />
-                                                            Start Learning
+                                                            {t('Layout.FilterComponent.Categories.category_status.start_learning')}
                                                         </>
                                                     )}
                                                 </div>
@@ -480,9 +483,10 @@ const Categories = ({ isVisible, onClose, screen }) => {
                             {filteredCategories.length === 0 && !loading && (
                                 <div className="col-span-2 text-center py-16">
                                     <div className="text-8xl mb-6 opacity-20">📚</div>
-                                    <h3 className="text-2xl font-bold text-gray-600 mb-3">No categories found</h3>
+                                    <h3 className="text-2xl font-bold text-gray-600 mb-3">{t('Layout.FilterComponent.Categories.search.no_results_found')}</h3>
                                     <p className="text-gray-500 max-w-md mx-auto">
-                                        {searchTerm ? `No categories matching "${searchTerm}"` : 'Try selecting a different language to see available categories'}
+                                        {searchTerm ? t('Layout.FilterComponent.Categories.search.no_matching_categories', { search_term: searchTerm })
+                                        : t('Layout.FilterComponent.Categories.search.try_different_language')}
                                     </p>
                                 </div>
                             )}
@@ -493,8 +497,9 @@ const Categories = ({ isVisible, onClose, screen }) => {
                 {/* Footer */}
                 <div className="bg-white border-t border-gray-200 p-4 text-center">
                     <p className="text-gray-600 text-sm">
-                        <span className="font-semibold text-purple-600">{learnedWords}</span> words mastered across{' '}
-                        <span className="font-semibold text-purple-600">{categories.length}</span> categories
+                        {/* <span className="font-semibold text-purple-600">{learnedWords}</span> words mastered across{' '}
+                        <span className="font-semibold text-purple-600">{categories.length}</span> categories */}
+                        <span className="font-semibold text-black-600">{t('Layout.FilterComponent.Categories.footer.summary', { learned_words: learnedWords, category_count: categories.length })}</span>
                     </p>
                 </div>
             </div>
