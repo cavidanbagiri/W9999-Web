@@ -1,3 +1,7 @@
+
+
+
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -6,7 +10,8 @@ import { useTranslation } from 'react-i18next';
 
 import UserNotAuth from '../../components/notes/UserNotAuth';
 
-import { removeCurrentNoteURL,
+import {
+  removeCurrentNoteURL,
   addCurrentNoteURL,
   handleInputChangeRT,
   handleContentChangeRT,
@@ -45,21 +50,6 @@ function EditNoteComponent() {
   const dispatch = useDispatch();
   const { id } = useParams();
 
-  // Get state from Redux
-  const { 
-    currentNote, 
-    loading: notesLoading, 
-    error: notesError, 
-    formData,
-    tagInput 
-  } = useSelector((state) => state.notesSlice);
-  const { user, is_auth } = useSelector((state) => state.authSlice);
-
-  // const [tagInput, setTagInput] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState('');
-  const [showPreview, setShowPreview] = useState(false);
-
   // Available languages
   const languages = [
     { value: null, label: 'No specific language' },
@@ -77,30 +67,56 @@ function EditNoteComponent() {
   ];
 
 
+  const { is_auth } = useSelector((state) => state.authSlice);
 
-  // User Not Authenticated
-  if (!is_auth) {
-    return <UserNotAuth />
-  }
+  // const [tagInput, setTagInput] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState('');
+  const [showPreview, setShowPreview] = useState(false);
 
 
+  // Get state from Redux
+  const {
+    currentNote,
+    loading: notesLoading,
+    error: notesError,
+    formData,
+    tagInput
+  } = useSelector((state) => state.notesSlice);
+
+
+  
   useEffect(() => {
-  if (id) {
-    const noteId = parseInt(id);
-    
-    // Only fetch if form is empty (indicating first load)
-    // OR if the currentNote doesn't match the ID we're editing
-    const isFormEmpty = !formData.note_name && !formData.content;
-    const isDifferentNote = currentNote && currentNote.id !== noteId;
-    
-    if (isFormEmpty || isDifferentNote) {
-      dispatch(NoteService.getNoteById(noteId));
+    if (id && is_auth) {
+      const noteId = parseInt(id);
+      const isFormEmpty = !formData.note_name && !formData.content;
+      const isDifferentNote = currentNote && currentNote.id !== noteId;
+
+      if (isFormEmpty || isDifferentNote) {
+        dispatch(NoteService.getNoteById(noteId));
+      }
     }
+  }, [dispatch, id, formData.note_name, formData.content, currentNote, is_auth]);
+
+
+
+  // ✅ Show loading while checking auth
+  if (!is_auth) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Checking authentication...</p>
+        </div>
+      </div>
+    );
   }
-}, [dispatch, id, formData.note_name, formData.content, currentNote]);
+
+  
 
 
-// Loading state
+
+  // Loading state
   if (notesLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -132,9 +148,7 @@ function EditNoteComponent() {
     );
   }
 
-
-
-// Handle form input changes
+  // Handle form input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     dispatch(handleInputChangeRT({ name, value }));
@@ -166,9 +180,9 @@ function EditNoteComponent() {
   const handleTagKeyPress = (e) => {
     if (e.key === 'Enter') {
       e.preventDefault();
-      dispatch(handleTagKeyPressRT({ 
-        key: e.key, 
-        tagInput: e.target.value 
+      dispatch(handleTagKeyPressRT({
+        key: e.key,
+        tagInput: e.target.value
       }));
     }
   };
@@ -311,18 +325,9 @@ function EditNoteComponent() {
     }
   };
 
-
-
-
-
-
-
   // Character count
   const charCount = formData.content.length;
   const charLimit = 50000;
-
-
-
 
   return (
     <div className="container mx-auto px-4 py-6 max-w-4xl">
@@ -448,9 +453,9 @@ function EditNoteComponent() {
                 <button
                   key={type.value}
                   type="button"
-                  onClick={() => dispatch(handleInputChangeRT({ 
-                    name: 'note_type', 
-                    value: type.value 
+                  onClick={() => dispatch(handleInputChangeRT({
+                    name: 'note_type',
+                    value: type.value
                   }))}
                   className={`flex-1 px-4 py-3 rounded-lg border transition-all ${formData.note_type === type.value
                     ? `${type.color} border-2`

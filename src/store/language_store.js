@@ -50,8 +50,6 @@ export const initializeLanguage = createAsyncThunk(
         langCode = browserLang;
       }
     }
-
-    console.log('............................................', langCode)
     
     // Apply the language
     await dispatch(changeLanguage(langCode));

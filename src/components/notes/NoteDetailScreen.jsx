@@ -77,23 +77,12 @@ function NoteDetailScreen() {
         navigate('/notes');
     };
 
-    // Loading state
-    if (loading) {
-        return (
-            <div className="container mx-auto px-4 py-12 text-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mx-auto mb-4"></div>
-                <p className="text-gray-600">
-                    {t('NoteDetailScreen.main_screen.loading.loading_note')}
-                </p>
-            </div>
-        );
-    }
 
-    
+
     // Loading state
-      if (!is_auth) {
-       return <UserNotAuth />
-      }
+    if (!is_auth) {
+        return <UserNotAuth />
+    }
 
     // Error state
     if (error) {
@@ -148,7 +137,7 @@ function NoteDetailScreen() {
                         <div className="flex flex-wrap gap-2 w-full sm:w-auto">
 
                             <button
-                                onClick={()=>{
+                                onClick={() => {
                                     navigate('/ai-direct-chat')
                                 }}
                                 className="flex-1 sm:flex-none px-4 py-2.5 bg-white border border-gray-300 hover:bg-gray-50  cursor-pointer rounded-xl flex items-center justify-center gap-2 transition-all hover:shadow-md"
@@ -208,235 +197,210 @@ function NoteDetailScreen() {
                 </div>
             </header>
 
-            <main className="container mx-auto px-4 py-8">
-                {/* Note Metadata Card */}
-                <div className="bg-white rounded-2xl shadow-lg p-6 mb-8">
-                    {/* Note Title and Badges */}
-                    <div className="mb-8">
-                        <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6 leading-tight">
-                            {currentNote.note_name}
-                        </h1>
+            {loading ?
+                <div className="container mx-auto px-4 py-12 text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mx-auto mb-4"></div>
+                    <p className="text-gray-600">
+                        {t('NoteDetailScreen.main_screen.loading.loading_note')}
+                    </p>
+                </div>
+                :
 
-                        {/* Date Info */}
-                        <div className="flex items-center justify-end gap-4 ml-auto text-sm text-gray-500  text-right">
-                            <div className="flex items-center  justify-end gap-2 w-full text-right">
-                                <FaCalendar className="text-gray-400" />
-                                <span className='text-right'>Updated: {new Date(currentNote.updated_at).toLocaleDateString()}</span>
-                            </div>
-                            <div className="hidden md:flex items-center gap-2">
-                                <FaClock className="text-gray-400" />
-                                <span>{new Date(currentNote.updated_at).toLocaleTimeString()}</span>
-                            </div>
-                        </div>
+                <main className="container mx-auto px-4 py-8">
+                    {/* Note Metadata Card */}
+                    <div className="bg-white rounded-2xl shadow-lg p-6 mb-8">
+                        {/* Note Title and Badges */}
+                        <div className="mb-8">
+                            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6 leading-tight">
+                                {currentNote.note_name}
+                            </h1>
 
-                        <div className="flex flex-wrap items-center gap-3">
-                            {/* Note Type Badge */}
-                            <span className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium shadow-sm ${getTypeBadgeClass(currentNote.note_type)}`}>
-                                <FaBook className="text-sm" />
-                                {currentNote.note_type}
-                            </span>
-
-                            {/* Language Badge */}
-                            {currentNote.target_lang && (
-                                <span className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-50 to-blue-100 text-blue-800 border border-blue-200 rounded-full text-sm font-medium shadow-sm">
-                                    <FaGlobeAmericas />
-                                    {currentNote.target_lang.toUpperCase()}
-                                </span>
-                            )}
-
-
-                        </div>
-                    </div>
-
-                    {/* Tags Section */}
-                    {currentNote.tags && currentNote.tags.length > 0 && (
-                        <div className="mb-6 pb-6 border-b border-gray-100">
-                            <div className="flex items-center gap-2 mb-3">
-                                <div className="p-2 bg-purple-100 rounded-lg">
-                                    <FaTag className="text-purple-600" />
+                            {/* Date Info */}
+                            <div className="flex items-center justify-end gap-4 ml-auto text-sm text-gray-500  text-right">
+                                <div className="flex items-center  justify-end gap-2 w-full text-right">
+                                    <FaCalendar className="text-gray-400" />
+                                    <span className='text-right'>Updated: {new Date(currentNote.updated_at).toLocaleDateString()}</span>
                                 </div>
-                                <h3 className="text-sm font-medium text-gray-700">
-                                    {t('NoteDetailScreen.main_screen.labels.tags')}
-                                </h3>
+                                <div className="hidden md:flex items-center gap-2">
+                                    <FaClock className="text-gray-400" />
+                                    <span>{new Date(currentNote.updated_at).toLocaleTimeString()}</span>
+                                </div>
                             </div>
-                            <div className="flex flex-wrap gap-2">
-                                {currentNote.tags.map((tag, index) => (
-                                    <span
-                                        key={index}
-                                        className="inline-flex items-center gap-1 px-4 py-2 bg-gradient-to-r from-purple-50 to-pink-50 text-purple-800 border border-purple-200 rounded-full text-sm font-medium hover:shadow-md transition-shadow"
-                                    >
-                                        <FaHashtag className="text-xs" />
-                                        {tag}
+
+                            <div className="flex flex-wrap items-center gap-3">
+                                {/* Note Type Badge */}
+                                <span className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium shadow-sm ${getTypeBadgeClass(currentNote.note_type)}`}>
+                                    <FaBook className="text-sm" />
+                                    {currentNote.note_type}
+                                </span>
+
+                                {/* Language Badge */}
+                                {currentNote.target_lang && (
+                                    <span className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-50 to-blue-100 text-blue-800 border border-blue-200 rounded-full text-sm font-medium shadow-sm">
+                                        <FaGlobeAmericas />
+                                        {currentNote.target_lang.toUpperCase()}
                                     </span>
-                                ))}
+                                )}
+
+
                             </div>
                         </div>
-                    )}
 
-                    {/* Creation Info */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-500">
-                        <div className="flex items-center gap-2">
-                            <FaIdCard className="text-gray-400" />
-                            <span>Note ID: <code className="ml-1 px-2 py-1 bg-gray-100 rounded">{currentNote.id}</code></span>
-                        </div>
-                        {/* <div className="flex items-center gap-2">
-            <FaUser className="text-gray-400" />
-            <span>User ID: <code className="ml-1 px-2 py-1 bg-gray-100 rounded">{currentNote.user_id}</code></span>
-          </div> */}
-                        <div className="flex items-center gap-2">
-                            <FaCalendarPlus className="text-gray-400" />
-                            <span>Created: {new Date(currentNote.created_at).toLocaleDateString()}</span>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Content Card */}
-                <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-                    {/* Content Header */}
-                    <div className="border-b border-gray-100">
-                        <div className="px-6 py-4 flex items-center justify-between">
-                            <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-                                <FaFileAlt className="text-blue-500" />
-                                {t('NoteDetailScreen.main_screen.headers.content')}
-                            </h2>
-                            <div className="flex items-center gap-4 text-sm text-gray-500">
-                                <span className="flex items-center gap-2">
-                                    <FaRuler className="text-xs" />
-                                    {currentNote.content.length} characters
-                                </span>
-                                <span className="flex items-center gap-2">
-                                    <FaClock className="text-xs" />
-                                    {Math.ceil(currentNote.content.split(/\s+/).length / 200)} min read
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Markdown Content */}
-                    <div className="p-6 md:p-8">
-                        <div className="prose prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-li:text-gray-700 prose-code:bg-gray-100 prose-code:px-2 prose-code:py-1 prose-code:rounded prose-pre:bg-gray-900 prose-pre:text-gray-100 prose-a:text-blue-600 hover:prose-a:text-blue-800 prose-blockquote:border-l-4 prose-blockquote:border-blue-500 prose-blockquote:pl-4 prose-blockquote:italic">
-                            <ReactMarkdown>
-                                {currentNote.content}
-                            </ReactMarkdown>
-                        </div>
-                    </div>
-
-                    {/* Raw Content Section */}
-                    <div className="border-t border-gray-100">
-                        <details className="group">
-                            <summary className="cursor-pointer list-none px-6 py-4 hover:bg-gray-50 transition-colors">
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-3">
-                                        <div className="p-2 bg-gray-100 rounded-lg group-hover:bg-gray-200 transition-colors">
-                                            <FaCode className="text-gray-600" />
-                                        </div>
-                                        <div>
-                                            <h3 className="font-medium text-gray-800">
-                                                {t('NoteDetailScreen.main_screen.headers.raw_markdown')}
-                                            </h3>
-                                            <p className="text-sm text-gray-500">
-                                                {t('NoteDetailScreen.main_screen.headers.view_and_copy')}
-                                            </p>
-                                        </div>
+                        {/* Tags Section */}
+                        {currentNote.tags && currentNote.tags.length > 0 && (
+                            <div className="mb-6 pb-6 border-b border-gray-100">
+                                <div className="flex items-center gap-2 mb-3">
+                                    <div className="p-2 bg-purple-100 rounded-lg">
+                                        <FaTag className="text-purple-600" />
                                     </div>
-                                    <div className="flex items-center gap-2">
-                                        <span className="text-sm text-gray-500 group-open:hidden">
-                                            {t('NoteDetailScreen.main_screen.buttons.show')}
-                                        </span>
-                                        <span className="text-sm text-gray-500 hidden group-open:inline">
-                                            {t('NoteDetailScreen.main_screen.buttons.hide')}
-                                        </span>
-                                        <FaChevronDown className="text-gray-400 transform group-open:rotate-180 transition-transform" />
-                                    </div>
+                                    <h3 className="text-sm font-medium text-gray-700">
+                                        {t('NoteDetailScreen.main_screen.labels.tags')}
+                                    </h3>
                                 </div>
-                            </summary>
-                            <div className="px-6 pb-6">
-                                <div className="mt-4 relative">
-                                    <div className="absolute right-4 top-4 z-10">
-                                        <button
-                                            onClick={() => navigator.clipboard.writeText(currentNote.content)}
-                                            className="p-2 bg-gray-800 hover:bg-gray-900 text-white rounded-lg transition-colors cursor-pointer"
-                                            title="Copy markdown"
+                                <div className="flex flex-wrap gap-2">
+                                    {currentNote.tags.map((tag, index) => (
+                                        <span
+                                            key={index}
+                                            className="inline-flex items-center gap-1 px-4 py-2 bg-gradient-to-r from-purple-50 to-pink-50 text-purple-800 border border-purple-200 rounded-full text-sm font-medium hover:shadow-md transition-shadow"
                                         >
-                                            <FaCopy className="text-sm" />
-                                        </button>
-                                    </div>
-                                    <pre className="mt-2 p-4 bg-gray-900 text-gray-100 rounded-xl text-sm overflow-x-auto whitespace-pre-wrap font-mono backdrop-blur-sm">
-                                        {currentNote.content}
-                                    </pre>
+                                            <FaHashtag className="text-xs" />
+                                            {tag}
+                                        </span>
+                                    ))}
                                 </div>
                             </div>
-                        </details>
-                    </div>
-                </div>
+                        )}
 
-                {/* Bottom Action Bar */}
-                <div className="mt-8 flex flex-col sm:flex-row gap-4 items-center justify-between">
-                    <div className="flex items-center gap-4 text-sm text-gray-500">
-                        <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                            <span>Last saved: {formatRelativeTime(currentNote.updated_at)}</span>
+                        {/* Creation Info */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-500">
+                            <div className="flex items-center gap-2">
+                                <FaIdCard className="text-gray-400" />
+                                <span>Note ID: <code className="ml-1 px-2 py-1 bg-gray-100 rounded">{currentNote.id}</code></span>
+                            </div>
+
+                            <div className="flex items-center gap-2">
+                                <FaCalendarPlus className="text-gray-400" />
+                                <span>Created: {new Date(currentNote.created_at).toLocaleDateString()}</span>
+                            </div>
                         </div>
-                        <span className="hidden sm:inline">•</span>
-                        <span className="flex items-center gap-2">
-                            <FaHistory />
-                            Version 1.0
-                        </span>
                     </div>
 
-                    <div className="flex gap-2">
-                        <button
-                            onClick={handleCopyContent}
-                            className="px-4 py-2 border border-gray-300 hover:bg-gray-50 rounded-lg flex items-center gap-2 transition-colors  cursor-pointer"
-                        >
-                            <FaCopy />
-                            {t('NoteDetailScreen.main_screen.buttons.copy_content')}
-                        </button>
-                        <button
-                            onClick={handleEdit}
-                            className="px-4 py-2 bg-gradient-to-r  cursor-pointer from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-lg flex items-center gap-2 shadow-md hover:shadow-lg transition-all"
-                        >
-                            <FaEdit />
-                            {t('NoteDetailScreen.main_screen.buttons.quick_edit')}
-                        </button>
-                    </div>
-                </div>
-            </main>
+                    {/* Content Card */}
+                    <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+                        {/* Content Header */}
+                        <div className="border-b border-gray-100">
+                            <div className="px-6 py-4 flex items-center justify-between">
+                                <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+                                    <FaFileAlt className="text-blue-500" />
+                                    {t('NoteDetailScreen.main_screen.headers.content')}
+                                </h2>
+                                <div className="flex items-center gap-4 text-sm text-gray-500">
+                                    <span className="flex items-center gap-2">
+                                        <FaRuler className="text-xs" />
+                                        {currentNote.content.length} characters
+                                    </span>
+                                    <span className="flex items-center gap-2">
+                                        <FaClock className="text-xs" />
+                                        {Math.ceil(currentNote.content.split(/\s+/).length / 200)} min read
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
 
-            {/* Floating Action Button for Mobile */}
-            {/* <div className="fixed bottom-32 md:bottom-6 right-6 z-30 sm:hidden">
-                <div className="flex flex-col items-end gap-2">
-                    <div className="flex flex-col gap-2 transform transition-all duration-300">
-                        <button
-                            onClick={()=>{
-                                navigate('/ai-direct-chat')
-                            }}
-                            className="p-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all  cursor-pointer"
-                        >
-                            <IoSparklesOutline />
-                        </button>
-                        <button
-                            onClick={handleEdit}
-                            className="p-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all  cursor-pointer"
-                        >
-                            <FaEdit />
-                        </button>
-                        <button
-                            onClick={handleCopyContent}
-                            className="p-3 bg-white border border-gray-300 text-gray-700 rounded-full shadow-lg hover:shadow-xl transition-all  cursor-pointer"
-                        >
-                            <FaCopy />
-                        </button>
-                        <button
-                            onClick={handleDelete}
-                            disabled={isDeleting}
-                            className="p-3 bg-gradient-to-r from-red-600 to-pink-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all disabled:opacity-50 cursor-pointer"
-                        >
-                            {isDeleting ? <FaSpinner className="animate-spin" /> : <FaTrash />}
-                        </button>
+                        {/* Markdown Content */}
+                        <div className="p-6 md:p-8">
+                            <div className="prose prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-li:text-gray-700 prose-code:bg-gray-100 prose-code:px-2 prose-code:py-1 prose-code:rounded prose-pre:bg-gray-900 prose-pre:text-gray-100 prose-a:text-blue-600 hover:prose-a:text-blue-800 prose-blockquote:border-l-4 prose-blockquote:border-blue-500 prose-blockquote:pl-4 prose-blockquote:italic">
+                                <ReactMarkdown>
+                                    {currentNote.content}
+                                </ReactMarkdown>
+                            </div>
+                        </div>
+
+                        {/* Raw Content Section */}
+                        <div className="border-t border-gray-100">
+                            <details className="group">
+                                <summary className="cursor-pointer list-none px-6 py-4 hover:bg-gray-50 transition-colors">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-3">
+                                            <div className="p-2 bg-gray-100 rounded-lg group-hover:bg-gray-200 transition-colors">
+                                                <FaCode className="text-gray-600" />
+                                            </div>
+                                            <div>
+                                                <h3 className="font-medium text-gray-800">
+                                                    {t('NoteDetailScreen.main_screen.headers.raw_markdown')}
+                                                </h3>
+                                                <p className="text-sm text-gray-500">
+                                                    {t('NoteDetailScreen.main_screen.headers.view_and_copy')}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-sm text-gray-500 group-open:hidden">
+                                                {t('NoteDetailScreen.main_screen.buttons.show')}
+                                            </span>
+                                            <span className="text-sm text-gray-500 hidden group-open:inline">
+                                                {t('NoteDetailScreen.main_screen.buttons.hide')}
+                                            </span>
+                                            <FaChevronDown className="text-gray-400 transform group-open:rotate-180 transition-transform" />
+                                        </div>
+                                    </div>
+                                </summary>
+                                <div className="px-6 pb-6">
+                                    <div className="mt-4 relative">
+                                        <div className="absolute right-4 top-4 z-10">
+                                            <button
+                                                onClick={() => navigator.clipboard.writeText(currentNote.content)}
+                                                className="p-2 bg-gray-800 hover:bg-gray-900 text-white rounded-lg transition-colors cursor-pointer"
+                                                title="Copy markdown"
+                                            >
+                                                <FaCopy className="text-sm" />
+                                            </button>
+                                        </div>
+                                        <pre className="mt-2 p-4 bg-gray-900 text-gray-100 rounded-xl text-sm overflow-x-auto whitespace-pre-wrap font-mono backdrop-blur-sm">
+                                            {currentNote.content}
+                                        </pre>
+                                    </div>
+                                </div>
+                            </details>
+                        </div>
                     </div>
-                </div>
-            </div> */}
+
+                    {/* Bottom Action Bar */}
+                    <div className="mt-8 flex flex-col sm:flex-row gap-4 items-center justify-between">
+                        <div className="flex items-center gap-4 text-sm text-gray-500">
+                            <div className="flex items-center gap-2">
+                                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                                <span>Last saved: {formatRelativeTime(currentNote.updated_at)}</span>
+                            </div>
+                            <span className="hidden sm:inline">•</span>
+                            <span className="flex items-center gap-2">
+                                <FaHistory />
+                                Version 1.0
+                            </span>
+                        </div>
+
+                        <div className="flex gap-2">
+                            <button
+                                onClick={handleCopyContent}
+                                className="px-4 py-2 border border-gray-300 hover:bg-gray-50 rounded-lg flex items-center gap-2 transition-colors  cursor-pointer"
+                            >
+                                <FaCopy />
+                                {t('NoteDetailScreen.main_screen.buttons.copy_content')}
+                            </button>
+                            <button
+                                onClick={handleEdit}
+                                className="px-4 py-2 bg-gradient-to-r  cursor-pointer from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-lg flex items-center gap-2 shadow-md hover:shadow-lg transition-all"
+                            >
+                                <FaEdit />
+                                {t('NoteDetailScreen.main_screen.buttons.quick_edit')}
+                            </button>
+                        </div>
+                    </div>
+                </main>
+            }
+
+
+
         </div>
     );
 

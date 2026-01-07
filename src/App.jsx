@@ -56,9 +56,6 @@ function App() {
           const result = await dispatch(AuthService.checkNativeLanguage()).unwrap();
 
           if (result.payload.has_native && result.payload.native_language) {
-            // .. Dont do nothing
-            console.log('the comiung response is ', result)
-            console.log('current language is ', currentLanguage)
             if (result.payload.native_language !== currentLanguage) {
               dispatch(changeLanguage(result.payload.native_language));
             }

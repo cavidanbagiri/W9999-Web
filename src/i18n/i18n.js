@@ -43,7 +43,7 @@ i18n
       Spanish: {
         translation: esTranslations,
       },
-      Turkish: {  // ← This allows "Turkish" as a valid language code
+      Turkish: {  
         translation: trTranslations,
       },
       Russian: {
