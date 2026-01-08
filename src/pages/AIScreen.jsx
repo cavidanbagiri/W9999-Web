@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import AIDirectChatComponent from '../components/ai/AIDirectChatComponent';
 import AIScreenChat from '../components/ai/AIScreenChat';
 
+import { useTranslation } from "react-i18next";
+
 // Icons
 import { 
   IoChatbubbleEllipsesOutline, 
@@ -14,6 +16,9 @@ import {
 } from 'react-icons/io5';
 
 export default function AIScreen({ route, come_from }) {
+
+  const {t} = useTranslation();
+
   const navigate = useNavigate();
   const { currentWord } = useSelector((state) => state.aiSlice);
   const [showDirectChat, setShowDirectChat] = useState(false);
@@ -61,11 +66,11 @@ export default function AIScreen({ route, come_from }) {
         </div>
         
         <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 sm:mb-5 font-sans leading-tight">
-          Your AI Language Assistant
+          {t('AIScreen.title')}
         </h1>
         
         <p className="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed font-sans">
-          Get personalized explanations, examples, and practice for any word in your target language
+          {t('AIScreen.description')}
         </p>
       </div>
 
@@ -82,15 +87,17 @@ export default function AIScreen({ route, come_from }) {
           </div>
           
           <h3 className="text-xl font-bold text-gray-900 mb-3 font-sans group-hover:text-blue-600 transition-colors">
-            Browse Words
+            {t('AIScreen.features.browseWords.title')}
           </h3>
           
           <p className="text-gray-600 mb-5 leading-relaxed">
-            Select from thousands of words organized by category, difficulty, and part of speech
+            {t('AIScreen.features.browseWords.description')}
           </p>
           
           <div className="flex items-center text-blue-600 font-medium">
-            <span>Explore vocabulary</span>
+            <span>
+              {t('AIScreen.features.browseWords.cta')}
+            </span>
             <IoArrowForwardOutline className="ml-2 group-hover:translate-x-2 transition-transform" />
           </div>
         </div>
@@ -105,15 +112,17 @@ export default function AIScreen({ route, come_from }) {
           </div>
           
           <h3 className="text-xl font-bold text-gray-900 mb-3 font-sans group-hover:text-purple-600 transition-colors">
-            Direct Chat 
+            {t('AIScreen.features.directChat.title')}
           </h3>
           
           <p className="text-gray-600 mb-5 leading-relaxed">
-            Ask any language question directly to our AI assistant without selecting a specific word
+            {t('AIScreen.features.directChat.description')}
           </p>
           
           <div className="flex items-center text-purple-600 font-medium">
-            <span>Start conversation</span>
+            <span>
+              {t('AIScreen.features.directChat.cta')}
+            </span>
             <IoArrowForwardOutline className="ml-2 group-hover:translate-x-2 transition-transform" />
           </div>
         </div>
@@ -128,15 +137,17 @@ export default function AIScreen({ route, come_from }) {
           </div>
           
           <h3 className="text-xl font-bold text-gray-900 mb-3 font-sans group-hover:text-green-600 transition-colors">
-            Search Words
+            {t('AIScreen.features.searchWords.title')}
           </h3>
           
           <p className="text-gray-600 mb-5 leading-relaxed">
-            Quickly find specific words or phrases using our intelligent search
+            {t('AIScreen.features.searchWords.description')}
           </p>
           
           <div className="flex items-center text-green-600 font-medium">
-            <span>Find vocabulary</span>
+            <span>
+              {t('AIScreen.features.searchWords.cta')}
+            </span>
             <IoArrowForwardOutline className="ml-2 group-hover:translate-x-2 transition-transform" />
           </div>
         </div>
@@ -147,38 +158,42 @@ export default function AIScreen({ route, come_from }) {
         
         {/* Learning Tips */}
         <div className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl p-6 sm:p-8 text-white">
-          <h3 className="text-xl font-bold mb-4 font-sans">💡 Learning Tips</h3>
+          <h3 className="text-xl font-bold mb-4 font-sans">{t('AIScreen.learningTips.title')}</h3>
           <ul className="space-y-3">
             <li className="flex items-start">
               <span className="inline-block w-2 h-2 bg-white rounded-full mt-2 mr-3"></span>
-              <span>Start with common words in your target language</span>
+              <span>
+                {t('AIScreen.learningTips.tips1')}
+              </span>
             </li>
             <li className="flex items-start">
               <span className="inline-block w-2 h-2 bg-white rounded-full mt-2 mr-3"></span>
-              <span>Use the AI assistant to understand context and usage</span>
+              <span>{t('AIScreen.learningTips.tips2')}</span>
             </li>
             <li className="flex items-start">
               <span className="inline-block w-2 h-2 bg-white rounded-full mt-2 mr-3"></span>
-              <span>Practice regularly with personalized examples</span>
+              <span>{t('AIScreen.learningTips.tips3')}</span>
             </li>
           </ul>
         </div>
 
         {/* Quick Stats */}
         <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-lg border border-gray-100">
-          <h3 className="text-xl font-bold text-gray-900 mb-4 font-sans">📊 Get Started</h3>
+          <h3 className="text-xl font-bold text-gray-900 mb-4 font-sans">
+            {t('AIScreen.quickStats.title')}
+          </h3>
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-gray-600">Words available</span>
+              <span className="text-gray-600">{t('AIScreen.quickStats.stats.wordsAvailable')}</span>
               <span className="font-bold text-purple-600">9,000+</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-gray-600">Languages supported</span>
+              <span className="text-gray-600">{t('AIScreen.quickStats.stats.languagesSupported')}</span>
               <span className="font-bold text-purple-600">3+</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-gray-600">AI responses</span>
-              <span className="font-bold text-purple-600">Instant</span>
+              <span className="text-gray-600">{t('AIScreen.quickStats.stats.aiResponses')}</span>
+              <span className="font-bold text-purple-600">{t('AIScreen.quickStats.values.responsesSpeed')}</span>
             </div>
           </div>
         </div>
@@ -187,12 +202,12 @@ export default function AIScreen({ route, come_from }) {
       {/* Bottom CTA */}
       <div className="mt-10 sm:mt-12 text-center">
         <p className="text-gray-500 text-sm sm:text-base">
-          Need help getting started?{' '}
+          {t('AIScreen.bottomCTA.text')}{' '}
           <button 
             onClick={() => setShowDirectChat(true)}
             className="text-purple-600 hover:text-purple-700 font-medium underline cursor-pointer"
           >
-            Chat with our assistant
+            {t('AIScreen.bottomCTA.link')}
           </button>
         </p>
       </div>

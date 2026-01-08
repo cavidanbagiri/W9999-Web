@@ -957,5 +957,57 @@
                 "user_not_authenticated": "Kullanıcı kimliği doğrulanmadı"
             }
         }
+    },
+    "AIScreen": {
+        "title": "Yapay Zeka Dil Asistanınız",
+        "description": "Hedef dilinizdeki herhangi bir kelime için kişiselleştirilmiş açıklamalar, örnekler ve pratik alın",
+        "features": {
+            "browseWords": {
+                "title": "Kelime Göz At",
+                "description": "Kategori, zorluk ve konuşma bölümüne göre düzenlenmiş binlerce kelimeden seçim yapın",
+                "cta": "Kelime dağarcığını keşfet"
+            },
+            "directChat": {
+                "title": "Doğrudan Sohbet",
+                "description": "Belirli bir kelime seçmeden dil sorularınızı doğrudan YZ asistanımıza sorun",
+                "cta": "Sohbete başla"
+            },
+            "searchWords": {
+                "title": "Kelime Ara",
+                "description": "Akıllı arama özelliğimizi kullanarak belirli kelimeleri veya ifadeleri hızlıca bulun",
+                "cta": "Kelime bul"
+            }
+        },
+        "learningTips": {
+            "title": "💡 Öğrenme İpuçları",
+            "tips": [
+                "Hedef dilinizdeki yaygın kelimelerle başlayın",
+                "Bağlamı ve kullanımı anlamak için YZ asistanını kullanın",
+                "Kişiselleştirilmiş örneklerle düzenli olarak pratik yapın"
+            ],
+            "tips1": "Hedef dilinizdeki yaygın kelimelerle başlayın",
+            "tips2": "Bağlamı ve kullanımı anlamak için YZ asistanını kullanın",
+            "tips3": "Kişiselleştirilmiş örneklerle düzenli olarak pratik yapın"
+        },
+        "quickStats": {
+            "title": "📊 Başlayın",
+            "stats": {
+                "wordsAvailable": "Mevcut kelimeler",
+                "languagesSupported": "Desteklenen diller",
+                "aiResponses": "YZ yanıtları"
+            },
+            "values": {
+                "wordsCount": "9,000+",
+                "languagesCount": "3+",
+                "responsesSpeed": "Anında"
+            }
+        },
+        "bottomCTA": {
+            "text": "Başlamak için yardıma mı ihtiyacınız var?",
+            "link": "Asistanımızla sohbet edin"
+        },
+        "errorMessages": {
+            "loadNativeLangFailed": "Ana dil yüklenemedi"
+        }
     }
 }

@@ -957,5 +957,57 @@
                 "user_not_authenticated": "User not authenticated"
             }
         }
+    },
+    "AIScreen": {
+        "title": "Your AI Language Assistant",
+        "description": "Get personalized explanations, examples, and practice for any word in your target language",
+        "features": {
+            "browseWords": {
+                "title": "Browse Words",
+                "description": "Select from thousands of words organized by category, difficulty, and part of speech",
+                "cta": "Explore vocabulary"
+            },
+            "directChat": {
+                "title": "Direct Chat",
+                "description": "Ask any language question directly to our AI assistant without selecting a specific word",
+                "cta": "Start conversation"
+            },
+            "searchWords": {
+                "title": "Search Words",
+                "description": "Quickly find specific words or phrases using our intelligent search",
+                "cta": "Find vocabulary"
+            }
+        },
+        "learningTips": {
+            "title": "💡 Learning Tips",
+            "tips": [
+                "Start with common words in your target language",
+                "Use the AI assistant to understand context and usage",
+                "Practice regularly with personalized examples"
+            ],
+            "tips1": "Start with common words in your target language",
+            "tips2": "Use the AI assistant to understand context and usage",
+            "tips3": "Practice regularly with personalized examples"
+        },
+        "quickStats": {
+            "title": "📊 Get Started",
+            "stats": {
+                "wordsAvailable": "Words available",
+                "languagesSupported": "Languages supported",
+                "aiResponses": "AI responses"
+            },
+            "values": {
+                "wordsCount": "9,000+",
+                "languagesCount": "3+",
+                "responsesSpeed": "Instant"
+            }
+        },
+        "bottomCTA": {
+            "text": "Need help getting started?",
+            "link": "Chat with our assistant"
+        },
+        "errorMessages": {
+            "loadNativeLangFailed": "Failed to load native language"
+        }
     }
 }

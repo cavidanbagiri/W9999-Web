@@ -957,5 +957,57 @@
                 "user_not_authenticated": "Usuario no autenticado"
             }
         }
+    },
+    "AIScreen": {
+        "title": "Tu Asistente de Idioma con IA",
+        "description": "Obtén explicaciones personalizadas, ejemplos y práctica para cualquier palabra en tu idioma objetivo",
+        "features": {
+            "browseWords": {
+                "title": "Explorar Palabras",
+                "description": "Selecciona entre miles de palabras organizadas por categoría, dificultad y parte del discurso",
+                "cta": "Explorar vocabulario"
+            },
+            "directChat": {
+                "title": "Chat Directo",
+                "description": "Haz cualquier pregunta de idioma directamente a nuestro asistente de IA sin seleccionar una palabra específica",
+                "cta": "Iniciar conversación"
+            },
+            "searchWords": {
+                "title": "Buscar Palabras",
+                "description": "Encuentra rápidamente palabras o frases específicas usando nuestra búsqueda inteligente",
+                "cta": "Buscar vocabulario"
+            }
+        },
+        "learningTips": {
+            "title": "💡 Consejos de Aprendizaje",
+            "tips": [
+                "Comienza con palabras comunes en tu idioma objetivo",
+                "Usa el asistente de IA para entender el contexto y uso",
+                "Practica regularmente con ejemplos personalizados"
+            ],
+            "tips1": "Comienza con palabras comunes en tu idioma objetivo",
+            "tips2": "Usa el asistente de IA para entender el contexto y uso",
+            "tips3": "Practica regularmente con ejemplos personalizados"
+        },
+        "quickStats": {
+            "title": "📊 Comenzar",
+            "stats": {
+                "wordsAvailable": "Palabras disponibles",
+                "languagesSupported": "Idiomas soportados",
+                "aiResponses": "Respuestas de IA"
+            },
+            "values": {
+                "wordsCount": "9,000+",
+                "languagesCount": "3+",
+                "responsesSpeed": "Instantáneo"
+            }
+        },
+        "bottomCTA": {
+            "text": "¿Necesitas ayuda para comenzar?",
+            "link": "Chatea con nuestro asistente"
+        },
+        "errorMessages": {
+            "loadNativeLangFailed": "Error al cargar el idioma nativo"
+        }
     }
 }
