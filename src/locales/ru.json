@@ -453,7 +453,7 @@
     "CategoryWordsScreen": {
         "main_screen": {
             "modals": {
-                "bulk_move_title": "Переместить \"{word_text}\"",
+                "bulk_move_title": "Переместить \"{{word_text}}\"",
                 "bulk_move_description": "Выберите категорию назначения:",
                 "moving_word": "Перемещение слова...",
                 "no_other_categories": "Другие категории не найдены"
@@ -462,7 +462,7 @@
                 "generate_ai": "Сгенерировать ИИ",
                 "move_to_category": "Переместить в другую категорию",
                 "remove_from_favorites": "Удалить из избранного",
-                "delete_confirm": "Вы уверены, что хотите удалить \"{word_text}\"?",
+                "delete_confirm": "Вы уверены, что хотите удалить \"{{word_text}}\"?",
                 "word_removed_success": "Слово удалено из избранного",
                 "word_removed_error": "Не удалось удалить слово",
                 "word_moved_success": "Слово перемещено в новую категорию",
@@ -479,10 +479,10 @@
                 "search_results": "соответствуют \"{search_query}\""
             },
             "search": {
-                "placeholder": "Поиск в {category_name}...",
+                "placeholder": "Поиск в {{category_name}}...",
                 "searching": "Поиск...",
                 "no_matching_words": "Нет подходящих слов",
-                "search_suggestion": "Попробуйте другие ключевые слова в {category_name}"
+                "search_suggestion": "Попробуйте другие ключевые слова в {{category_name}}"
             },
             "empty_states": {
                 "no_words_in_category": "В этой категории нет слов",
@@ -516,7 +516,7 @@
                 "search_suggestion": "Попробуйте другие ключевые слова или проверьте правописание"
             },
             "category_labels": {
-                "word_count": "{count} слово{words_plural}",
+                "word_count": "{{count}} слово",
                 "added_info": "в {category_name} • {formatted_date}",
                 "no_categories_yet": "Категорий пока нет",
                 "create_first_category": "Создайте свою первую категорию для организации избранных слов",

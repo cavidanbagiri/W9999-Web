@@ -116,6 +116,7 @@ export default function LanguagePickerModal({
   selectedLang,
   excludeLang,
   title = 'Select Language',
+  t
 }) {
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -166,7 +167,7 @@ export default function LanguagePickerModal({
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search languages..."
+            placeholder={t('TranslateScreen.language_picker.modal.search_placeholder')}
             className="flex-1 bg-transparent border-none outline-none text-gray-900 placeholder-gray-400 font-sans"
             autoFocus
           />
@@ -214,7 +215,7 @@ export default function LanguagePickerModal({
           
           {sortedLanguages.length === 0 && (
             <div className="text-center py-8 text-gray-500 font-sans">
-              No languages found
+              {t('TranslateScreen.language_picker.modal.no_languages_found')}
             </div>
           )}
         </div>

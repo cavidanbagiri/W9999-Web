@@ -453,7 +453,7 @@
     "CategoryWordsScreen": {
         "main_screen": {
             "modals": {
-                "bulk_move_title": "Move \"{word_text}\"",
+                "bulk_move_title": "Move \"{{word_text}}\"",
                 "bulk_move_description": "Select destination category:",
                 "moving_word": "Moving word...",
                 "no_other_categories": "No other categories found"
@@ -462,7 +462,7 @@
                 "generate_ai": "Generate AI",
                 "move_to_category": "Move to other category",
                 "remove_from_favorites": "Remove from favorites",
-                "delete_confirm": "Are you sure you want to remove \"{word_text}\"?",
+                "delete_confirm": "Are you sure you want to remove \"{{word_text}}\"?",
                 "word_removed_success": "Word removed from favorites",
                 "word_removed_error": "Failed to remove word",
                 "word_moved_success": "Word moved to new category",
@@ -479,10 +479,10 @@
                 "search_results": "matching \"{search_query}\""
             },
             "search": {
-                "placeholder": "Search in {category_name}...",
+                "placeholder": "Search in {{category_name}}...",
                 "searching": "Searching...",
                 "no_matching_words": "No matching words",
-                "search_suggestion": "Try different keywords in {category_name}"
+                "search_suggestion": "Try different keywords in {{category_name}}"
             },
             "empty_states": {
                 "no_words_in_category": "No words in this category",
@@ -516,7 +516,7 @@
                 "search_suggestion": "Try different keywords or check spelling"
             },
             "category_labels": {
-                "word_count": "{count} word{words_plural}",
+                "word_count": "{{count}} word",
                 "added_info": "in {category_name} • {formatted_date}",
                 "no_categories_yet": "No categories yet",
                 "create_first_category": "Create your first category to organize favorite words",

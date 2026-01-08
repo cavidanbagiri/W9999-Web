@@ -4,7 +4,12 @@ import { useNavigate } from 'react-router-dom';
 import FavoritesService from '../services/FavoritesService';
 import { clearError, clearSearchResults } from '../store/favorites_store';
 
+import { useTranslation } from "react-i18next";
+
 export default function FavoritesScreen() {
+
+  const { t } = useTranslation();
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -32,7 +37,7 @@ export default function FavoritesScreen() {
   const renderCategoryResult = useCallback((item) => (
     <button
       key={item.id}
-      onClick={() => navigate('/category-words', { 
+      onClick={() => navigate('/category-words', {
         state: { categoryId: item.id, categoryName: item.name }
       })}
       className="bg-white p-5 rounded-xl mb-3 shadow-sm border border-gray-100 w-full text-left hover:bg-gray-50 transition-colors"
@@ -115,14 +120,14 @@ export default function FavoritesScreen() {
   const renderCategory = (item) => (
     <button
       key={item.id}
-      onClick={() => navigate('/category-words', { 
+      onClick={() => navigate('/category-words', {
         state: { categoryId: item.id, categoryName: item.name }
       })}
       className="bg-white p-5 rounded-xl mb-3 shadow-sm border border-gray-100 w-full text-left hover:bg-gray-50 transition-colors"
     >
       <div className="flex items-center justify-between">
         <div className="flex items-center flex-1">
-          <div 
+          <div
             className="w-12 h-12 rounded-full flex items-center justify-center mr-4"
             style={{ backgroundColor: `${item.color}20` }}
           >
@@ -134,7 +139,9 @@ export default function FavoritesScreen() {
               {item.name}
             </h3>
             <p className="text-gray-500 text-sm mt-1">
-              {item.word_count} word{item.word_count !== 1 ? 's' : ''}
+              {t('FavoritesScreen.main_screen.category_labels.word_count', {
+                count: item.word_count
+              })}
             </p>
           </div>
         </div>
@@ -150,15 +157,17 @@ export default function FavoritesScreen() {
       <div className="px-4 py-3 bg-white border-b border-gray-200">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center">
-            <button 
+            <button
               onClick={() => navigate(-1)}
               className="p-1 hover:bg-gray-100 rounded transition-colors mr-2"
             >
               <span className="text-gray-600 text-xl">←</span>
             </button>
-            <h1 className="text-xl font-bold text-gray-900">Favorites</h1>
+            <h1 className="text-xl font-bold text-gray-900">
+              {t('FavoritesScreen.main_screen.header.title')}
+            </h1>
           </div>
-          <button 
+          <button
             onClick={() => setShowAddModal(true)}
             className="p-2 hover:bg-gray-100 rounded transition-colors"
           >
@@ -172,7 +181,7 @@ export default function FavoritesScreen() {
           <input
             type="text"
             className="flex-1 ml-2 text-gray-900 text-base bg-transparent border-none outline-none placeholder-gray-500"
-            placeholder="Search across all categories..."
+            placeholder={t('FavoritesScreen.main_screen.search.placeholder')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -180,8 +189,8 @@ export default function FavoritesScreen() {
             <div className="w-4 h-4 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin ml-2"></div>
           )}
           {searchQuery.length > 0 && !searchLoading && (
-            <button 
-              onClick={() => setSearchQuery('')} 
+            <button
+              onClick={() => setSearchQuery('')}
               className="ml-2 p-1 hover:bg-gray-200 rounded transition-colors"
             >
               <span className="text-gray-500 text-lg">×</span>
@@ -195,18 +204,22 @@ export default function FavoritesScreen() {
         // Search Results
         <div className="p-4">
           {searchResults.map(renderSearchResult)}
-          
+
           {searchLoading ? (
             <div className="flex flex-col items-center justify-center py-20">
               <div className="w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
-              <p className="text-gray-500 mt-4">Searching...</p>
+              <p className="text-gray-500 mt-4">
+                {t('FavoritesScreen.main_screen.search.searching')}
+              </p>
             </div>
           ) : searchResults.length === 0 && (
             <div className="flex flex-col items-center justify-center py-20">
               <span className="text-gray-300 text-4xl mb-4">🔍</span>
-              <p className="text-gray-400 text-lg">No results found</p>
+              <p className="text-gray-400 text-lg">
+                {t('FavoritesScreen.main_screen.search.no_results_found')}
+              </p>
               <p className="text-gray-400 text-center mt-2">
-                Try different keywords or check spelling
+                {t('FavoritesScreen.main_screen.search.search_suggestion')}
               </p>
             </div>
           )}
@@ -214,19 +227,21 @@ export default function FavoritesScreen() {
       ) : (
         <div className="p-4">
           {categories.map(renderCategory)}
-          
+
           {categories.length === 0 && !loading && (
             <div className="flex flex-col items-center justify-center py-20">
               <span className="text-gray-300 text-4xl mb-4">📁</span>
-              <p className="text-gray-400 text-lg">No categories yet</p>
+              <p className="text-gray-400 text-lg">
+                {t('FavoritesScreen.main_screen.empty_states.no_categories')}
+              </p>
               <p className="text-gray-400 text-center mt-2 px-8">
-                Create your first category to organize favorite words
+                {t('FavoritesScreen.main_screen.empty_states.create_category_prompt')}
               </p>
               <button
                 className="bg-indigo-600 px-6 py-3 rounded-full mt-6 text-white font-semibold hover:bg-indigo-700 transition-colors"
                 onClick={() => setShowAddModal(true)}
               >
-                Create Category
+                {t('FavoritesScreen.main_screen.category_labels.create_category_button')}
               </button>
             </div>
           )}
@@ -238,8 +253,10 @@ export default function FavoritesScreen() {
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50 p-4">
           <div className="bg-white rounded-2xl p-6 w-full max-w-md">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-gray-900">Create New Category</h2>
-              <button 
+              <h2 className="text-lg font-semibold text-gray-900">
+                {t('FavoritesScreen.main_screen.modals.create_category_title')}
+              </h2>
+              <button
                 onClick={() => setShowAddModal(false)}
                 className="p-1 hover:bg-gray-100 rounded transition-colors"
               >
@@ -250,7 +267,7 @@ export default function FavoritesScreen() {
             <input
               type="text"
               className="w-full border border-gray-300 rounded-lg px-4 py-3 mb-4 text-base focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-              placeholder="Enter category name"
+              placeholder={t('FavoritesScreen.main_screen.modals.create_category_placeholder')}
               value={newCategoryName}
               onChange={(e) => setNewCategoryName(e.target.value)}
               autoFocus
@@ -266,7 +283,7 @@ export default function FavoritesScreen() {
                 className="px-5 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors"
                 onClick={() => setShowAddModal(false)}
               >
-                Cancel
+                {t('FavoritesScreen.main_screen.modals.cancel')}
               </button>
 
               <button
@@ -277,7 +294,7 @@ export default function FavoritesScreen() {
                 {loading ? (
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mx-2"></div>
                 ) : (
-                  'Create'
+                  t('FavoritesScreen.main_screen.modals.create')
                 )}
               </button>
             </div>

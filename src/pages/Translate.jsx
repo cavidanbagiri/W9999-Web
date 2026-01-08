@@ -11,6 +11,9 @@ import { setCurrentWord } from '../store/ai_store';
 import { clearTranslatedText } from '../store/translate_store';
 import FavoritesService from '../services/FavoritesService';
 
+
+import {useTranslation} from 'react-i18next';
+
 import MsgBox from '../layouts/MsgBox';
 
 import { BiTransfer } from "react-icons/bi";
@@ -40,6 +43,9 @@ function CopiedMessage({visible, setVisible}) {
 
 
 export default function TranslateComponent({ onClose }) {
+
+  const {t} = useTranslation();
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -186,17 +192,14 @@ export default function TranslateComponent({ onClose }) {
 
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 bg-white border-b border-gray-200">
-        <h1 className="text-lg font-semibold text-gray-900 font-sans">Translate</h1>
+        <h1 className="text-lg font-semibold text-gray-900 font-sans">
+          {t('TranslateScreen.main_screen.header.title')}
+        </h1>
         <div className='flex items-center'>
           {/* <span className='text-sm'>Favorites</span> */}
           <button
           onClick={() => {
             if (is_auth) {
-              // dispatch(
-              //   AuthService.setTargetLanguage({
-              //     target_language_code: lang.code,
-              //   })
-              // );
               navigate('/favorites');
             }
             else {
@@ -208,7 +211,9 @@ export default function TranslateComponent({ onClose }) {
           title="View Favorites"
         >
           <span className="flex items-center text-gray-600 text-xl">
-            <span className='text-sm mr-1'>Favorites</span>
+            <span className='text-sm mr-1'>
+              {t('TranslateScreen.main_screen.header.favorites')}
+            </span>
             {/* <FaRegHeart className='text-red-500 text-xl' /> */}
             <FaHeart className='text-red-500' />
           </span>
@@ -234,7 +239,8 @@ export default function TranslateComponent({ onClose }) {
           onSelect={(langCode) => setFromLang(langCode)}
           selectedLang={fromLang}
           excludeLang={toLang}
-          title="Translate from"
+          title={t('TranslateScreen.main_screen.placeholders.select_language')}
+          t = {t}
         />
 
         {/* Swap Button */}
@@ -254,7 +260,8 @@ export default function TranslateComponent({ onClose }) {
           onSelect={(langCode) => setToLang(langCode)}
           selectedLang={toLang}
           excludeLang={fromLang}
-          title="Translate to"
+          title={t('TranslateScreen.main_screen.placeholders.translate_to')}
+          t = {t}
         />
 
         <button
@@ -288,7 +295,7 @@ export default function TranslateComponent({ onClose }) {
           <div className="px-4 pb-4 border-b border-gray-100">
             <textarea
               className="w-full text-gray-900 text-lg min-h-[100px] resize-none focus:outline-none font-sans"
-              placeholder="Type text to translate..."
+              placeholder={t('TranslateScreen.main_screen.placeholders.type_text_to_translate')}
               value={inputText}
               onChange={(e) => {
                 setInputText(e.target.value);
@@ -366,7 +373,9 @@ export default function TranslateComponent({ onClose }) {
                 </div>
               </>
             ) : (
-              <p className="text-gray-400 font-sans">Translation will appear here...</p>
+              <p className="text-gray-400 font-sans">
+                {t('TranslateScreen.main_screen.placeholders.translation_will_appear')}
+              </p>
             )}
           </div>
           

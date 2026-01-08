@@ -11,7 +11,9 @@ import TranslateService from '../services/TranslateService';
 import { setPayload, clearPayload } from '../store/translate_store';
 import Notification from '../components/ai/Notification';
 
-const BulkOperationsModal = ({ visible, onClose, selectedWord, categories, categoryId, moveLoading, handleMoveWord }) => {
+import { useTranslation } from "react-i18next";
+
+const BulkOperationsModal = ({ visible, onClose, selectedWord, categories, categoryId, moveLoading, handleMoveWord, t }) => {
   if (!visible || !selectedWord) return null;
 
   return (
@@ -19,7 +21,10 @@ const BulkOperationsModal = ({ visible, onClose, selectedWord, categories, categ
       <div className="bg-white rounded-2xl p-6 w-full max-w-md">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-gray-900">
-            Move "{selectedWord.original_text}"
+            {/* Move "{selectedWord.original_text}" */}
+            {t('CategoryWordsScreen.main_screen.modals.bulk_move_title', {
+              word_text: selectedWord.original_text
+            })}
           </h2>
           <button 
             onClick={onClose} 
@@ -30,7 +35,9 @@ const BulkOperationsModal = ({ visible, onClose, selectedWord, categories, categ
           </button>
         </div>
 
-        <p className="text-gray-600 mb-4">Select destination category:</p>
+        <p className="text-gray-600 mb-4">
+          {t('CategoryWordsScreen.main_screen.modals.bulk_move_description')}
+        </p>
 
         {moveLoading ? (
           <div className="py-8 flex flex-col items-center">
@@ -65,7 +72,9 @@ const BulkOperationsModal = ({ visible, onClose, selectedWord, categories, categ
             {categories.filter(cat => cat.id !== categoryId).length === 0 && (
               <div className="py-8 flex flex-col items-center">
                 <span className="text-gray-300 text-3xl mb-4">📁</span>
-                <p className="text-gray-400">No other categories found</p>
+                <p className="text-gray-400">
+                  {t('CategoryWordsScreen.main_screen.modals.no_other_categories')}
+                </p>
               </div>
             )}
           </div>
@@ -76,6 +85,9 @@ const BulkOperationsModal = ({ visible, onClose, selectedWord, categories, categ
 };
 
 export default function CategoryWordsScreen() {
+
+  const {t} = useTranslation();
+
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
@@ -139,7 +151,9 @@ export default function CategoryWordsScreen() {
         className="flex items-center w-full px-4 py-3 border-b border-gray-100 hover:bg-gray-50 transition-colors cursor-pointer"
       >
         <span className="text-gray-600 text-lg">✨</span>
-        <span className="ml-3 text-gray-700">Generate AI</span>
+        <span className="ml-3 text-gray-700">
+          {t('CategoryWordsScreen.main_screen.word_actions.generate_ai')}
+        </span>
       </button>
 
       <button
@@ -153,7 +167,9 @@ export default function CategoryWordsScreen() {
         className="flex items-center w-full px-4 py-3 border-b border-gray-100 hover:bg-gray-50 transition-colors cursor-pointer"
       >
         <span className="text-gray-600 text-lg">📂</span>
-        <span className="ml-3 text-gray-700">Move to other category</span>
+        <span className="ml-3 text-gray-700">
+          {t('CategoryWordsScreen.main_screen.word_actions.move_to_category')}
+        </span>
       </button>
 
       <button
@@ -170,7 +186,9 @@ export default function CategoryWordsScreen() {
         ) : (
           <>
             <span className="text-red-500 text-lg">🗑️</span>
-            <span className="ml-3 text-red-600">Remove from favorites</span>
+            <span className="ml-3 text-red-600">
+              {t('CategoryWordsScreen.main_screen.word_actions.remove_from_favorites')}
+            </span>
           </>
         )}
       </button>
@@ -235,7 +253,10 @@ export default function CategoryWordsScreen() {
   };
 
   const handleDeleteWord = async (word) => {
-    if (confirm(`Are you sure you want to remove "${word.original_text}"?`)) {
+    // if (confirm(`Are you sure you want to remove "${word.original_text}"?`)) {
+    if (confirm(t('CategoryWordsScreen.main_screen.word_actions.delete_confirm', {
+      word_text: word.original_text
+    }))) {
       setDeleteLoading(true);
       try {
         await dispatch(FavoritesService.deleteFavoriteWord(word.id)).unwrap();
@@ -277,7 +298,9 @@ export default function CategoryWordsScreen() {
         className="flex items-center w-full px-4 py-3 hover:bg-gray-50 transition-colors"
       >
         <span className="text-red-500 text-lg">🗑️</span>
-        <span className="ml-3 text-red-600">Delete Category</span>
+        <span className="ml-3 text-red-600">
+          {t('CategoryWordsScreen.main_screen.category_actions.delete_category')}
+        </span>
       </button>
     </div>
   );
@@ -392,7 +415,10 @@ export default function CategoryWordsScreen() {
           <input
             type="text"
             className="flex-1 ml-2 text-gray-900 text-base bg-transparent border-none outline-none placeholder-gray-500"
-            placeholder={`Search in ${categoryName}...`}
+            // placeholder={`Search in ${categoryName}...`}
+            placeholder={t('CategoryWordsScreen.main_screen.search.placeholder', {
+              category_name: categoryName
+            })}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -426,22 +452,30 @@ export default function CategoryWordsScreen() {
         {searchLoading ? (
           <div className="flex flex-col items-center justify-center py-20">
             <div className="w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
-            <p className="text-gray-500 mt-4">Searching...</p>
+            <p className="text-gray-500 mt-4">
+              {t('CategoryWordsScreen.main_screen.search.searching')}
+            </p>
           </div>
         ) : searchQuery.length > 0 && displayedWords.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20">
             <span className="text-gray-300 text-4xl mb-4">🔍</span>
-            <p className="text-gray-400 text-lg">No matching words</p>
+            <p className="text-gray-400 text-lg">
+              {t('CategoryWordsScreen.main_screen.search.no_matching_words')}
+            </p>
             <p className="text-gray-400 text-center mt-2">
-              Try different keywords in {categoryName}
+              {t('CategoryWordsScreen.main_screen.search.search_suggestion', {
+                category_name: categoryName
+              })}
             </p>
           </div>
         ) : displayedWords.length === 0 && (
           <div className="flex flex-col items-center justify-center py-20">
             <span className="text-gray-300 text-4xl mb-4">📄</span>
-            <p className="text-gray-400 text-lg">No words in this category</p>
+            <p className="text-gray-400 text-lg">
+              {t('CategoryWordsScreen.main_screen.empty_states.no_words_in_category')}
+            </p>
             <p className="text-gray-400 text-center mt-2 px-8">
-              Add words to this category from the translate screen
+              {t('CategoryWordsScreen.main_screen.empty_states.add_words_hint')}
             </p>
           </div>
         )}
@@ -458,6 +492,7 @@ export default function CategoryWordsScreen() {
         categoryId={categoryId}
         moveLoading={moveLoading}
         handleMoveWord={handleMoveWord}
+        t={t}
       />
 
       {/* FAB */}

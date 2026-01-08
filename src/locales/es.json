@@ -453,7 +453,7 @@
     "CategoryWordsScreen": {
         "main_screen": {
             "modals": {
-                "bulk_move_title": "Mover \"{word_text}\"",
+                "bulk_move_title": "Mover \"{{word_text}}\"",
                 "bulk_move_description": "Selecciona categoría de destino:",
                 "moving_word": "Moviendo palabra...",
                 "no_other_categories": "No se encontraron otras categorías"
@@ -462,7 +462,7 @@
                 "generate_ai": "Generar IA",
                 "move_to_category": "Mover a otra categoría",
                 "remove_from_favorites": "Quitar de favoritos",
-                "delete_confirm": "¿Estás seguro de que quieres eliminar \"{word_text}\"?",
+                "delete_confirm": "¿Estás seguro de que quieres eliminar \"{{word_text}}\"?",
                 "word_removed_success": "Palabra eliminada de favoritos",
                 "word_removed_error": "Error al eliminar la palabra",
                 "word_moved_success": "Palabra movida a nueva categoría",
@@ -479,10 +479,10 @@
                 "search_results": "coincidencias con \"{search_query}\""
             },
             "search": {
-                "placeholder": "Buscar en {category_name}...",
+                "placeholder": "Buscar en {{category_name}}...",
                 "searching": "Buscando...",
                 "no_matching_words": "No hay palabras que coincidan",
-                "search_suggestion": "Prueba diferentes palabras clave en {category_name}"
+                "search_suggestion": "Prueba diferentes palabras clave en {{category_name}}"
             },
             "empty_states": {
                 "no_words_in_category": "No hay palabras en esta categoría",
@@ -516,7 +516,7 @@
                 "search_suggestion": "Prueba diferentes palabras clave o revisa la ortografía"
             },
             "category_labels": {
-                "word_count": "{count} palabra{palabras_plural}",
+                "word_count": "{{count}} palabra",
                 "added_info": "en {category_name} • {formatted_date}",
                 "no_categories_yet": "Aún no hay categorías",
                 "create_first_category": "Crea tu primera categoría para organizar palabras favoritas",

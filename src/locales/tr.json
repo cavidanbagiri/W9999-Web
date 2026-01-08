@@ -453,7 +453,7 @@
     "CategoryWordsScreen": {
         "main_screen": {
             "modals": {
-                "bulk_move_title": "\"{word_text}\" taşı",
+                "bulk_move_title": "\"{{word_text}}\" taşı",
                 "bulk_move_description": "Hedef kategoriyi seçin:",
                 "moving_word": "Kelime taşınıyor...",
                 "no_other_categories": "Başka kategori bulunamadı"
@@ -462,7 +462,7 @@
                 "generate_ai": "Yapay Zeka Oluştur",
                 "move_to_category": "Başka kategoriye taşı",
                 "remove_from_favorites": "Favorilerden kaldır",
-                "delete_confirm": "\"{word_text}\" kelimesini kaldırmak istediğinizden emin misiniz?",
+                "delete_confirm": "\"{{word_text}}\" kelimesini kaldırmak istediğinizden emin misiniz?",
                 "word_removed_success": "Kelime favorilerden kaldırıldı",
                 "word_removed_error": "Kelime kaldırılamadı",
                 "word_moved_success": "Kelime yeni kategoriye taşındı",
@@ -479,10 +479,10 @@
                 "search_results": "\"{search_query}\" ile eşleşen"
             },
             "search": {
-                "placeholder": "{category_name} içinde ara...",
-                "searching": "Arıyor...",
+                "placeholder": "{{category_name}} içinde ara...",
+                "searching": "Araniyor...",
                 "no_matching_words": "Eşleşen kelime yok",
-                "search_suggestion": "{category_name} içinde farklı anahtar kelimeler deneyin"
+                "search_suggestion": "{{category_name}} içinde farklı anahtar kelimeler deneyin"
             },
             "empty_states": {
                 "no_words_in_category": "Bu kategoride kelime yok",
@@ -511,12 +511,12 @@
             },
             "search": {
                 "placeholder": "Tüm kategorilerde ara...",
-                "searching": "Arıyor...",
+                "searching": "Aranıyor...",
                 "no_results_found": "Sonuç bulunamadı",
                 "search_suggestion": "Farklı anahtar kelimeler deneyin veya yazımı kontrol edin"
             },
             "category_labels": {
-                "word_count": "{count} kelime{words_plural}",
+                "word_count": "{{count}} kelime",
                 "added_info": "{category_name} içinde • {formatted_date}",
                 "no_categories_yet": "Henüz kategori yok",
                 "create_first_category": "Favori kelimeleri düzenlemek için ilk kategorinizi oluşturun",
