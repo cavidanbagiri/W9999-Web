@@ -28,6 +28,7 @@ import ChatContainer from "../components/chats/ChatContainer";
 import FriendList from "../components/friends/FriendList";
 import FriendRequests from "../components/friends/FriendRequests";
 import AddFriends from "../components/friends/AddFriends";
+import UserInformationByID from "../components/friends/UserInformationByID";
 
 import TestChat from '../components/chats/TestChat'
 
@@ -132,6 +133,10 @@ const router = createBrowserRouter([
             {
                 path: '/friends/requests',
                 element: <FriendRequests />
+            },
+            {
+                path: '/user/profile',
+                element: <UserInformationByID />
             },
 
             {

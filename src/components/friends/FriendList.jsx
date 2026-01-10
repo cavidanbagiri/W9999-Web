@@ -5,7 +5,12 @@ import { FriendService } from '../../services/FriendService';
 import { clearMessages } from '../../store/friendSlice';
 import socketService from '../../services/SocketService';
 
+import { useNavigate } from 'react-router-dom';
+
 const FriendList = () => {
+
+    const navigate = useNavigate();
+
   const dispatch = useDispatch();
   const { friends, loading, error, successMessage, friendRequests } = useSelector((state) => state.friendSlice);
   const { user } = useSelector((state) => state.authSlice);
@@ -51,9 +56,8 @@ const FriendList = () => {
     dispatch(FriendService.rejectFriendRequest(requestId));
 };
 
-const handleViewProfile = (senderId) => {
-    // You'll need to implement this
-    dispatch(FriendService.getUserById(senderId));
+const handleViewProfile = (senderId, requestId) => {
+    navigate(`/user/profile?userId=${senderId}&requestId=${requestId}`);
   };
   
   const handleStartChat = (friendId) => {
@@ -171,7 +175,7 @@ const handleViewProfile = (senderId) => {
                       Message
                     </button>
                     <button
-                      onClick={() => console.log('View profile:', friend.id)}
+                      onClick={() => handleViewProfile(friend.id)}
                       className="flex-1 border border-gray-300 text-gray-700 py-2 px-4 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors"
                     >
                       Profile
@@ -244,7 +248,7 @@ const handleViewProfile = (senderId) => {
                                             Decline
                                         </button>
                                         <button
-                                            onClick={() => handleViewProfile(request.sender?.id)}
+                                            onClick={() => handleViewProfile(request.sender?.id, request.id)}
                                             className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors"
                                         >
                                             View Profile

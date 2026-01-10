@@ -3,222 +3,254 @@ import { createSlice } from '@reduxjs/toolkit';
 import { FriendService } from '../services/FriendService';
 
 const initialState = {
-  friends: [],
-  friendRequests: [],
-  suggestedUsers: [],
-  loading: false,
-  error: null,
-  successMessage: null,
-  searchResults: [],
-  searchLoading: false,
-  selectedUser: null,
+    friends: [],
+    friendRequests: [],
+    suggestedUsers: [],
+    loading: false,
+    error: null,
+    successMessage: null,
+    searchResults: [],
+    searchLoading: false,
+    selectedUser: null,
 };
 
 const friendSlice = createSlice({
-  name: 'friends',
-  initialState,
-  reducers: {
-    // Clear messages
-    clearMessages: (state) => {
-      state.error = null;
-      state.successMessage = null;
+    name: 'friends',
+    initialState,
+    reducers: {
+        // Clear messages
+        clearMessages: (state) => {
+            state.error = null;
+            state.successMessage = null;
+        },
+
+        // Set selected user
+        setSelectedUser: (state, action) => {
+            state.selectedUser = action.payload;
+        },
+
+        // Clear search results
+        clearSearchResults: (state) => {
+            state.searchResults = [];
+        },
+
+        // Update user online status (from WebSocket)
+        updateUserOnlineStatus: (state, action) => {
+            const { userId, isOnline, lastSeen } = action.payload;
+
+            // Update in friends list
+            state.friends = state.friends.map(friend =>
+                friend.id === userId ? { ...friend, isOnline, lastSeen } : friend
+            );
+
+            // Update in suggested users
+            state.suggestedUsers = state.suggestedUsers.map(user =>
+                user.id === userId ? { ...user, isOnline, lastSeen } : user
+            );
+
+            // Update in search results
+            state.searchResults = state.searchResults.map(user =>
+                user.id === userId ? { ...user, isOnline, lastSeen } : user
+            );
+
+            // Update selected user
+            if (state.selectedUser?.id === userId) {
+                state.selectedUser = { ...state.selectedUser, isOnline, lastSeen };
+            }
+        },
+
+        // Add friend request notification (from WebSocket)
+        addFriendRequestNotification: (state, action) => {
+            state.friendRequests.unshift(action.payload);
+        },
+
+        // Remove friend request (when accepted/rejected)
+        removeFriendRequest: (state, action) => {
+            state.friendRequests = state.friendRequests.filter(
+                req => req.id !== action.payload
+            );
+        },
+
+        // Add friend (when request accepted)
+        addFriend: (state, action) => {
+            state.friends.unshift(action.payload);
+        },
+
+        // Remove friend
+        removeFriend: (state, action) => {
+            state.friends = state.friends.filter(
+                friend => friend.id !== action.payload
+            );
+        },
+
+        // Update friend request status
+        updateFriendRequestStatus: (state, action) => {
+            const { requestId, status } = action.payload;
+            const request = state.friendRequests.find(req => req.id === requestId);
+            if (request) {
+                request.status = status;
+            }
+        },
     },
-    
-    // Set selected user
-    setSelectedUser: (state, action) => {
-      state.selectedUser = action.payload;
+
+    extraReducers: (builder) => {
+        // Get Friends
+        builder
+            .addCase(FriendService.getFriends.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(FriendService.getFriends.fulfilled, (state, action) => {
+                state.loading = false;
+                console.log('the friends is ', action.payload)
+                state.friends = action.payload.payload || [];
+            })
+            .addCase(FriendService.getFriends.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload?.payload?.detail || 'Failed to load friends';
+            })
+
+        // Get Friend Requests
+        builder
+            .addCase(FriendService.getFriendRequests.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(FriendService.getFriendRequests.fulfilled, (state, action) => {
+                state.loading = false;
+                state.friendRequests = action?.payload?.payload?.received_requests || [];
+            })
+            .addCase(FriendService.getFriendRequests.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload?.payload?.detail || 'Failed to load friend requests';
+            })
+
+        // Send Friend Request
+        builder
+            .addCase(FriendService.sendFriendRequest.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+                state.successMessage = null;
+            })
+            .addCase(FriendService.sendFriendRequest.fulfilled, (state, action) => {
+                state.loading = false;
+                state.successMessage = action.payload.payload?.message || 'Friend request sent';
+
+                // Update user status in search results
+                state.searchResults = state.searchResults.map(user =>
+                    user.id === action.payload.payload?.receiver_id
+                        ? { ...user, relationship_status: 'request_sent' }
+                        : user
+                );
+            })
+            .addCase(FriendService.sendFriendRequest.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload?.payload?.detail || 'Failed to send friend request';
+            })
+
+        // Accept Friend Request
+        builder
+            .addCase(FriendService.acceptFriendRequest.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(FriendService.acceptFriendRequest.fulfilled, (state, action) => {
+                state.loading = false;
+                state.successMessage = 'Friend request accepted';
+
+                // Remove from friend requests
+                state.friendRequests = state.friendRequests.filter(
+                    req => req.id !== action.meta.arg
+                );
+
+                // Add to friends list
+                const request = state.friendRequests.find(req => req.id === action.meta.arg);
+                if (request?.sender) {
+                    state.friends.unshift({
+                        ...request.sender,
+                        friendship_created_at: action.payload.payload?.friendship_created
+                    });
+                }
+            })
+            .addCase(FriendService.acceptFriendRequest.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload?.payload?.detail || 'Failed to accept friend request';
+            })
+
+            // Reject users
+            .addCase(FriendService.rejectFriendRequest.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(FriendService.rejectFriendRequest.fulfilled, (state, action) => {
+                state.loading = false;
+                state.successMessage = 'Friend request rejected';
+
+                // Remove from friend requests
+                state.friendRequests = state.friendRequests.filter(
+                    req => req.id !== action.meta.arg
+                );
+
+                // Optionally, you might want to update the user's relationship status
+                // in the users list if you have one
+                if (state.users) {
+                    const userId = state.friendRequests.find(req => req.id === action.meta.arg)?.sender?.id;
+                    if (userId) {
+                        const userIndex = state.users.findIndex(user => user.id === userId);
+                        if (userIndex !== -1) {
+                            state.users[userIndex].relationship_status = 'rejected_you';
+                        }
+                    }
+                }
+            })
+            .addCase(FriendService.rejectFriendRequest.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload?.payload?.detail || 'Failed to reject friend request';
+            })
+
+        // Fetch Users
+        builder
+            .addCase(FriendService.fetchUsers.pending, (state) => {
+                state.searchLoading = true;
+                state.error = null;
+            })
+            .addCase(FriendService.fetchUsers.fulfilled, (state, action) => {
+                state.searchLoading = false;
+                state.searchResults = action.payload.payload?.users || [];
+            })
+            .addCase(FriendService.fetchUsers.rejected, (state, action) => {
+                state.searchLoading = false;
+                state.error = action.payload?.payload?.detail || 'Failed to search users';
+            })
+
+        // Get User By ID
+        builder
+            .addCase(FriendService.getUserById.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(FriendService.getUserById.fulfilled, (state, action) => {
+                state.loading = false;
+                console.log('the user by id informartion is ....... ', action.payload.payload)
+                state.selectedUser = action.payload.payload;
+            })
+            .addCase(FriendService.getUserById.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload?.payload?.detail || 'Failed to load user';
+            });
     },
-    
-    // Clear search results
-    clearSearchResults: (state) => {
-      state.searchResults = [];
-    },
-    
-    // Update user online status (from WebSocket)
-    updateUserOnlineStatus: (state, action) => {
-      const { userId, isOnline, lastSeen } = action.payload;
-      
-      // Update in friends list
-      state.friends = state.friends.map(friend => 
-        friend.id === userId ? { ...friend, isOnline, lastSeen } : friend
-      );
-      
-      // Update in suggested users
-      state.suggestedUsers = state.suggestedUsers.map(user =>
-        user.id === userId ? { ...user, isOnline, lastSeen } : user
-      );
-      
-      // Update in search results
-      state.searchResults = state.searchResults.map(user =>
-        user.id === userId ? { ...user, isOnline, lastSeen } : user
-      );
-      
-      // Update selected user
-      if (state.selectedUser?.id === userId) {
-        state.selectedUser = { ...state.selectedUser, isOnline, lastSeen };
-      }
-    },
-    
-    // Add friend request notification (from WebSocket)
-    addFriendRequestNotification: (state, action) => {
-      state.friendRequests.unshift(action.payload);
-    },
-    
-    // Remove friend request (when accepted/rejected)
-    removeFriendRequest: (state, action) => {
-      state.friendRequests = state.friendRequests.filter(
-        req => req.id !== action.payload
-      );
-    },
-    
-    // Add friend (when request accepted)
-    addFriend: (state, action) => {
-      state.friends.unshift(action.payload);
-    },
-    
-    // Remove friend
-    removeFriend: (state, action) => {
-      state.friends = state.friends.filter(
-        friend => friend.id !== action.payload
-      );
-    },
-    
-    // Update friend request status
-    updateFriendRequestStatus: (state, action) => {
-      const { requestId, status } = action.payload;
-      const request = state.friendRequests.find(req => req.id === requestId);
-      if (request) {
-        request.status = status;
-      }
-    },
-  },
-  
-  extraReducers: (builder) => {
-    // Get Friends
-    builder
-      .addCase(FriendService.getFriends.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(FriendService.getFriends.fulfilled, (state, action) => {
-        state.loading = false;
-        console.log('the friends is ', action.payload)
-        state.friends = action.payload.payload || [];
-      })
-      .addCase(FriendService.getFriends.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload?.payload?.detail || 'Failed to load friends';
-      })
-    
-    // Get Friend Requests
-    builder
-      .addCase(FriendService.getFriendRequests.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(FriendService.getFriendRequests.fulfilled, (state, action) => {
-        state.loading = false;
-        state.friendRequests = action?.payload?.payload?.received_requests || [];
-      })
-      .addCase(FriendService.getFriendRequests.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload?.payload?.detail || 'Failed to load friend requests';
-      })
-    
-    // Send Friend Request
-    builder
-      .addCase(FriendService.sendFriendRequest.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-        state.successMessage = null;
-      })
-      .addCase(FriendService.sendFriendRequest.fulfilled, (state, action) => {
-        state.loading = false;
-        state.successMessage = action.payload.payload?.message || 'Friend request sent';
-        
-        // Update user status in search results
-        state.searchResults = state.searchResults.map(user =>
-          user.id === action.payload.payload?.receiver_id
-            ? { ...user, relationship_status: 'request_sent' }
-            : user
-        );
-      })
-      .addCase(FriendService.sendFriendRequest.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload?.payload?.detail || 'Failed to send friend request';
-      })
-    
-    // Accept Friend Request
-    builder
-      .addCase(FriendService.acceptFriendRequest.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(FriendService.acceptFriendRequest.fulfilled, (state, action) => {
-        state.loading = false;
-        state.successMessage = 'Friend request accepted';
-        
-        // Remove from friend requests
-        state.friendRequests = state.friendRequests.filter(
-          req => req.id !== action.meta.arg
-        );
-        
-        // Add to friends list
-        const request = state.friendRequests.find(req => req.id === action.meta.arg);
-        if (request?.sender) {
-          state.friends.unshift({
-            ...request.sender,
-            friendship_created_at: action.payload.payload?.friendship_created
-          });
-        }
-      })
-      .addCase(FriendService.acceptFriendRequest.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload?.payload?.detail || 'Failed to accept friend request';
-      })
-    
-    // Fetch Users
-    builder
-      .addCase(FriendService.fetchUsers.pending, (state) => {
-        state.searchLoading = true;
-        state.error = null;
-      })
-      .addCase(FriendService.fetchUsers.fulfilled, (state, action) => {
-        state.searchLoading = false;
-        state.searchResults = action.payload.payload?.users || [];
-      })
-      .addCase(FriendService.fetchUsers.rejected, (state, action) => {
-        state.searchLoading = false;
-        state.error = action.payload?.payload?.detail || 'Failed to search users';
-      })
-    
-    // Get User By ID
-    builder
-      .addCase(FriendService.getUserById.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(FriendService.getUserById.fulfilled, (state, action) => {
-        state.loading = false;
-        state.selectedUser = action.payload.payload;
-      })
-      .addCase(FriendService.getUserById.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload?.payload?.detail || 'Failed to load user';
-      });
-  },
 });
 
 export const {
-  clearMessages,
-  setSelectedUser,
-  clearSearchResults,
-  updateUserOnlineStatus,
-  addFriendRequestNotification,
-  removeFriendRequest,
-  addFriend,
-  removeFriend,
-  updateFriendRequestStatus,
+    clearMessages,
+    setSelectedUser,
+    clearSearchResults,
+    updateUserOnlineStatus,
+    addFriendRequestNotification,
+    removeFriendRequest,
+    addFriend,
+    removeFriend,
+    updateFriendRequestStatus,
 } = friendSlice.actions;
 
 export default friendSlice.reducer;

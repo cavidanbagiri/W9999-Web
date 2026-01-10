@@ -130,6 +130,7 @@ export const FriendService = {
         const response = await $api.get('/chat/get_user_by_id', {
           params: { getting_user_id: userId }
         });
+        console.log('the user informartion is ....... ', response)
         return {
           payload: response.data,
           status: response.status,
