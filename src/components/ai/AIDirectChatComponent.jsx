@@ -437,17 +437,31 @@ export default function AIDirectChatComponent({ onClose }) {
               <div>
                 <AIMessageContent text={message.text} />
                 <div className='flex my-2'>
+                  <span className='flex items-center space-x-2 cursor-pointer text-gray-600 hover:text-gray-300 duration-200 hover:scale-110'
+                  onClick={()=>{
+                    handleCopyMessage(message.text)
+                  }}>
+
                   <FaRegCopy 
                             onClick={()=>{
                               handleCopyMessage(message.text)
                             }}
-                            className='text-xl cursor-pointer text-gray-600 hover:text-gray-300 duration-200 hover:scale-110' />
+                            className='text-xl' />
+                    <span className='text-sm '>
+                      Copy
+                    </span>
+                  </span>
 
-                <FaRegNoteSticky 
+                <span className='flex items-center space-x-2 cursor-pointer text-gray-600 hover:text-gray-300 duration-200 hover:scale-110'
                   onClick={()=>{
                     createNote(message.text)
-                  }}
-                  className='text-xl cursor-pointer text-gray-600 hover:text-gray-300 duration-200 hover:scale-110 ml-4' />
+                  }}>
+                    <FaRegNoteSticky 
+                    className='text-xl ml-4' />
+                    <span className='text-sm '>
+                      Create Note
+                    </span>
+                </span>
                 </div>
               </div>
             )}

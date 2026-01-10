@@ -1029,7 +1029,12 @@
             "title": "Your Personal Language Coach",
             "description": "Ask anything about <color>{{text}}</color>",
             "loading_history": "Loading conversation history...",
-            "loading":"Loading..."
+            "loading":"Loading...",
+            "refresh": "Refresh"
+        },
+        "chat_message_note":{
+            "copy": "Copy",
+            "create_note": "Create Note"
         }
         
     }

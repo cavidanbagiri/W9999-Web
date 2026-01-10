@@ -1029,7 +1029,12 @@
             "title": "Tu tutor de idiomas personalizado",
             "description": "Pregunta cualquier cosa sobre <color>{{text}}</color>",
             "loading_history": "Cargando historial de conversación...",
-            "loading":"Cargando..."
+            "loading":"Cargando...",
+            "refresh":"Actualizar"
+        },
+        "chat_message_note":{
+            "copy": "Copiar",
+            "create_note": "Crear nota"
         }
     }
 }

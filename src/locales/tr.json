@@ -1029,7 +1029,12 @@
             "title": "Kişiselleştirilmiş Dil Öğretmeni",
             "description": "<color>{{text}}</color> hakkında her şeyi sorun",
             "loading_history": "Sohbet geçmişi yükleniyor...",
-            "loading":"Yükleniyor..."
+            "loading":"Yükleniyor...",
+            "refresh":"Yenile"
+        },
+        "chat_message_note":{
+            "copy": "Kopyala",
+            "create_note": "Not Oluştur"
         }
     }
 }

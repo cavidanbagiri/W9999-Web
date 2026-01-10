@@ -86,14 +86,31 @@ const MemoizedMessage = React.memo(({
       )}
 
       <div className='flex my-2'>
-        <FaRegCopy
-          onClick={onCopy}
-          className='text-xl cursor-pointer text-gray-600 hover:text-gray-300 duration-200 hover:scale-110'
-        />
-        <FaRegNoteSticky
+
+        <span className='flex items-center space-x-2 cursor-pointer text-gray-600 hover:text-gray-300 duration-200 hover:scale-110'
+          onClick={onCopy}>
+
+          <FaRegCopy
+            onClick={() => {
+              handleCopyMessage(message.text)
+            }}
+            className='text-xl' />
+          <span className='text-sm '>
+            Copy
+          </span>
+        </span>
+
+        <span className='flex items-center space-x-2 cursor-pointer text-gray-600 hover:text-gray-300 duration-200 hover:scale-110'
           onClick={onCreateNote}
-          className='text-xl cursor-pointer text-gray-600 hover:text-gray-300 duration-200 hover:scale-110 ml-4'
-        />
+        >
+          <FaRegNoteSticky
+            className='text-xl ml-4' />
+          <span className='text-sm '>
+            Create Note
+          </span>
+        </span>
+
+
       </div>
     </div>
   );
@@ -620,12 +637,16 @@ function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat }) {
             <span className='flex items-center space-x-2'>
               {currentConversation.isLoadingHistory ? (
                 <>
-                  <span className='text-sm hidden md:block'>Loading...</span>
+                  <span className='text-sm hidden md:block'>
+                    {t("AIScreen.word_chat.loading")}
+                  </span>
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-500"></div>
                 </>
               ) : (
                 <>
-                  <span className='text-sm hidden md:block'>Refresh</span>
+                  <span className='text-sm hidden md:block'>
+                    {t("AIScreen.word_chat.refresh")}
+                  </span>
                   <IoMdRefresh className='text-xl' />
                 </>
               )}
@@ -645,7 +666,7 @@ function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat }) {
         className="flex-1 overflow-y-auto p-4 relative"
       >
 
-        {isLoadingInitial  ? (
+        {isLoadingInitial ? (
           <div className="flex flex-col items-center justify-center h-full">
             <div className="flex flex-col items-center justify-center h-full w-full">
               <div className="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mb-6">
@@ -655,7 +676,7 @@ function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat }) {
                 {t('AIScreen.word_chat.loading')}
               </h3>
             </div>
-           
+
           </div>
         ) :
           messages.length === 0 ? (
@@ -668,16 +689,16 @@ function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat }) {
               <h3 className="text-2xl font-bold text-gray-900 mb-3 font-sans">
                 {t('AIScreen.word_chat.title')}
               </h3>
-             
-             <p className="text-gray-600 mb-8 max-w-md leading-relaxed font-sans">
-  <Trans 
-    i18nKey="AIScreen.word_chat.description" 
-    values={{ text: currentWord?.text }}
-    components={{ 
-      color: <span className="font-semibold text-purple-600" /> 
-    }} 
-  />
-</p>
+
+              <p className="text-gray-600 mb-8 max-w-md leading-relaxed font-sans">
+                <Trans
+                  i18nKey="AIScreen.word_chat.description"
+                  values={{ text: currentWord?.text }}
+                  components={{
+                    color: <span className="font-semibold text-purple-600" />
+                  }}
+                />
+              </p>
 
               <div className="w-full max-w-md space-y-3">
                 {quickPrompts.map((prompt, index) => (
