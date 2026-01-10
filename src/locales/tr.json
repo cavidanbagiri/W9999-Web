@@ -1,4 +1,8 @@
 {
+    "VoiceInputComponent": {
+        "text": "Yazın ya da konuşun ...",
+        "tts_processing": "Google'daki Konuşma-İçin Çeviri işlemi..."
+    },
     "languages": {
         "en": "İngilizce",
         "es": "İspanyolca",
@@ -1008,6 +1012,24 @@
         },
         "errorMessages": {
             "loadNativeLangFailed": "Ana dil yüklenemedi"
+        },
+        "direct_chat_prompts": {
+            "initialMessages": {
+                "prompt1": "Merhaba! Ben senin AI dil öğretmeninim. Diller, dil bilgisi, kelime dağarcığı hakkında bana her şeyi sorabilir veya sadece konuşma pratiği yapabilirsin!",
+                "prompt2": "Bana şunları sorabilirsin:\n• 'İspanyolca fiil zamanlarını açıkla'\n• 'Rusça selamlaşmaları pratik yapmama yardım et'\n• 'Bu kelimeler arasındaki fark nedir?'\n• 'Bana bir konuşma pratiği ver'"
+            }
+        },
+        "word_chat_prompts": {
+            "detailedExplanation": "{{text}} için ayrıntılı açıklama verin",
+            "shortExplanation": "{{text}} için kısa açıklama verin",
+            "storyCreation": "{{targetLang}} dilinde {{text}} için 100 kelimelik bir hikaye oluşturun",
+            "synonymsAntonyms": "{{text}} için eş anlamlı ve zıt anlamlıları"
+        },
+        "word_chat":{
+            "title": "Kişiselleştirilmiş Dil Öğretmeni",
+            "description": "<color>{{text}}</color> hakkında her şeyi sorun",
+            "loading_history": "Sohbet geçmişi yükleniyor...",
+            "loading":"Yükleniyor..."
         }
     }
 }

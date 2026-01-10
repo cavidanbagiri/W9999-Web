@@ -5,6 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import { API_URL } from '../../http/api';
 import ReactMarkdown from 'react-markdown';
 
+import { useTranslation } from 'react-i18next';
+
 
 // Import actions from your slice
 import {
@@ -48,6 +50,9 @@ const AIMessageContent = React.memo(({ text }) => (
 ));
 
 export default function AIDirectChatComponent({ onClose }) {
+
+  const { t } = useTranslation();
+
   const STT_LANGUAGES = {
     'English': 'en-US',
     'Spanish': 'es-ES',
@@ -94,14 +99,14 @@ export default function AIDirectChatComponent({ onClose }) {
   const initialMessages = [
     {
       id: 1,
-      text: "Hello! I'm your AI language tutor. You can ask me anything about languages, grammar, vocabulary, or just practice conversation!",
+      text: t('AIScreen.direct_chat_prompts.initialMessages.prompt1'),
       isUser: false,
       timestamp: new Date().toISOString(),
       isStreaming: false
     },
     {
       id: 2,
-      text: "Try asking me things like:\n• 'Explain Spanish verb tenses'\n• 'Help me practice French greetings'\n• 'What's the difference between these words?'\n• 'Give me a conversation practice'",
+      text: t('AIScreen.direct_chat_prompts.initialMessages.prompt2'),
       isUser: false,
       timestamp: new Date().toISOString(),
       isStreaming: false

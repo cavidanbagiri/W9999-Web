@@ -1,4 +1,8 @@
 {
+    "VoiceInputComponent": {
+        "text": "Type or speak ...",
+        "tts_processing": "Processing with Google Speech-to-Text..."
+    },
     "languages": {
         "en": "English",
         "es": "Spanish",
@@ -1008,6 +1012,25 @@
         },
         "errorMessages": {
             "loadNativeLangFailed": "Failed to load native language"
+        },
+        "direct_chat_prompts": {
+            "initialMessages": {
+                "prompt1": "Hello! I'm your AI language tutor. You can ask me anything about languages, grammar, vocabulary, or just practice conversation!",
+                "prompt2": "Try asking me things like:\n• 'Explain Spanish verb tenses'\n• 'Help me practice Russian greetings'\n• 'What's the difference between these words?'\n• 'Give me a conversation practice'"
+            }
+        },
+        "word_chat_prompts": {
+            "detailedExplanation": "Give me detailed explanation of \"{{text}}\"",
+            "shortExplanation": "Give me short explanation of \"{{text}}\"",
+            "storyCreation": "Create a 100-word story using \"{{text}}\" in {{targetLang}} with translation",
+            "synonymsAntonyms": "Synonyms and antonyms for \"{{text}}\""
+        },
+        "word_chat":{
+            "title": "Your Personal Language Coach",
+            "description": "Ask anything about <color>{{text}}</color>",
+            "loading_history": "Loading conversation history...",
+            "loading":"Loading..."
         }
+        
     }
 }

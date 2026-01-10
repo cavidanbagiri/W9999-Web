@@ -3,6 +3,8 @@ import { IoSend, IoMic, IoMicOff, IoClose } from 'react-icons/io5';
 import { RiSendPlane2Fill } from "react-icons/ri";
 import { API_URL } from '../http/api';
 
+import { useTranslation } from 'react-i18next';
+
 const VoiceInputComponent = ({
   onSend,
   inputMessage,
@@ -10,6 +12,9 @@ const VoiceInputComponent = ({
   isLoading,
   language = 'en-US'
 }) => {
+
+  const { t } = useTranslation();
+
   const [isListening, setIsListening] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState('');
@@ -381,7 +386,7 @@ const VoiceInputComponent = ({
             value={inputMessage + ((isListening && !stopping) ? ' ' + interimTranscript : '')}
             onChange={(e) => setInputMessage(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder="Type or speak ..."
+            placeholder={t('VoiceInputComponent.text')}
             className="w-full border border-gray-300 rounded-2xl px-4 py-3 pr-12 resize-none outline-none bg-white disabled:bg-gray-50"
             rows="1"
             disabled={isLoading || isProcessing}
@@ -458,7 +463,7 @@ const VoiceInputComponent = ({
         <div className="flex items-center gap-2 p-3 bg-purple-50 border border-purple-200 rounded-xl">
           <div className="w-4 h-4 border-2 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
           <span className="text-sm text-purple-700">
-            Processing with Google Speech-to-Text...
+            {t('VoiceInputComponent.tts_processing')}
           </span>
         </div>
       )}

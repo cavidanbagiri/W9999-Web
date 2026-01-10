@@ -1,4 +1,8 @@
 {
+    "VoiceInputComponent": {
+        "text": "Escribe o habla ...",
+        "tts_processing": "Procesando con Google Speech-to-Text..."
+    },
     "languages": {
         "en": "Inglés",
         "es": "Español",
@@ -1008,6 +1012,24 @@
         },
         "errorMessages": {
             "loadNativeLangFailed": "Error al cargar el idioma nativo"
+        },
+        "direct_chat_prompts": {
+            "initialMessages": {
+                "prompt1": "¡Hola! Soy tu tutor de idiomas con IA. Puedes preguntarme cualquier cosa sobre idiomas, gramática, vocabulario o simplemente practicar conversación.",
+                "prompt2": "Intenta preguntarme cosas como:\n• 'Explica los tiempos verbales en español'\n• 'Ayúdame a practicar saludos en ruso'\n• '¿Cuál es la diferencia entre estas palabras?'\n• 'Dame una práctica de conversación'"
+            }
+        },
+        "word_chat_prompts": {
+            "detailedExplanation": "Dame una explicación detallada de \"{{text}}\"",
+            "shortExplanation": "Dame una explicación breve de \"{{text}}\"",
+            "storyCreation": "Crea una historia de 100 palabras usando \"{{text}}\" en {{targetLang}} con traducción",
+            "synonymsAntonyms": "Sinónimos y antónimos de \"{{text}}\""
+        },
+        "word_chat":{
+            "title": "Tu tutor de idiomas personalizado",
+            "description": "Pregunta cualquier cosa sobre <color>{{text}}</color>",
+            "loading_history": "Cargando historial de conversación...",
+            "loading":"Cargando..."
         }
     }
 }

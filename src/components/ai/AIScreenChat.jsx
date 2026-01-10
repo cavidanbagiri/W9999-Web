@@ -17,6 +17,8 @@ import TRANSLATE_LANGUAGES_LIST from '../../constants/TranslateLanguagesList';
 import MsgBox from '../../layouts/MsgBox';
 import VoiceInputComponent from '../../layouts/VoiceInputComponent'
 
+import { useTranslation, Trans } from 'react-i18next';
+
 
 import { IoArrowDown } from "react-icons/io5";
 import { FaRegCopy } from "react-icons/fa6";
@@ -106,6 +108,8 @@ function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat }) {
     'Russian': 'ru-RU',
     'Turkish': 'tr-TR',
   }
+
+  const { t } = useTranslation();
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -332,12 +336,14 @@ function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat }) {
     const targetLang = LANGUAGES.find(lang => lang.code === language_code)?.name;
 
     return [
-      // `Explain "${text}" in simple ${targetLang || 'English'} terms`,
-      `Give me detailed explanation of "${text}"`,
-      // `Write a short story (100 words) with "${currentWord?.text}"`,
-      `Create a 100-word story using "${text}" in ${targetLang} with  translation`,
-      // `What are common mistakes with "${text}"?`,
-      `Synonyms and antonyms for "${text}"`,
+      t('AIScreen.word_chat_prompts.detailedExplanation', { text }),
+      t('AIScreen.word_chat_prompts.shortExplanation', { text }),
+      t('AIScreen.word_chat_prompts.storyCreation', { text, targetLang }),
+      t('AIScreen.word_chat_prompts.synonymsAntonyms', { text }),
+      // `Give me detailed explanation of "${text}"`,
+      // `Give me short explanation of "${text}"`,
+      // `Create a 100-word story using "${text}" in ${targetLang} with  translation`,
+      // `Synonyms and antonyms for "${text}"`,
     ];
   }, [currentWord?.text, currentWord?.language_code]);
 
@@ -349,7 +355,7 @@ function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat }) {
     const refreshId = generateUniqueId();
     dispatch(addChatMessage(currentWord.id, {
       role: 'system',
-      content: 'Loading conversation history...',
+      content: t('AIScreen.word_chat.loading_history'),
       id: refreshId,
       isSystem: true
     }));
@@ -645,7 +651,9 @@ function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat }) {
               <div className="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mb-6">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Loading History</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">
+                {t('AIScreen.word_chat.loading')}
+              </h3>
             </div>
            
           </div>
@@ -658,14 +666,18 @@ function AIScreenChat({ currentWord, nativeLang, onOpenDirectChat }) {
                 </span>
               </div>
               <h3 className="text-2xl font-bold text-gray-900 mb-3 font-sans">
-                Your Personal Language Coach
+                {t('AIScreen.word_chat.title')}
               </h3>
-              <p className="text-gray-600 mb-8 max-w-md leading-relaxed font-sans">
-                Ask anything about{" "}
-                <span className="font-semibold text-purple-600">
-                  "{currentWord?.text}"
-                </span>
-              </p>
+             
+             <p className="text-gray-600 mb-8 max-w-md leading-relaxed font-sans">
+  <Trans 
+    i18nKey="AIScreen.word_chat.description" 
+    values={{ text: currentWord?.text }}
+    components={{ 
+      color: <span className="font-semibold text-purple-600" /> 
+    }} 
+  />
+</p>
 
               <div className="w-full max-w-md space-y-3">
                 {quickPrompts.map((prompt, index) => (
