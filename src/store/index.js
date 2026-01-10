@@ -9,6 +9,8 @@ import categoryWordsSlice from './category_words_store.js'
 import notesSlice from './note_store.js'
 import aiDirectChatSlice from './ai_direct_chat_store.js'
 import languageSlice from './language_store.js'
+import chatSlice from './chatSlice.js'
+import friendSlice from './friendSlice.js'
 
 const store = configureStore({
   reducer: {
@@ -21,9 +23,14 @@ const store = configureStore({
     notesSlice: notesSlice,
     aiDirectChatSlice: aiDirectChatSlice,
     languageSlice: languageSlice,
+    chatSlice: chatSlice,
+    friendSlice: friendSlice,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false,
+    }),
 })
-
 
 export default store;
 

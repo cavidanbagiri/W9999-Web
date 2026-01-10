@@ -18,3 +18,31 @@ Problems
 
 Today:
 
+Before this message you answered my question as perfect form )). lets go step by step. Can you answered this question for me please?
+
+1. Add Message Persistence in Express (Currently messages are only in memory)
+    l add the code to the chatHandler and everthing is working perfectly.
+
+2. Add Friend Requests System
+    l Created router, then l will write the repository
+
+3. Add Online/Offline Status
+    l will add this function to the server.js yes?
+
+4. Add File Upload for Messages
+    l Created router, then l will write the repository
+
+5. Add Message Search - Dont need to now.
+6. Add Error Handling & Logging - Dont need to now.
+
+7. Add Rate Limiting
+    l need to add this to server.js, yes?
+
+8. Add Monitoring Endpoints
+    l need to add this to server.js, yes?
+
+🎨 FRONTEND ENHANCEMENTS
+9. Add Real-time Notifications
+    l create this component, where l need to add? Chathandler.js?
+
+10. Add Voice Messages - Dont need to now.

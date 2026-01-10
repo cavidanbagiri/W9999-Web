@@ -24,92 +24,119 @@ import EditNoteComponent from "../components/notes/EditNoteComponent";
 import CreateNoteComponent from "../components/notes/CreateNoteComponent";
 import NoteDetailScreen from "../components/notes/NoteDetailScreen";
 import AIDirectChatComponent from "../components/ai/AIDirectChatComponent";
+import ChatContainer from "../components/chats/ChatContainer";
+import FriendList from "../components/friends/FriendList";
+import FriendRequests from "../components/friends/FriendRequests";
+import AddFriends from "../components/friends/AddFriends";
+
+import TestChat from '../components/chats/TestChat'
 
 
 const router = createBrowserRouter([
     {
         path: "/",
-        element: <Navbar/>,
+        element: <Navbar />,
         children: [
             {
                 path: "/",
-                element: <Dashboard/>
+                element: <Dashboard />
             },
             {
                 path: "/words",
-                element: <Words/>
+                element: <Words />
             },
             {
                 path: "/ai-chat",
-                element: <AIScreen/>
+                element: <AIScreen />
             },
             {
                 path: "/ai-direct-chat",
-                element: <AIDirectChatComponent/>
+                element: <AIDirectChatComponent />
             },
             {
-                path:'/card-detail',
-                element: <CardDetail/>
+                path: '/card-detail',
+                element: <CardDetail />
             },
             {
                 path: "/translate",
-                element: <Translate/>
+                element: <Translate />
             },
             {
                 path: "/favorites",
-                element: <Favorites/>
+                element: <Favorites />
             },
             {
                 path: "/category-words",
-                element: <CategoryWordsScreen/>
+                element: <CategoryWordsScreen />
             },
             {
                 path: "/learned",
-                element: <Learned/>
+                element: <Learned />
             },
             {
                 path: "/search",
-                element: <SearchScreen/>
+                element: <SearchScreen />
             },
             {
                 path: "/auth",
-                element: <Auth/>
+                element: <Auth />
             },
             {
                 path: "/login-register",
-                element: <Login_Register/>
+                element: <Login_Register />
             },
             {
                 path: "/profile",
-                element: <Profile/>
+                element: <Profile />
             },
             {
                 path: "/notes",
-                element: <NotesScreen/>
+                element: <NotesScreen />
             },
             {
                 path: "/notes/create",
-                element: <CreateNoteComponent/>
+                element: <CreateNoteComponent />
             },
             {
                 path: "/notes/edit/:id",
-                element: <EditNoteComponent/>
+                element: <EditNoteComponent />
             },
             {
                 path: "/notes/detail/:id",
-                element: <NoteDetailScreen/>
+                element: <NoteDetailScreen />
             },
             {
                 path: "/privacy",
-                element: <Privacy/>
+                element: <Privacy />
             },
             {
                 path: "/forget_password",
-                element: <ForgotPasswordScreen/>
+                element: <ForgotPasswordScreen />
             },
             {
                 path: "/reset-password-confirm",
-                element: <ResetPasswordConfirmScreen/>
+                element: <ResetPasswordConfirmScreen />
+            },
+            {
+                path: '/chat',
+                element: <ChatContainer />
+            },
+            {
+                path: '/friends',
+                element: <FriendList />,
+            },
+            {
+                path: '/friends/add',
+                element: <AddFriends />
+            },
+            {
+                path: '/friends/requests',
+                element: <FriendRequests />
+            },
+
+            {
+                path: '/test-chat',
+                element: <TestChat />
             }
         ]
     },

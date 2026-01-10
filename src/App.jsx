@@ -12,6 +12,9 @@ import './i18n/i18n'; // Import i18n configuration
 import { useTranslation } from 'react-i18next';
 import { initializeLanguage, changeLanguage } from './store/language_store.js';
 
+import SocketService from './services/SocketService.js';
+import { setSocketConnected } from './store/chatSlice.js';
+
 function App() {
 
 
@@ -27,6 +30,7 @@ function App() {
   const { currentLanguage, isInitialized } = useSelector((state) => state.languageSlice);
   const is_auth = useSelector((state) => state.authSlice.is_auth);
   const { user } = useSelector((state) => state.authSlice);
+  const { socketConnected } = useSelector((state) => state.chatSlice);
 
   // Initialize language on app load
   useEffect(() => {
@@ -120,6 +124,32 @@ function App() {
     };
     getSelectedLanguage();
   }, [is_auth]);
+
+
+
+  // // Initialize socket when user is authenticated
+  // useEffect(() => {
+  //   if (is_auth) {
+  //     const token = localStorage.getItem('token');
+  //     if (token) {
+  //       console.log('🔄 Initializing socket connection...');
+  //       console.log('in app.jsx the token is ', token)
+  //       SocketService.initializeSocket(token);
+  //     }
+  //   } else {
+  //     // Disconnect socket when user logs out
+  //     SocketService.disconnect();
+  //     dispatch(setSocketConnected(false));
+  //   }
+  // }, [is_auth, dispatch]);
+  
+  // // Monitor socket connection status
+  // useEffect(() => {
+  //   const status = SocketService.getStatus();
+  //   if (status.isConnected !== socketConnected) {
+  //     dispatch(setSocketConnected(status.isConnected));
+  //   }
+  // }, [socketConnected, dispatch]);
 
 
 
