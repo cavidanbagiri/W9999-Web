@@ -147,7 +147,6 @@ class AuthService {
             }
         });
 
-
     static checkNativeLanguage = createAsyncThunk(
         '/auth/getnative',
         async (_, thunkAPI) => {
@@ -190,8 +189,6 @@ class AuthService {
             }
         });
 
-
-
     // services/AuthService.js
     static resetPassword = createAsyncThunk(
         'auth/resetPassword',
@@ -223,13 +220,30 @@ class AuthService {
         }
     );
 
-
     static getTotalLearnedWords = createAsyncThunk(
         'auth/total_learned_words',
         async (data, thunkAPI) => {
             try {
                 const response = await $api.get(`/auth/total-learned-words`);
                 return response.data;
+            } catch (error) {
+                return thunkAPI.rejectWithValue({
+                    message: error.response?.data?.detail || error.message,
+                    status: error.response?.status || 500,
+                });
+            }
+        }
+    )
+
+    static update_user = createAsyncThunk(
+        'auth/update_user',
+        async (data, thunkAPI) => {
+            try {
+                const response = await $api.post(`/auth/edit/update-profile`, data);
+                return {
+                    payload: response.data,
+                    status: response.status,
+                }
             } catch (error) {
                 return thunkAPI.rejectWithValue({
                     message: error.response?.data?.detail || error.message,

@@ -18,8 +18,12 @@ import {
   IoRefresh,
   IoWarning,
   IoRibbon,
-  IoTime
+  IoTime,
 } from "react-icons/io5";
+
+import { CiEdit } from "react-icons/ci";
+
+
 
 export default function ProfileScreen() {
   const navigate = useNavigate();
@@ -142,7 +146,15 @@ export default function ProfileScreen() {
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
         {/* User Profile Card */}
-        <div className="bg-white rounded-3xl shadow-xl p-8 mb-8 border border-gray-100">
+        <div className="bg-white rounded-3xl shadow-xl p-8 mb-8 border border-gray-100 relative">
+          
+          {/* <span 
+          onClick={()=>navigate('/edit-profile')}
+          className='flex items-center absolute top-2 right-4 text-sm bg-gray-50 py-1 px-2 rounded-lg text-gray-500 hover:underline cursor-pointer'>
+            Edit Profile
+            <CiEdit className='text-black text-lg ml-1' />
+          </span> */}
+          
           <div className="flex flex-col lg:flex-row items-center lg:items-start space-y-6 lg:space-y-0 lg:space-x-8">
             {/* Avatar Section */}
             <div className="flex-shrink-0">

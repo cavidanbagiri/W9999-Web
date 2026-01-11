@@ -21,6 +21,13 @@ const initialState = {
         msg: '',
         res: null,
     },
+
+    edit_profile:{
+        edit_pending: false,
+        edit_message: "",
+        profile_updated: false,
+    }
+
 }
 
 export const authSlice = createSlice({
@@ -48,6 +55,12 @@ export const authSlice = createSlice({
         setNewTargetLanguageCondFalse: (state, action) => {
             state.new_target_lang_cond.is_cond = false;
             state.new_target_lang_cond.msg = '';
+        },
+        setEditPendingFalse: (state) => {
+            state.edit_pending = false;
+        },
+        setEditProfileUpdatedFalse: (state) => {
+            state.edit_profile.profile_updated = false;
         },
     },
     extraReducers: (builder) => {
@@ -108,7 +121,6 @@ export const authSlice = createSlice({
             }
         });
         builder.addCase(AuthService.login.rejected, (state, action) => {
-            console.log('Login rejected the result is ', action)
             state.login_pending = false;
             state.is_auth = false;
             state.is_login_error = true;
@@ -226,9 +238,29 @@ export const authSlice = createSlice({
             console.log('target rejected', action.payload);
         });
 
+
+        // Edit Profile
+        builder.addCase(AuthService.update_user.pending, (state, action) => {
+            // state.login_pending = true;
+            state.edit_profile.edit_pending = true;
+        })
+        builder.addCase(AuthService.update_user.fulfilled, (state, action) => {
+            // state.user = action.payload;
+            state.edit_profile.edit_pending = false;
+            state.edit_profile.edit_message = 'Successfully updated your profile';
+            state.edit_profile.profile_updated = true;
+            state.user = action.payload;
+            
+            // console.log('update user fulfilled...................', action.payload);
+        });
+        builder.addCase(AuthService.update_user.rejected, (state, action) => {
+            state.edit_profile.edit_pending = false;
+            state.edit_profile.edit_message = action.payload?.payload?.detail;
+        });
+
     },
 });
 
-export const { setUser, setLoginPending, setIsAuth, setIsLoginErrorTrue, setIsLoginErrorFalse, setIsLoginSuccessFalse, setNewTargetLanguageCondFalse } = authSlice.actions;
+export const { setUser, setLoginPending, setIsAuth, setIsLoginErrorTrue, setIsLoginErrorFalse, setIsLoginSuccessFalse, setNewTargetLanguageCondFalse, setEditPendingFalse, setEditProfileUpdatedFalse } = authSlice.actions;
 
 export default authSlice.reducer;

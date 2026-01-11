@@ -29,6 +29,7 @@ import FriendList from "../components/friends/FriendList";
 import FriendRequests from "../components/friends/FriendRequests";
 import AddFriends from "../components/friends/AddFriends";
 import UserInformationByID from "../components/friends/UserInformationByID";
+import EditProfile from "../pages/EditProfile";
 
 import TestChat from '../components/chats/TestChat'
 
@@ -137,6 +138,10 @@ const router = createBrowserRouter([
             {
                 path: '/user/profile',
                 element: <UserInformationByID />
+            },
+            {
+                path: '/edit-profile',
+                element: <EditProfile />
             },
 
             {
