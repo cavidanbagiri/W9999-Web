@@ -6,16 +6,19 @@ import { io } from 'socket.io-client';
 // import store from '../store/store.js';
 import store from '../store/index.js';
 
-import { 
-  setSocketConnected, 
-  addMessage, 
-  updateMessageStatus, 
+
+
+import {
+  setSocketConnected,
+  addMessage,
+  updateMessageStatus,
   setTypingIndicator,
   addConversation,
   updateConversation,
   addFriendRequest,
   updateFriendRequest,
-  setUnreadCount 
+  setUnreadCount,
+  fetchConversations
 } from '../store/chatSlice.js';
 
 class SocketService {
@@ -61,7 +64,7 @@ class SocketService {
       console.error('❌ Socket.io connection error:', error.message);
       this.isConnected = false;
       store.dispatch(setSocketConnected(false));
-      
+
       // Auto-reconnect logic
       if (this.reconnectAttempts < this.maxReconnectAttempts) {
         this.reconnectAttempts++;
@@ -82,23 +85,47 @@ class SocketService {
       console.log('👋 Welcome from server:', data);
     });
 
-    this.socket.on('new_message', (data) => {
-      console.log('📨 New message received:', data);
-      store.dispatch(addMessage({
-        conversationId: data.conversationId,
-        message: data.message
-      }));
-      
-      // Update unread count
-      const state = store.getState();
-      const isActiveConversation = state.chatSlice.activeConversation === data.conversationId;
-      if (!isActiveConversation) {
-        store.dispatch(setUnreadCount({
-          conversationId: data.conversationId,
-          increment: true
-        }));
-      }
-    });
+
+// SocketService.js - ADD THESE LOGS
+this.socket.on('new_message', (data) => {
+  console.log('🚨 ======== NEW_MESSAGE EVENT START ========');
+  console.log('📦 Data received:', {
+    conversationId: data.conversationId,
+    hasMessage: !!data.message,
+    messageId: data.message?.id,
+    contentPreview: data.message?.content?.substring(0, 30)
+  });
+  
+  const state = store.getState();
+  console.log('📊 Current Redux state:', {
+    totalConversations: state.chatSlice.conversations.length,
+    conversationIds: state.chatSlice.conversations.map(c => c.id),
+    activeConversation: state.chatSlice.activeConversation
+  });
+  
+  // Check if conversation exists
+  const conversationExists = state.chatSlice.conversations.some(
+    c => c.id === data.conversationId
+  );
+  console.log('🔍 Conversation exists in Redux?', conversationExists);
+  
+  if (!conversationExists) {
+    console.log('🔄 Dispatching fetchConversations...');
+    store.dispatch(fetchConversations());
+  }
+  
+  console.log('➕ Dispatching addMessage...');
+  store.dispatch(addMessage({
+    conversationId: data.conversationId,
+    message: data.message
+  }));
+  
+  console.log('✅ ======== NEW_MESSAGE EVENT END ========');
+});
+
+
+
+
 
     this.socket.on('message_read', (data) => {
       console.log('👁️ Message read:', data);
@@ -140,6 +167,7 @@ class SocketService {
     this.socket.on('error', (error) => {
       console.error('❌ Socket error:', error);
     });
+
   };
 
   // Emit events to server

@@ -9,7 +9,6 @@ export const FriendService = {
     async (_, { rejectWithValue }) => {
       try {
         const response = await $api.get('/chat/friends');
-        console.log('get friends is working and the result is ', response.data)
         return {
           payload: response.data,
           status: response.status,

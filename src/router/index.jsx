@@ -124,6 +124,10 @@ const router = createBrowserRouter([
                 element: <ChatContainer />
             },
             {
+                path: '/chat/:friendId',
+                element: <ChatContainer />
+            },
+            {
                 path: '/friends',
                 element: <FriendList />,
             },

@@ -14,11 +14,11 @@ export const fetchConversations = createAsyncThunk(
           'Content-Type': 'application/json',
         },
       });
-      
+
       if (!response.ok) {
         throw new Error('Failed to fetch conversations');
       }
-      
+
       return await response.json();
     } catch (error) {
       return rejectWithValue(error.message);
@@ -38,12 +38,10 @@ export const fetchMessages = createAsyncThunk(
         },
       });
 
-      console.log('fetch messages is working and response is ', response)
-      
       if (!response.ok) {
         throw new Error('Failed to fetch messages');
       }
-      
+
       return {
         conversationId,
         messages: await response.json()
@@ -59,19 +57,20 @@ export const createConversation = createAsyncThunk(
   async (participantIds, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem('token');
+      const participant_ids = participantIds
       const response = await fetch('http://localhost:8000/api/chat/conversations', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ participantIds, isGroup: false }),
+        body: JSON.stringify(participant_ids),
       });
-      
+
       if (!response.ok) {
         throw new Error('Failed to create conversation');
       }
-      
+
       return await response.json();
     } catch (error) {
       return rejectWithValue(error.message);
@@ -99,17 +98,17 @@ const chatSlice = createSlice({
     setSocketConnected: (state, action) => {
       state.socketConnected = action.payload;
     },
-    
+
     // Messages
     addMessage: (state, action) => {
       const { conversationId, message } = action.payload;
-      
+
       if (!state.messages[conversationId]) {
         state.messages[conversationId] = [];
       }
-      
+
       state.messages[conversationId].push(message);
-      
+
       // Update conversation's last message and timestamp
       const conversation = state.conversations.find(c => c.id === conversationId);
       if (conversation) {
@@ -117,10 +116,10 @@ const chatSlice = createSlice({
         conversation.updated_at = new Date().toISOString();
       }
     },
-    
+
     updateMessageStatus: (state, action) => {
       const { messageId, status, readAt } = action.payload;
-      
+
       // Find and update message in all conversations
       Object.keys(state.messages).forEach(conversationId => {
         const messageIndex = state.messages[conversationId].findIndex(m => m.id === messageId);
@@ -132,21 +131,21 @@ const chatSlice = createSlice({
         }
       });
     },
-    
+
     // Conversations
     setActiveConversation: (state, action) => {
       state.activeConversation = action.payload;
-      
+
       // Reset unread count for this conversation
       if (action.payload && state.unreadCounts[action.payload]) {
         state.unreadCounts[action.payload] = 0;
       }
     },
-    
+
     addConversation: (state, action) => {
       state.conversations.unshift(action.payload);
     },
-    
+
     updateConversation: (state, action) => {
       const index = state.conversations.findIndex(c => c.id === action.payload.id);
       if (index !== -1) {
@@ -156,15 +155,15 @@ const chatSlice = createSlice({
         };
       }
     },
-    
+
     // Typing indicators
     setTypingIndicator: (state, action) => {
       const { conversationId, userId, isTyping, username } = action.payload;
-      
+
       if (!state.typingIndicators[conversationId]) {
         state.typingIndicators[conversationId] = {};
       }
-      
+
       if (isTyping) {
         state.typingIndicators[conversationId][userId] = {
           userId,
@@ -176,12 +175,12 @@ const chatSlice = createSlice({
         delete state.typingIndicators[conversationId][userId];
       }
     },
-    
+
     // Friend requests
     addFriendRequest: (state, action) => {
       state.friendRequests.push(action.payload);
     },
-    
+
     updateFriendRequest: (state, action) => {
       const { requestId, status } = action.payload;
       const request = state.friendRequests.find(r => r.requestId === requestId);
@@ -189,28 +188,28 @@ const chatSlice = createSlice({
         request.status = status;
       }
     },
-    
+
     removeFriendRequest: (state, action) => {
       state.friendRequests = state.friendRequests.filter(
         r => r.requestId !== action.payload
       );
     },
-    
+
     // Unread counts
     setUnreadCount: (state, action) => {
       const { conversationId, increment, value } = action.payload;
-      
+
       if (!state.unreadCounts[conversationId]) {
         state.unreadCounts[conversationId] = 0;
       }
-      
+
       if (value !== undefined) {
         state.unreadCounts[conversationId] = value;
       } else if (increment) {
         state.unreadCounts[conversationId] += 1;
       }
     },
-    
+
     // Clear chat state (on logout)
     clearChat: (state) => {
       state.conversations = [];
@@ -224,7 +223,7 @@ const chatSlice = createSlice({
       state.error = null;
     },
   },
-  
+
   extraReducers: (builder) => {
     builder
       // Fetch conversations
@@ -233,14 +232,29 @@ const chatSlice = createSlice({
         state.error = null;
       })
       .addCase(fetchConversations.fulfilled, (state, action) => {
-        state.loading = false;
-        state.conversations = action.payload;
+        // state.loading = false;
+        // state.conversations = action.payload;
+        // Remove duplicates based on conversation ID
+        const uniqueConversations = [];
+        const seenIds = new Set();
+
+        // Combine existing and new conversations
+        const allConversations = [...state.conversations, ...action.payload];
+
+        allConversations.forEach(conv => {
+          if (!seenIds.has(conv.id)) {
+            seenIds.add(conv.id);
+            uniqueConversations.push(conv);
+          }
+        });
+
+        state.conversations = uniqueConversations;
       })
       .addCase(fetchConversations.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
-      
+
       // Fetch messages
       .addCase(fetchMessages.pending, (state) => {
         state.loading = true;
@@ -255,10 +269,21 @@ const chatSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-      
+
       // Create conversation
       .addCase(createConversation.fulfilled, (state, action) => {
-        state.conversations.unshift(action.payload);
+        // state.conversations.unshift(action.payload);
+        // state.activeConversation = action.payload.id;
+        // Check if conversation already exists
+        const existingIndex = state.conversations.findIndex(
+          conv => conv.id === action.payload.id
+        );
+
+        // Only add if not already present
+        if (existingIndex === -1) {
+          state.conversations.unshift(action.payload);
+        }
+
         state.activeConversation = action.payload.id;
       });
   },

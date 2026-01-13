@@ -2,38 +2,53 @@
 
 
 // components/chat/ChatContainer.jsx - Update handleSelectConversation
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { 
-  fetchConversations, 
+import { useParams, useNavigate } from 'react-router-dom'; // Add useParams
+
+import {
+  fetchConversations,
   setActiveConversation,
-  fetchMessages  // ← ADD THIS IMPORT
+  fetchMessages,
+  createConversation,  // Add this import
+  addMessage
 } from '../../store/chatSlice';
 
-import socketService from '../../services/SocketService';
+import ConversationList from './ConversationList';
+import MessageList from './MessageList';
+import MessageInput from './MessageInput';
 
+import socketService from '../../services/SocketService';
 const ChatContainer = () => {
+
+  const { friendId } = useParams();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { 
-    conversations, 
-    activeConversation, 
-    messages, 
-    typingIndicators, 
+
+  const {
+    conversations,
+    activeConversation,
+    messages,
+    typingIndicators,
     socketConnected,
-    loading 
+    loading
   } = useSelector((state) => state.chatSlice);
-  
+
   const { user } = useSelector((state) => state.authSlice);
-  
+
   const [conversationsLoading, setConversationsLoading] = useState(false);
-  
+
+  // Use refs to track state without triggering re-renders
+  const isProcessingRef = useRef(false);
+  const hasProcessedRef = useRef(false);
+
   // Load conversations on mount
   useEffect(() => {
     if (socketConnected) {
       loadConversations();
     }
   }, [socketConnected]);
-  
+
   // Load messages when active conversation changes
   useEffect(() => {
     if (activeConversation && socketConnected) {
@@ -41,7 +56,15 @@ const ChatContainer = () => {
       socketService.joinConversation(activeConversation);
     }
   }, [activeConversation, socketConnected]);
-  
+
+  // Handle friendId ONCE when component mounts
+  useEffect(() => {
+    if (friendId && socketConnected && !loading && !hasProcessedRef.current) {
+      hasProcessedRef.current = true;
+      processFriendChat(parseInt(friendId));
+    }
+  }, [friendId, socketConnected, loading]);
+
   const loadConversations = async () => {
     setConversationsLoading(true);
     try {
@@ -52,61 +75,153 @@ const ChatContainer = () => {
       setConversationsLoading(false);
     }
   };
-  
+
   const loadMessages = async (conversationId) => {
     try {
-      // Check if messages already loaded
       if (!messages[conversationId] || messages[conversationId].length === 0) {
-        console.log(`📥 Loading messages for conversation ${conversationId}...`);
         await dispatch(fetchMessages(conversationId)).unwrap();
       }
     } catch (error) {
       console.error(`Failed to load messages for conversation ${conversationId}:`, error);
     }
   };
-  
-  const handleSelectConversation = async (conversationId) => {
-    // Set active conversation
-    dispatch(setActiveConversation(conversationId));
-    
-    // Messages will be loaded by the useEffect above
+
+  const processFriendChat = async (friendId) => {
+    if (isProcessingRef.current) return;
+    isProcessingRef.current = true;
+
+    try {
+      // Check if conversation already exists
+      const existingConversation = conversations.find(conv => {
+        return !conv.is_group &&
+          conv.participants?.some(p => p.id === friendId);
+      });
+
+      if (existingConversation) {
+        dispatch(setActiveConversation(existingConversation.id));
+        navigate('/chat', { replace: true });
+      } else {
+        await createNewConversation(friendId);
+      }
+    } finally {
+      isProcessingRef.current = false;
+    }
   };
-  
+
+  const createNewConversation = async (friendId) => {
+    try {
+      const result = await dispatch(createConversation([friendId])).unwrap();
+
+      if (result.id) {
+        dispatch(setActiveConversation(result.id));
+        navigate('/chat', { replace: true });
+      }
+    } catch (error) {
+      console.error('Failed to create conversation:', error);
+      alert('Failed to start chat. Please try again.');
+    }
+  };
+  // Also update handleFriendChat to prevent multiple API calls
+  // const handleFriendChat = useCallback(async (friendId) => {
+  //   // Check if conversation already exists with this friend
+  //   const existingConversation = conversations.find(conv => {
+  //     return !conv.is_group &&
+  //       conv.participants?.some(p => p.id === friendId);
+  //   });
+
+  //   if (existingConversation) {
+  //     dispatch(setActiveConversation(existingConversation.id));
+  //     navigate('/chat', { replace: true });
+  //   } else {
+  //     await createNewConversation(friendId);
+  //   }
+  // }, [conversations, dispatch, navigate]);
+
+
+
+
+  const handleSelectConversation = (conversationId) => {
+    dispatch(setActiveConversation(conversationId));
+  };
+
   const handleSendMessage = (content) => {
     if (!activeConversation || !content.trim()) return;
-    
+
     const messageData = {
       conversationId: activeConversation,
       content: content.trim(),
       messageType: 'text'
     };
-    
+
     socketService.sendMessage(messageData);
   };
-  
+
   const handleTyping = (isTyping) => {
     if (activeConversation) {
       socketService.sendTypingIndicator(activeConversation, isTyping);
     }
   };
-  
+
   // Get active conversation data
   const activeConversationData = conversations.find(c => c.id === activeConversation);
-  
-  // Show loading state
-  if (loading) {
-    return (
-      <div className="flex h-screen bg-white items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading chat...</p>
-        </div>
-      </div>
-    );
-  }
-  
+
+
+  // Add this useEffect to ChatContainer.jsx - AFTER your existing useEffects
+  // useEffect(() => {
+  //   const socket = socketService.socket;
+  //   if (!socket) return;
+
+  //   console.log('🔧 Setting up new_message listener in ChatContainer');
+
+  //   const handleNewMessage = (data) => {
+  //     console.log('📨 ChatContainer received new_message:', {
+  //       conversationId: data.conversationId,
+  //       messageId: data.message?.id,
+  //       fromUser: data.message?.sender_id
+  //     });
+
+  //     // Check if conversation exists locally
+  //     const conversationExists = conversations.some(
+  //       conv => conv.id === data.conversationId
+  //     );
+
+  //     console.log('🔍 Conversation check:', {
+  //       conversationId: data.conversationId,
+  //       exists: conversationExists,
+  //       totalConversations: conversations.length
+  //     });
+
+  //     if (!conversationExists) {
+  //       console.log('🔄 Unknown conversation, fetching conversations...');
+  //       // Use dispatch to fetch conversations
+  //       dispatch(fetchConversations()).then(() => {
+  //         console.log('✅ Conversations fetched, now adding message');
+  //         // After fetching, add the message
+  //         dispatch(addMessage({
+  //           conversationId: data.conversationId,
+  //           message: data.message
+  //         }));
+  //       });
+  //     } else {
+  //       // Conversation exists, just add message
+  //       dispatch(addMessage({
+  //         conversationId: data.conversationId,
+  //         message: data.message
+  //       }));
+  //     }
+  //   };
+
+  //   socket.on('new_message', handleNewMessage);
+
+  //   return () => {
+  //     console.log('🧹 Cleaning up new_message listener');
+  //     socket.off('new_message', handleNewMessage);
+  //   };
+  // }, [conversations, dispatch]); // Add this dependency
+
+
   return (
-    <div className="flex h-screen bg-white">
+    <div className="flex min-h-[calc(100vh-100px)] bg-white">
       {/* Sidebar */}
       <div className="w-1/3 md:w-1/4 border-r border-gray-200 flex flex-col">
         <div className="p-4 border-b border-gray-200">
@@ -115,7 +230,7 @@ const ChatContainer = () => {
             {socketConnected ? '🟢 Connected' : '🔴 Connecting...'}
           </p>
         </div>
-        
+
         {conversationsLoading ? (
           <div className="p-4">
             <div className="animate-pulse space-y-3">
@@ -129,9 +244,8 @@ const ChatContainer = () => {
             {conversations.map(conv => (
               <div
                 key={conv.id}
-                className={`p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50 ${
-                  activeConversation === conv.id ? 'bg-blue-50 border-blue-200' : ''
-                }`}
+                className={`p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50 ${activeConversation === conv.id ? 'bg-blue-50 border-blue-200' : ''
+                  }`}
                 onClick={() => handleSelectConversation(conv.id)}
               >
                 <div className="flex items-center">
@@ -157,7 +271,7 @@ const ChatContainer = () => {
           </div>
         )}
       </div>
-      
+
       {/* Main Chat Area */}
       <div className="flex-1 flex flex-col">
         {activeConversation ? (
@@ -180,7 +294,7 @@ const ChatContainer = () => {
                 </div>
               </div>
             </div>
-            
+
             {/* Messages Area */}
             <div className="flex-1 overflow-y-auto p-4">
               {messages[activeConversation]?.length > 0 ? (
@@ -190,20 +304,18 @@ const ChatContainer = () => {
                       key={msg.id}
                       className={`flex ${msg.sender_id == parseInt(user?.payload?.user?.sub) ? 'justify-end' : 'justify-start'}`}
                     >
-                      <div className={`max-w-[70%] rounded-lg px-4 py-2 ${
-                        msg.sender_id == parseInt(user?.payload?.user?.sub)
-                          ? 'bg-blue-500 text-white' 
-                          : 'bg-gray-100 text-gray-800'
-                      }`}>
-                        <p>{msg.content} </p>
-                        <p className={`text-xs mt-1 ${
-                          msg.sender_id == parseInt(user?.payload?.user?.sub)
-                            ? 'text-blue-200' 
-                            : 'text-gray-500'
+                      <div className={`max-w-[70%] rounded-lg px-4 py-2 ${msg.sender_id == parseInt(user?.payload?.user?.sub)
+                        ? 'bg-blue-500 text-white'
+                        : 'bg-gray-100 text-gray-800'
                         }`}>
-                          {new Date(msg.created_at).toLocaleTimeString([], { 
-                            hour: '2-digit', 
-                            minute: '2-digit' 
+                        <p>{msg.content} </p>
+                        <p className={`text-xs mt-1 ${msg.sender_id == parseInt(user?.payload?.user?.sub)
+                          ? 'text-blue-200'
+                          : 'text-gray-500'
+                          }`}>
+                          {new Date(msg.created_at).toLocaleTimeString([], {
+                            hour: '2-digit',
+                            minute: '2-digit'
                           })}
                         </p>
                       </div>
@@ -220,7 +332,7 @@ const ChatContainer = () => {
                 </div>
               )}
             </div>
-            
+
             {/* Message Input */}
             <div className="border-t border-gray-200 p-4">
               <div className="flex items-center">
@@ -268,175 +380,3 @@ const ChatContainer = () => {
 export default ChatContainer;
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// // components/chat/ChatContainer.jsx
-// import React, { useState, useEffect } from 'react';
-// import { useSelector, useDispatch } from 'react-redux';
-// import { fetchConversations, setActiveConversation } from '../../store/chatSlice';
-// import socketService from '../../services/SocketService';
-// import ConversationList from './ConversationList';
-// import MessageList from './MessageList';
-// import MessageInput from './MessageInput';
-
-// const ChatContainer = () => {
-//   const dispatch = useDispatch();
-//   const { conversations, activeConversation, messages, typingIndicators, socketConnected } = useSelector((state) => state.chatSlice);
-//   const { user } = useSelector((state) => state.authSlice);
-  
-//   const [loading, setLoading] = useState(false);
-  
-//   // Fetch conversations when connected
-//   useEffect(() => {
-//     if (socketConnected) {
-//       loadConversations();
-//     }
-//   }, [socketConnected]);
-  
-//   // Join conversation when active changes
-//   useEffect(() => {
-//     if (activeConversation && socketConnected) {
-//       socketService.joinConversation(activeConversation);
-//     }
-//   }, [activeConversation, socketConnected]);
-  
-//   const loadConversations = async () => {
-//     setLoading(true);
-//     try {
-//       await dispatch(fetchConversations()).unwrap();
-//     } catch (error) {
-//       console.error('Failed to load conversations:', error);
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-  
-//   const handleSelectConversation = (conversationId) => {
-//     dispatch(setActiveConversation(conversationId));
-//   };
-  
-//   const handleSendMessage = (content) => {
-//     if (!activeConversation || !content.trim()) return;
-    
-//     const messageData = {
-//       conversationId: activeConversation,
-//       content: content.trim(),
-//       messageType: 'text'
-//     };
-    
-//     socketService.sendMessage(messageData);
-//   };
-  
-//   const handleTyping = (isTyping) => {
-//     if (activeConversation) {
-//       socketService.sendTypingIndicator(activeConversation, isTyping);
-//     }
-//   };
-  
-//   // Get active conversation data
-//   const activeConversationData = conversations.find(c => c.id === activeConversation);
-
-  
-//   return (
-//     <div className="flex h-screen bg-white">
-//       {/* Sidebar - Conversations */}
-//       <div className="w-1/3 md:w-1/4 border-r border-gray-200 flex flex-col">
-//         <div className="p-4 border-b border-gray-200">
-//           <h1 className="text-2xl font-bold text-gray-800">Messages</h1>
-//           <p className="text-sm text-gray-500 mt-1">
-//             {socketConnected ? '🟢 Connected' : '🔴 Connecting...'}
-//           </p>
-//         </div>
-//         <ConversationList
-//           conversations={conversations}
-//           activeConversation={activeConversation}
-//           onSelectConversation={handleSelectConversation}
-//           loading={loading}
-//         />
-//       </div>
-      
-//       {/* Main Chat Area */}
-//       <div className="flex-1 flex flex-col">
-//         {activeConversation ? (
-//           <>
-//             {/* Chat Header */}
-//             <div className="p-4 border-b border-gray-200 flex items-center justify-between">
-//               <div className="flex items-center space-x-3">
-//                 <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-400 to-purple-500 flex items-center justify-center text-white font-bold">
-//                   {activeConversationData?.is_group 
-//                     ? activeConversationData?.group_name?.charAt(0).toUpperCase()
-//                     : 'U'
-//                   }
-//                 </div>
-//                 <div>
-//                   <h2 className="font-semibold text-gray-800">
-//                     {activeConversationData?.is_group 
-//                       ? activeConversationData?.group_name 
-//                       : 'User'
-//                     }
-//                   </h2>
-//                   <p className="text-sm text-gray-500">
-//                     {socketConnected ? 'Online' : 'Offline'}
-//                   </p>
-//                 </div>
-//               </div>
-//               <button className="text-gray-500 hover:text-gray-700 p-2">
-//                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-//                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
-//                 </svg>
-//               </button>
-//             </div>
-            
-//             {/* Messages */}
-//             <div className="flex-1 overflow-hidden">
-//               <MessageList
-//                 messages={messages[activeConversation] || []}
-//                 currentUserId={user?.id || 0}
-//                 typingIndicators={typingIndicators[activeConversation] || {}}
-//               />
-//             </div>
-            
-//             {/* Message Input */}
-//             <MessageInput
-//               onSendMessage={handleSendMessage}
-//               onTyping={handleTyping}
-//               disabled={!socketConnected}
-//             />
-//           </>
-//         ) : (
-//           <div className="flex-1 flex flex-col items-center justify-center p-8 text-gray-500">
-//             <div className="text-6xl mb-4">💬</div>
-//             <h2 className="text-2xl font-bold mb-2">Your Messages</h2>
-//             <p className="text-center mb-6">
-//               Select a conversation to start chatting
-//             </p>
-//             <button 
-//               className="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-6 rounded-full transition-colors"
-//               onClick={() => {/* Add new conversation logic */}}
-//             >
-//               Start New Chat
-//             </button>
-//           </div>
-//         )}
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default ChatContainer;

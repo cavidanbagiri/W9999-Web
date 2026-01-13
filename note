@@ -9,18 +9,23 @@ Features:
 
 Problems
 
-1 - AiTutor, Profile need to interfaces langs. 
+1 - Profile, Chat, Friends need to interfaces langs. 
 
 2 - Check the words always calling from backend after the change the screen
 
 3 - Friends section 
-    3.1 - Create messages
-    3.2 - Show messages normally
-    3.3 - During fething friends show loading
-    3.4 - 
-
-4 - Add Detail User Profile Page 
-
+    3.1 - During fething friends show loading
+    
 
 
 Today:
+
+Now, I'm working on the FriendsList.jsx file. When l click the chat button, l need to create a new chat with the user. 
+
+FriendsList.jsx
+
+  
+const handleStartChat = (friendId) => {
+  navigate(`/chat/${friendId}`);
+};
+  

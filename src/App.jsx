@@ -127,29 +127,29 @@ function App() {
 
 
 
-  // // Initialize socket when user is authenticated
-  // useEffect(() => {
-  //   if (is_auth) {
-  //     const token = localStorage.getItem('token');
-  //     if (token) {
-  //       console.log('🔄 Initializing socket connection...');
-  //       console.log('in app.jsx the token is ', token)
-  //       SocketService.initializeSocket(token);
-  //     }
-  //   } else {
-  //     // Disconnect socket when user logs out
-  //     SocketService.disconnect();
-  //     dispatch(setSocketConnected(false));
-  //   }
-  // }, [is_auth, dispatch]);
+  // Initialize socket when user is authenticated
+  useEffect(() => {
+    if (is_auth) {
+      const token = localStorage.getItem('token');
+      if (token) {
+        console.log('🔄 Initializing socket connection...');
+        console.log('in app.jsx the token is ', token)
+        SocketService.initializeSocket(token);
+      }
+    } else {
+      // Disconnect socket when user logs out
+      SocketService.disconnect();
+      dispatch(setSocketConnected(false));
+    }
+  }, [is_auth, dispatch]);
   
-  // // Monitor socket connection status
-  // useEffect(() => {
-  //   const status = SocketService.getStatus();
-  //   if (status.isConnected !== socketConnected) {
-  //     dispatch(setSocketConnected(status.isConnected));
-  //   }
-  // }, [socketConnected, dispatch]);
+  // Monitor socket connection status
+  useEffect(() => {
+    const status = SocketService.getStatus();
+    if (status.isConnected !== socketConnected) {
+      dispatch(setSocketConnected(status.isConnected));
+    }
+  }, [socketConnected, dispatch]);
 
 
 

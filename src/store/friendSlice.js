@@ -12,6 +12,14 @@ const initialState = {
     searchResults: [],
     searchLoading: false,
     selectedUser: null,
+
+    // reject_accept_loading: {
+    //     isLoading: false,
+    //     key: null,
+    // },
+
+    requestLoading: {}, // { [requestId]: 'accept' | 'reject' }
+
 };
 
 const friendSlice = createSlice({
@@ -91,6 +99,13 @@ const friendSlice = createSlice({
                 request.status = status;
             }
         },
+
+        // Set reject accept loading
+        setRejectAcceptLoadingFalse: (state) => {
+            state.reject_accept_loading.isLoading = false;
+            state.reject_accept_loading.key = null;
+        },
+
     },
 
     extraReducers: (builder) => {
@@ -102,7 +117,6 @@ const friendSlice = createSlice({
             })
             .addCase(FriendService.getFriends.fulfilled, (state, action) => {
                 state.loading = false;
-                console.log('the friends is ', action.payload)
                 state.friends = action.payload.payload || [];
             })
             .addCase(FriendService.getFriends.rejected, (state, action) => {
@@ -148,23 +162,23 @@ const friendSlice = createSlice({
                 state.error = action.payload?.payload?.detail || 'Failed to send friend request';
             })
 
-        // Accept Friend Request
-        builder
-            .addCase(FriendService.acceptFriendRequest.pending, (state) => {
-                state.loading = true;
+            .addCase(FriendService.acceptFriendRequest.pending, (state, action) => {
+                const requestId = action.meta.arg;
+                state.requestLoading[requestId] = 'accept';
                 state.error = null;
             })
             .addCase(FriendService.acceptFriendRequest.fulfilled, (state, action) => {
-                state.loading = false;
+                const requestId = action.meta.arg;
+                delete state.requestLoading[requestId];
                 state.successMessage = 'Friend request accepted';
 
                 // Remove from friend requests
                 state.friendRequests = state.friendRequests.filter(
-                    req => req.id !== action.meta.arg
+                    req => req.id !== requestId
                 );
 
                 // Add to friends list
-                const request = state.friendRequests.find(req => req.id === action.meta.arg);
+                const request = state.friendRequests.find(req => req.id === requestId);
                 if (request?.sender) {
                     state.friends.unshift({
                         ...request.sender,
@@ -173,40 +187,31 @@ const friendSlice = createSlice({
                 }
             })
             .addCase(FriendService.acceptFriendRequest.rejected, (state, action) => {
-                state.loading = false;
+                const requestId = action.meta.arg;
+                delete state.requestLoading[requestId];
                 state.error = action.payload?.payload?.detail || 'Failed to accept friend request';
             })
 
-            // Reject users
-            .addCase(FriendService.rejectFriendRequest.pending, (state) => {
-                state.loading = true;
+            .addCase(FriendService.rejectFriendRequest.pending, (state, action) => {
+                const requestId = action.meta.arg;
+                state.requestLoading[requestId] = 'reject';
                 state.error = null;
             })
             .addCase(FriendService.rejectFriendRequest.fulfilled, (state, action) => {
-                state.loading = false;
+                const requestId = action.meta.arg;
+                delete state.requestLoading[requestId];
                 state.successMessage = 'Friend request rejected';
 
                 // Remove from friend requests
                 state.friendRequests = state.friendRequests.filter(
-                    req => req.id !== action.meta.arg
+                    req => req.id !== requestId
                 );
-
-                // Optionally, you might want to update the user's relationship status
-                // in the users list if you have one
-                if (state.users) {
-                    const userId = state.friendRequests.find(req => req.id === action.meta.arg)?.sender?.id;
-                    if (userId) {
-                        const userIndex = state.users.findIndex(user => user.id === userId);
-                        if (userIndex !== -1) {
-                            state.users[userIndex].relationship_status = 'rejected_you';
-                        }
-                    }
-                }
             })
             .addCase(FriendService.rejectFriendRequest.rejected, (state, action) => {
-                state.loading = false;
+                const requestId = action.meta.arg;
+                delete state.requestLoading[requestId];
                 state.error = action.payload?.payload?.detail || 'Failed to reject friend request';
-            })
+            });
 
         // Fetch Users
         builder
@@ -251,6 +256,7 @@ export const {
     addFriend,
     removeFriend,
     updateFriendRequestStatus,
+    setRejectAcceptLoadingFalse,
 } = friendSlice.actions;
 
 export default friendSlice.reducer;
