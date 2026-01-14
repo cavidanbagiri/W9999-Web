@@ -1,3 +1,5 @@
+
+
 // slices/chatSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 // import socketService from '../services/SocketService.js';
@@ -231,24 +233,19 @@ const chatSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
+      // Replace the fetchConversations.fulfilled case in chatSlice.js
       .addCase(fetchConversations.fulfilled, (state, action) => {
-        // state.loading = false;
-        // state.conversations = action.payload;
-        // Remove duplicates based on conversation ID
-        const uniqueConversations = [];
-        const seenIds = new Set();
-
-        // Combine existing and new conversations
-        const allConversations = [...state.conversations, ...action.payload];
-
-        allConversations.forEach(conv => {
-          if (!seenIds.has(conv.id)) {
-            seenIds.add(conv.id);
-            uniqueConversations.push(conv);
-          }
-        });
-
-        state.conversations = uniqueConversations;
+        state.loading = false;
+        
+        // 🔥 SIMPLER APPROACH: Replace conversations completely
+        // This ensures we always have the latest data
+        state.conversations = action.payload;
+        
+        // If there was an active conversation that no longer exists, clear it
+        if (state.activeConversation && 
+            !action.payload.find(c => c.id === state.activeConversation)) {
+          state.activeConversation = null;
+        }
       })
       .addCase(fetchConversations.rejected, (state, action) => {
         state.loading = false;
@@ -272,9 +269,6 @@ const chatSlice = createSlice({
 
       // Create conversation
       .addCase(createConversation.fulfilled, (state, action) => {
-        // state.conversations.unshift(action.payload);
-        // state.activeConversation = action.payload.id;
-        // Check if conversation already exists
         const existingIndex = state.conversations.findIndex(
           conv => conv.id === action.payload.id
         );

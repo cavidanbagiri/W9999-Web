@@ -2,21 +2,16 @@
 
 
 // components/chat/ChatContainer.jsx - Update handleSelectConversation
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useParams, useNavigate } from 'react-router-dom'; // Add useParams
+import { useParams, useNavigate } from 'react-router-dom';
 
 import {
   fetchConversations,
   setActiveConversation,
   fetchMessages,
-  createConversation,  // Add this import
-  addMessage
+  createConversation,  
 } from '../../store/chatSlice';
-
-import ConversationList from './ConversationList';
-import MessageList from './MessageList';
-import MessageInput from './MessageInput';
 
 import socketService from '../../services/SocketService';
 const ChatContainer = () => {
@@ -29,7 +24,6 @@ const ChatContainer = () => {
     conversations,
     activeConversation,
     messages,
-    typingIndicators,
     socketConnected,
     loading
   } = useSelector((state) => state.chatSlice);
@@ -121,23 +115,6 @@ const ChatContainer = () => {
       alert('Failed to start chat. Please try again.');
     }
   };
-  // Also update handleFriendChat to prevent multiple API calls
-  // const handleFriendChat = useCallback(async (friendId) => {
-  //   // Check if conversation already exists with this friend
-  //   const existingConversation = conversations.find(conv => {
-  //     return !conv.is_group &&
-  //       conv.participants?.some(p => p.id === friendId);
-  //   });
-
-  //   if (existingConversation) {
-  //     dispatch(setActiveConversation(existingConversation.id));
-  //     navigate('/chat', { replace: true });
-  //   } else {
-  //     await createNewConversation(friendId);
-  //   }
-  // }, [conversations, dispatch, navigate]);
-
-
 
 
   const handleSelectConversation = (conversationId) => {
@@ -156,68 +133,13 @@ const ChatContainer = () => {
     socketService.sendMessage(messageData);
   };
 
-  const handleTyping = (isTyping) => {
-    if (activeConversation) {
-      socketService.sendTypingIndicator(activeConversation, isTyping);
-    }
-  };
 
   // Get active conversation data
   const activeConversationData = conversations.find(c => c.id === activeConversation);
 
-
-  // Add this useEffect to ChatContainer.jsx - AFTER your existing useEffects
   // useEffect(() => {
-  //   const socket = socketService.socket;
-  //   if (!socket) return;
-
-  //   console.log('🔧 Setting up new_message listener in ChatContainer');
-
-  //   const handleNewMessage = (data) => {
-  //     console.log('📨 ChatContainer received new_message:', {
-  //       conversationId: data.conversationId,
-  //       messageId: data.message?.id,
-  //       fromUser: data.message?.sender_id
-  //     });
-
-  //     // Check if conversation exists locally
-  //     const conversationExists = conversations.some(
-  //       conv => conv.id === data.conversationId
-  //     );
-
-  //     console.log('🔍 Conversation check:', {
-  //       conversationId: data.conversationId,
-  //       exists: conversationExists,
-  //       totalConversations: conversations.length
-  //     });
-
-  //     if (!conversationExists) {
-  //       console.log('🔄 Unknown conversation, fetching conversations...');
-  //       // Use dispatch to fetch conversations
-  //       dispatch(fetchConversations()).then(() => {
-  //         console.log('✅ Conversations fetched, now adding message');
-  //         // After fetching, add the message
-  //         dispatch(addMessage({
-  //           conversationId: data.conversationId,
-  //           message: data.message
-  //         }));
-  //       });
-  //     } else {
-  //       // Conversation exists, just add message
-  //       dispatch(addMessage({
-  //         conversationId: data.conversationId,
-  //         message: data.message
-  //       }));
-  //     }
-  //   };
-
-  //   socket.on('new_message', handleNewMessage);
-
-  //   return () => {
-  //     console.log('🧹 Cleaning up new_message listener');
-  //     socket.off('new_message', handleNewMessage);
-  //   };
-  // }, [conversations, dispatch]); // Add this dependency
+  //   console.log('messages -> ', messages);
+  // }, [messages]);
 
 
   return (

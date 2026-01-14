@@ -1,23 +1,13 @@
-// services/SocketService.js
 import { io } from 'socket.io-client';
 
-
-
-// import store from '../store/store.js';
 import store from '../store/index.js';
-
-
 
 import {
   setSocketConnected,
   addMessage,
   updateMessageStatus,
   setTypingIndicator,
-  addConversation,
-  updateConversation,
   addFriendRequest,
-  updateFriendRequest,
-  setUnreadCount,
   fetchConversations
 } from '../store/chatSlice.js';
 
@@ -85,45 +75,65 @@ class SocketService {
       console.log('👋 Welcome from server:', data);
     });
 
+    // Add this to setupEventListeners in SocketService.js
+    this.socket.on('conversation_joined', async (data) => {
+      console.log('👥 New conversation joined:', data.conversationId);
+      
+      // Fetch updated conversations to include the new one
+      try {
+        await store.dispatch(fetchConversations()).unwrap();
+        console.log('✅ Conversations refreshed after joining new conversation');
+      } catch (error) {
+        console.error('❌ Failed to refresh conversations:', error);
+      }
+    });
 
-// SocketService.js - ADD THESE LOGS
-this.socket.on('new_message', (data) => {
-  console.log('🚨 ======== NEW_MESSAGE EVENT START ========');
-  console.log('📦 Data received:', {
-    conversationId: data.conversationId,
-    hasMessage: !!data.message,
-    messageId: data.message?.id,
-    contentPreview: data.message?.content?.substring(0, 30)
-  });
-  
-  const state = store.getState();
-  console.log('📊 Current Redux state:', {
-    totalConversations: state.chatSlice.conversations.length,
-    conversationIds: state.chatSlice.conversations.map(c => c.id),
-    activeConversation: state.chatSlice.activeConversation
-  });
-  
-  // Check if conversation exists
-  const conversationExists = state.chatSlice.conversations.some(
-    c => c.id === data.conversationId
-  );
-  console.log('🔍 Conversation exists in Redux?', conversationExists);
-  
-  if (!conversationExists) {
-    console.log('🔄 Dispatching fetchConversations...');
-    store.dispatch(fetchConversations());
-  }
-  
-  console.log('➕ Dispatching addMessage...');
-  store.dispatch(addMessage({
-    conversationId: data.conversationId,
-    message: data.message
-  }));
-  
-  console.log('✅ ======== NEW_MESSAGE EVENT END ========');
-});
-
-
+    
+    this.socket.on('new_message', async (data) => {
+      console.log('📨 NEW_MESSAGE EVENT START');
+      console.log('   Message ID:', data.message.id);
+      console.log('   Sender ID:', data.message.sender_id);
+      console.log('   Content:', data.message.content);
+      
+      const state = store.getState();
+      const currentUserId = parseInt(state.authSlice.user.payload.user.sub);
+      
+      console.log('   Current User ID:', currentUserId);
+      console.log('   Is own message?', data.message.sender_id === currentUserId);
+      
+      if (data.message.sender_id === currentUserId) {
+        console.log('⏭️ SKIPPING: Own message detected');
+        return;
+      }
+      
+      // 🔥 ADD THIS - Handle messages from OTHER users
+      console.log('📥 Processing message from OTHER user');
+      
+      // Check if conversation exists in Redux
+      const conversationExists = state.chatSlice.conversations.some(
+        c => c.id === data.conversationId
+      );
+      
+      if (!conversationExists) {
+        console.log('🔄 Conversation not found, fetching conversations first...');
+        try {
+          await store.dispatch(fetchConversations()).unwrap();
+          console.log('✅ Conversations fetched');
+        } catch (error) {
+          console.error('❌ Failed to fetch conversations:', error);
+          return;
+        }
+      }
+      
+      // Add message to Redux store
+      console.log('➕ ADDING message from other user to Redux');
+      store.dispatch(addMessage({
+        conversationId: data.conversationId,
+        message: data.message
+      }));
+      
+      console.log('✅ Message from other user added successfully');
+    });
 
 
 
@@ -153,7 +163,6 @@ this.socket.on('new_message', (data) => {
 
     this.socket.on('friend_request_sent', (data) => {
       console.log('🤝 Friend request sent:', data);
-      // You might want to update UI or show confirmation
     });
 
     this.socket.on('joined_conversation', (data) => {
@@ -171,15 +180,69 @@ this.socket.on('new_message', (data) => {
   };
 
   // Emit events to server
-  sendMessage = (messageData) => {
-    if (!this.isConnected || !this.socket) {
-      console.error('Cannot send message: Socket not connected');
-      return false;
-    }
+  // sendMessage = (messageData) => {
+  //   if (!this.isConnected || !this.socket) {
+  //     console.error('Cannot send message: Socket not connected');
+  //     return false;
+  //   }
 
-    this.socket.emit('send_message', messageData);
-    return true;
-  };
+  //   this.socket.emit('send_message', messageData);
+  //   return true;
+  // };
+
+
+  
+
+      // Update your sendMessage method with detailed logging
+    sendMessage = (messageData) => {
+      if (!this.isConnected || !this.socket) {
+        console.error('Cannot send message: Socket not connected');
+        return false;
+      }
+
+
+      console.log('current user', store.getState().authSlice.user);
+      console.log('current user', store.getState().authSlice.user.payload.user.sub);
+      const currentUser = store.getState().authSlice.user.payload.user;
+
+      console.log('🚀 SENDING MESSAGE - Current user ID:', parseInt(currentUser.sub));
+
+      // 🔥 OPTIMISTIC UPDATE
+      const optimisticMessage = {
+        id: `temp-${Date.now()}`,
+        conversation_id: messageData.conversationId,
+        sender_id: parseInt(currentUser.sub),
+        content: messageData.content,
+        message_type: messageData.messageType,
+        created_at: new Date().toISOString(),
+        sender: {
+          id: parseInt(currentUser.sub),
+          username: currentUser.username,
+          profile: currentUser.profile || {}
+        },
+        status: 'sending'
+      };
+
+      console.log('➕ OPTIMISTIC: Adding message to Redux:', {
+        messageId: optimisticMessage.id,
+        senderId: optimisticMessage.sender_id,
+        content: optimisticMessage.content
+      });
+
+      store.dispatch(addMessage({
+        conversationId: messageData.conversationId,
+        message: optimisticMessage
+      }));
+
+      this.socket.emit('send_message', messageData);
+      return true;
+    };
+
+
+
+
+
+
 
   joinConversation = (conversationId) => {
     if (!this.isConnected || !this.socket) {
