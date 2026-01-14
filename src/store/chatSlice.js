@@ -90,18 +90,73 @@ const initialState = {
   loading: false,
   error: null,
   unreadCounts: {},
+  userStatuses: {}, // 🔥 NEW - track online status of users
 };
 
 const chatSlice = createSlice({
   name: 'chat',
   initialState,
   reducers: {
-    // Socket connection
+
     setSocketConnected: (state, action) => {
       state.socketConnected = action.payload;
     },
 
-    // Messages
+    // 🔥 NEW REDUCERS
+    setUserOnlineStatus: (state, action) => {
+      const { userId, isOnline, lastSeen } = action.payload;
+      
+      if (!state.userStatuses[userId]) {
+        state.userStatuses[userId] = {};
+      }
+      
+      state.userStatuses[userId] = {
+        isOnline,
+        lastSeen: lastSeen || new Date().toISOString(),
+        lastUpdated: new Date().toISOString()
+      };
+      
+      console.log(`👤 User ${userId} status updated: ${isOnline ? 'online' : 'offline'}`);
+    },
+    
+    initializeUserStatuses: (state, action) => {
+      // Initialize status for all conversation participants
+      const { conversations } = action.payload;
+      
+      conversations.forEach(conv => {
+        conv.participants?.forEach(participant => {
+          const userId = participant.user?.id || participant.id;
+          if (userId && !state.userStatuses[userId]) {
+            state.userStatuses[userId] = {
+              isOnline: false,
+              lastSeen: null,
+              lastUpdated: new Date().toISOString()
+            };
+          }
+        });
+      });
+    },
+
+
+    incrementUnreadCount: (state, action) => {
+      const { conversationId } = action.payload;
+      
+      if (!state.unreadCounts[conversationId]) {
+        state.unreadCounts[conversationId] = 0;
+      }
+      
+      state.unreadCounts[conversationId] += 1;
+      console.log(`📬 Unread count for conversation ${conversationId}: ${state.unreadCounts[conversationId]}`);
+    },
+
+    resetUnreadCount: (state, action) => {
+      const { conversationId } = action.payload;
+      state.unreadCounts[conversationId] = 0;
+      console.log(`✅ Reset unread count for conversation ${conversationId}`);
+    },
+
+
+    // Update your existing addMessage reducer
     addMessage: (state, action) => {
       const { conversationId, message } = action.payload;
 
@@ -116,6 +171,18 @@ const chatSlice = createSlice({
       if (conversation) {
         conversation.lastMessage = message;
         conversation.updated_at = new Date().toISOString();
+      }
+    },
+
+
+    // Update your existing setActiveConversation reducer
+    setActiveConversation: (state, action) => {
+      state.activeConversation = action.payload;
+
+      // 🔥 Reset unread count when opening conversation
+      if (action.payload && state.unreadCounts[action.payload]) {
+        state.unreadCounts[action.payload] = 0;
+        console.log(`📖 Opened conversation ${action.payload}, reset unread count`);
       }
     },
 
@@ -134,16 +201,6 @@ const chatSlice = createSlice({
       });
     },
 
-    // Conversations
-    setActiveConversation: (state, action) => {
-      state.activeConversation = action.payload;
-
-      // Reset unread count for this conversation
-      if (action.payload && state.unreadCounts[action.payload]) {
-        state.unreadCounts[action.payload] = 0;
-      }
-    },
-
     addConversation: (state, action) => {
       state.conversations.unshift(action.payload);
     },
@@ -158,7 +215,6 @@ const chatSlice = createSlice({
       }
     },
 
-    // Typing indicators
     setTypingIndicator: (state, action) => {
       const { conversationId, userId, isTyping, username } = action.payload;
 
@@ -224,6 +280,10 @@ const chatSlice = createSlice({
       state.loading = false;
       state.error = null;
     },
+
+
+    
+
   },
 
   extraReducers: (builder) => {
@@ -297,6 +357,10 @@ export const {
   removeFriendRequest,
   setUnreadCount,
   clearChat,
+  incrementUnreadCount,  // 🔥 NEW
+  resetUnreadCount,      // 🔥 NEW
+  setUserOnlineStatus,     // 🔥 NEW
+  initializeUserStatuses,  // 🔥 NEW
 } = chatSlice.actions;
 
 export default chatSlice.reducer;

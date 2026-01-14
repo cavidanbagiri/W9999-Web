@@ -1,6 +1,7 @@
 import { io } from 'socket.io-client';
 
 import store from '../store/index.js';
+import notificationService from './NotificationService.js';
 
 import {
   setSocketConnected,
@@ -8,7 +9,10 @@ import {
   updateMessageStatus,
   setTypingIndicator,
   addFriendRequest,
-  fetchConversations
+  fetchConversations,
+  incrementUnreadCount,  // 🔥 NEW
+  setUserOnlineStatus,      // 🔥 NEW
+  initializeUserStatuses    // 🔥 NEW
 } from '../store/chatSlice.js';
 
 class SocketService {
@@ -78,7 +82,7 @@ class SocketService {
     // Add this to setupEventListeners in SocketService.js
     this.socket.on('conversation_joined', async (data) => {
       console.log('👥 New conversation joined:', data.conversationId);
-      
+
       // Fetch updated conversations to include the new one
       try {
         await store.dispatch(fetchConversations()).unwrap();
@@ -88,51 +92,83 @@ class SocketService {
       }
     });
 
+
+    // 🔥 NEW: Listen for user status changes
+    this.socket.on('user_status_changed', (data) => {
+      console.log('👤 User status changed:', data);
+      
+      store.dispatch(setUserOnlineStatus({
+        userId: data.userId,
+        isOnline: data.isOnline,
+        lastSeen: data.timestamp
+      }));
+    });
+
+    // 🔥 NEW: Handle conversations loaded - initialize user statuses
+    this.socket.on('conversations_joined', (data) => {
+      console.log('🏠 Conversations joined:', data.conversations?.length);
+      
+      if (data.conversations) {
+        store.dispatch(initializeUserStatuses({
+          conversations: data.conversations
+        }));
+      }
+    });
+
     
+
+        // Update your new_message handler
     this.socket.on('new_message', async (data) => {
-      console.log('📨 NEW_MESSAGE EVENT START');
-      console.log('   Message ID:', data.message.id);
-      console.log('   Sender ID:', data.message.sender_id);
-      console.log('   Content:', data.message.content);
+      // console.log('📨 NEW_MESSAGE EVENT START');
       
       const state = store.getState();
       const currentUserId = parseInt(state.authSlice.user.payload.user.sub);
       
-      console.log('   Current User ID:', currentUserId);
-      console.log('   Is own message?', data.message.sender_id === currentUserId);
-      
       if (data.message.sender_id === currentUserId) {
-        console.log('⏭️ SKIPPING: Own message detected');
+        // console.log('⏭️ SKIPPING: Own message detected');
         return;
       }
       
-      // 🔥 ADD THIS - Handle messages from OTHER users
       console.log('📥 Processing message from OTHER user');
       
-      // Check if conversation exists in Redux
+      // Check if conversation exists
       const conversationExists = state.chatSlice.conversations.some(
         c => c.id === data.conversationId
       );
       
       if (!conversationExists) {
-        console.log('🔄 Conversation not found, fetching conversations first...');
         try {
           await store.dispatch(fetchConversations()).unwrap();
-          console.log('✅ Conversations fetched');
         } catch (error) {
           console.error('❌ Failed to fetch conversations:', error);
           return;
         }
       }
+
+      // 🔥 Check if user is actively viewing this conversation
+      const activeConversationId = state.chatSlice.activeConversation;
+      const isActiveConversation = activeConversationId === data.conversationId;
       
-      // Add message to Redux store
-      console.log('➕ ADDING message from other user to Redux');
+      // Show notification if not actively viewing this conversation
+      if (!notificationService.isActiveInConversation(data.conversationId, activeConversationId)) {
+        const senderName = data.message.sender?.username || 'Someone';
+        notificationService.showMessageNotification(data.message, senderName, 'Chat');
+      }
+      
+      // Add message to Redux
       store.dispatch(addMessage({
         conversationId: data.conversationId,
         message: data.message
       }));
       
-      console.log('✅ Message from other user added successfully');
+      // 🔥 NEW: Increment unread count if not actively viewing this conversation
+      if (!isActiveConversation) {
+        store.dispatch(incrementUnreadCount({
+          conversationId: data.conversationId
+        }));
+      }
+      
+      console.log('✅ Message processed, notification shown, unread count updated');
     });
 
 
@@ -191,56 +227,64 @@ class SocketService {
   // };
 
 
-  
-
-      // Update your sendMessage method with detailed logging
-    sendMessage = (messageData) => {
-      if (!this.isConnected || !this.socket) {
-        console.error('Cannot send message: Socket not connected');
-        return false;
-      }
 
 
-      console.log('current user', store.getState().authSlice.user);
-      console.log('current user', store.getState().authSlice.user.payload.user.sub);
-      const currentUser = store.getState().authSlice.user.payload.user;
+  // Update your sendMessage method with detailed logging
+  sendMessage = (messageData) => {
+    if (!this.isConnected || !this.socket) {
+      console.error('Cannot send message: Socket not connected');
+      return false;
+    }
 
-      console.log('🚀 SENDING MESSAGE - Current user ID:', parseInt(currentUser.sub));
 
-      // 🔥 OPTIMISTIC UPDATE
-      const optimisticMessage = {
-        id: `temp-${Date.now()}`,
-        conversation_id: messageData.conversationId,
-        sender_id: parseInt(currentUser.sub),
-        content: messageData.content,
-        message_type: messageData.messageType,
-        created_at: new Date().toISOString(),
-        sender: {
-          id: parseInt(currentUser.sub),
-          username: currentUser.username,
-          profile: currentUser.profile || {}
-        },
-        status: 'sending'
-      };
+    console.log('current user', store.getState().authSlice.user);
+    console.log('current user', store.getState().authSlice.user.payload.user.sub);
+    const currentUser = store.getState().authSlice.user.payload.user;
 
-      console.log('➕ OPTIMISTIC: Adding message to Redux:', {
-        messageId: optimisticMessage.id,
-        senderId: optimisticMessage.sender_id,
-        content: optimisticMessage.content
-      });
+    console.log('🚀 SENDING MESSAGE - Current user ID:', parseInt(currentUser.sub));
 
-      store.dispatch(addMessage({
-        conversationId: messageData.conversationId,
-        message: optimisticMessage
-      }));
-
-      this.socket.emit('send_message', messageData);
-      return true;
+    // 🔥 OPTIMISTIC UPDATE
+    const optimisticMessage = {
+      id: `temp-${Date.now()}`,
+      conversation_id: messageData.conversationId,
+      sender_id: parseInt(currentUser.sub),
+      content: messageData.content,
+      message_type: messageData.messageType,
+      created_at: new Date().toISOString(),
+      sender: {
+        id: parseInt(currentUser.sub),
+        username: currentUser.username,
+        profile: currentUser.profile || {}
+      },
+      status: 'sending'
     };
 
+    console.log('➕ OPTIMISTIC: Adding message to Redux:', {
+      messageId: optimisticMessage.id,
+      senderId: optimisticMessage.sender_id,
+      content: optimisticMessage.content
+    });
+
+    store.dispatch(addMessage({
+      conversationId: messageData.conversationId,
+      message: optimisticMessage
+    }));
+
+    this.socket.emit('send_message', messageData);
+    return true;
+  };
 
 
 
+  // 🔥 NEW: Add method to request user status
+  requestUserStatus = (userId) => {
+    if (!this.isConnected || !this.socket) {
+      return false;
+    }
+
+    this.socket.emit('check_user_status', { targetUserId: userId });
+    return true;
+  };
 
 
 
