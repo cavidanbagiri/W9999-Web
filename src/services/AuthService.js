@@ -253,6 +253,25 @@ class AuthService {
         }
     )
 
+    static update_user_image = createAsyncThunk(
+        'auth/update_user_image',
+        async (data, thunkAPI) => {
+            try {
+                const response = await $api.post(`/auth/edit/update-profile-image`, data);
+                return response.data;
+                // return {
+                //     payload: response.data,
+                //     status: response.status,
+                // }
+            } catch (error) {
+                return thunkAPI.rejectWithValue({
+                    message: error.response?.data?.detail || error.message,
+                    status: error.response?.status || 500,
+                });
+            }
+        }
+    )
+
 
 }
 

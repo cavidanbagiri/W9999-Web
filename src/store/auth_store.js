@@ -61,6 +61,8 @@ export const authSlice = createSlice({
         },
         setEditProfileUpdatedFalse: (state) => {
             state.edit_profile.profile_updated = false;
+            state.edit_profile.edit_message = '';
+            state.edit_profile.edit_pending = false;
         },
     },
     extraReducers: (builder) => {
@@ -79,6 +81,7 @@ export const authSlice = createSlice({
             localStorage.setItem('token', action.payload?.payload?.access_token);
             localStorage.setItem('sub', action.payload?.payload?.user?.sub);  
             localStorage.setItem('username', action.payload?.payload?.user?.username); 
+            localStorage.setItem('image_url', action.payload?.payload?.user?.profile?.profile_image_url);
             if (action.payload.payload.user.native === null) {
                 localStorage.setItem('native', '');
             }
@@ -101,6 +104,7 @@ export const authSlice = createSlice({
             state.login_pending = true;
         })
         builder.addCase(AuthService.login.fulfilled, (state, action) => {
+            console.log('the login action is : ', action.payload)
             state.is_auth = true;
             state.login_pending = false;
             state.user = action.payload;
@@ -111,6 +115,7 @@ export const authSlice = createSlice({
             localStorage.setItem('sub', action.payload?.payload?.user?.sub);  
             localStorage.setItem('username', action.payload?.payload?.user?.username); 
             localStorage.setItem('native', action.payload?.payload?.user?.native);
+            localStorage.setItem('image_url', action.payload?.payload?.user?.profile?.profile_image_url);
             localStorage.target_langs = JSON.stringify(action.payload?.payload?.user?.learning_targets || []);
             if (action.payload.payload.user.native === null) {
                 localStorage.setItem('native', '');
@@ -144,6 +149,7 @@ export const authSlice = createSlice({
             localStorage.setItem('sub', action.payload?.payload?.user?.sub);  
             localStorage.setItem('username', action.payload?.payload?.user?.username); 
             localStorage.setItem('native', action.payload?.payload?.user?.native);
+            localStorage.setItem('image_url', action.payload?.payload?.user?.profile?.profile_image_url);
             localStorage.target_langs = JSON.stringify(action.payload?.payload?.user?.learning_targets || []);
             if (action.payload.payload.user.native === null) {
                 localStorage.setItem('native', '');
@@ -168,7 +174,7 @@ export const authSlice = createSlice({
             localStorage.setItem('token', action.payload?.payload?.access_token);
             localStorage.setItem('sub', action?.payload?.payload?.user?.sub);
             localStorage.setItem('username', action?.payload?.payload?.user?.username);
-            // localStorage.setItem('native', action?.payload?.payload?.user?.native);
+            localStorage.setItem('image_url', action.payload?.payload?.user?.profile?.profile_image_url);
 
             // Get the target languages from the local storage and set them to the user object
             const target_langs = localStorage.getItem('target_langs');
@@ -256,6 +262,22 @@ export const authSlice = createSlice({
         builder.addCase(AuthService.update_user.rejected, (state, action) => {
             state.edit_profile.edit_pending = false;
             state.edit_profile.edit_message = action.payload?.payload?.detail;
+        });
+
+        // Edit User Image
+        builder.addCase(AuthService.update_user_image.pending, (state, action) => {
+            // state.login_pending = true;
+            state.edit_profile.edit_pending = true;
+        })
+        builder.addCase(AuthService.update_user_image.fulfilled, (state, action) => {
+            state.edit_profile.edit_pending = false;
+            state.edit_profile.edit_message = 'Successfully updated your profile image';
+            state.edit_profile.profile_updated = true;
+            localStorage.setItem('image_url', action.payload?.image_url);
+        });
+        builder.addCase(AuthService.update_user_image.rejected, (state, action) => {
+            state.edit_profile.edit_pending = false;
+            state.edit_profile.edit_message = action.payload?.detail;
         });
 
     },
