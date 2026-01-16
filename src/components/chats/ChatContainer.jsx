@@ -152,9 +152,14 @@ const ChatContainer = () => {
   const createNewConversation = async (friendId) => {
     try {
       const result = await dispatch(createConversation([friendId])).unwrap();
+
       if (result.id) {
+        // 🔥 Set active conversation for User A (creator)
         dispatch(setActiveConversation(result.id));
         navigate('/chat', { replace: true });
+        
+        console.log(`✅ Conversation ${result.id} created silently`);
+        console.log('💡 Other user will see it when first message is sent');
       }
     } catch (error) {
       console.error('Failed to create conversation:', error);

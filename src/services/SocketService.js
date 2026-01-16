@@ -96,7 +96,7 @@ class SocketService {
     // 🔥 NEW: Listen for user status changes
     this.socket.on('user_status_changed', (data) => {
       console.log('👤 User status changed:', data);
-      
+
       store.dispatch(setUserOnlineStatus({
         userId: data.userId,
         isOnline: data.isOnline,
@@ -104,38 +104,27 @@ class SocketService {
       }));
     });
 
-    // 🔥 NEW: Handle conversations loaded - initialize user statuses
-    this.socket.on('conversations_joined', (data) => {
-      console.log('🏠 Conversations joined:', data.conversations?.length);
-      
-      if (data.conversations) {
-        store.dispatch(initializeUserStatuses({
-          conversations: data.conversations
-        }));
-      }
-    });
 
-    
 
-        // Update your new_message handler
+    // Update your new_message handler
     this.socket.on('new_message', async (data) => {
       // console.log('📨 NEW_MESSAGE EVENT START');
-      
+
       const state = store.getState();
       const currentUserId = parseInt(state.authSlice.user.payload.user.sub);
-      
+
       if (data.message.sender_id === currentUserId) {
         // console.log('⏭️ SKIPPING: Own message detected');
         return;
       }
-      
+
       console.log('📥 Processing message from OTHER user');
-      
+
       // Check if conversation exists
       const conversationExists = state.chatSlice.conversations.some(
         c => c.id === data.conversationId
       );
-      
+
       if (!conversationExists) {
         try {
           await store.dispatch(fetchConversations()).unwrap();
@@ -148,27 +137,73 @@ class SocketService {
       // 🔥 Check if user is actively viewing this conversation
       const activeConversationId = state.chatSlice.activeConversation;
       const isActiveConversation = activeConversationId === data.conversationId;
-      
+
       // Show notification if not actively viewing this conversation
       if (!notificationService.isActiveInConversation(data.conversationId, activeConversationId)) {
         const senderName = data.message.sender?.username || 'Someone';
         notificationService.showMessageNotification(data.message, senderName, 'Chat');
       }
-      
+
       // Add message to Redux
       store.dispatch(addMessage({
         conversationId: data.conversationId,
         message: data.message
       }));
-      
+
       // 🔥 NEW: Increment unread count if not actively viewing this conversation
       if (!isActiveConversation) {
         store.dispatch(incrementUnreadCount({
           conversationId: data.conversationId
         }));
       }
-      
+
       console.log('✅ Message processed, notification shown, unread count updated');
+    });
+
+    // Add this to setupEventListeners in SocketService.js
+    // Update your new_conversation_with_message handler
+    this.socket.on('new_conversation_with_message', async (data) => {
+      console.log('🆕 NEW CONVERSATION with first message received!');
+
+      const state = store.getState();
+      const currentUserId = parseInt(state.authSlice.user.payload.user.sub);
+
+      if (data.message.sender_id === currentUserId) {
+        console.log('⏭️ Skipping - own message');
+        return;
+      }
+
+      // Fetch updated conversations
+      try {
+        await store.dispatch(fetchConversations()).unwrap();
+      } catch (error) {
+        console.error('❌ Failed to refresh conversations:', error);
+        return;
+      }
+
+      // 🔥 AUTO-JOIN the conversation room for real-time messaging
+      this.joinConversation(data.conversationId);
+      console.log(`🔌 Auto-joined conversation ${data.conversationId} for real-time messaging`);
+
+      // Add the first message
+      store.dispatch(addMessage({
+        conversationId: data.conversationId,
+        message: data.message
+      }));
+
+      // Increment unread count
+      const activeConversationId = state.chatSlice.activeConversation;
+      if (activeConversationId !== data.conversationId) {
+        store.dispatch(incrementUnreadCount({
+          conversationId: data.conversationId
+        }));
+      }
+
+      // Show notification
+      const senderName = data.message.sender?.username || 'Someone';
+      notificationService.showMessageNotification(data.message, senderName, 'New Message');
+
+      console.log('✅ New conversation processed and joined for real-time chat');
     });
 
 
@@ -214,18 +249,6 @@ class SocketService {
     });
 
   };
-
-  // Emit events to server
-  // sendMessage = (messageData) => {
-  //   if (!this.isConnected || !this.socket) {
-  //     console.error('Cannot send message: Socket not connected');
-  //     return false;
-  //   }
-
-  //   this.socket.emit('send_message', messageData);
-  //   return true;
-  // };
-
 
 
 
