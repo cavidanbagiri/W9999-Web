@@ -43,7 +43,7 @@ const ConversationList = ({
 
   return (
     <div className="overflow-y-auto h-full">
-      <div className="p-3 border-b border-gray-200">
+      <div className="p-3 ">
         <h2 className="font-semibold text-lg">Messages</h2>
       </div>
       
@@ -65,7 +65,7 @@ const ConversationList = ({
         return (
           <div
             key={conversation.id}
-            className={`p-3 border-b border-gray-100 cursor-pointer transition-colors hover:bg-gray-50 ${
+            className={`p-3  cursor-pointer transition-colors hover:bg-gray-50 ${
               isActive ? 'bg-blue-50 border-blue-200' : ''
             }`}
             onClick={() => onSelectConversation(conversation.id)}

@@ -9,10 +9,13 @@ import { useNavigate } from 'react-router-dom';
 
 import { toast } from 'react-toastify';
 
-import { 
-  UserGroupIcon, 
+import { IoIosArrowRoundBack } from "react-icons/io";
+
+
+import {
+  UserGroupIcon,
   // TiUserAddOutline, 
-  ChatBubbleLeftRightIcon, 
+  ChatBubbleLeftRightIcon,
   UserIcon,
   CheckCircleIcon,
   XCircleIcon,
@@ -28,71 +31,71 @@ import { set } from 'lodash';
 
 
 const FriendList = () => {
-  
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { friends, loading, error, successMessage, friendRequests, requestLoading  } = useSelector((state) => state.friendSlice);
+  const { friends, loading, error, successMessage, friendRequests, requestLoading } = useSelector((state) => state.friendSlice);
   const { user } = useSelector((state) => state.authSlice);
-  
+
   const [activeTab, setActiveTab] = useState('friends');
   const [searchQuery, setSearchQuery] = useState('');
   const [loadingStates, setLoadingStates] = useState({}); // { [requestId]: 'accept' | 'reject' }
-  
+
   useEffect(() => {
     loadFriends();
     loadFriendRequests();
-    
+
     socketService.socket?.on('friend_request_received', (data) => {
       console.log('Friend request received:', data);
       loadFriendRequests();
     });
-    
+
     socketService.socket?.on('friend_request_accepted', (data) => {
       console.log('Friend request accepted:', data);
       loadFriends();
       loadFriendRequests();
     });
-    
+
     socketService.socket?.on('user_online_status', (data) => {
       console.log('Online status update:', data);
     });
-    
+
     return () => {
       socketService.socket?.off('friend_request_received');
       socketService.socket?.off('friend_request_accepted');
       socketService.socket?.off('user_online_status');
     };
   }, [dispatch]);
-  
+
   const loadFriends = () => {
     dispatch(FriendService.getFriends());
   };
-  
+
   const loadFriendRequests = () => {
     dispatch(FriendService.getFriendRequests());
   };
-  
 
 
 
 
-   const handleAcceptRequest = async (requestId) => {
+
+  const handleAcceptRequest = async (requestId) => {
     if (requestId) {
       try {
         // Set loading state for this request
         setLoadingStates(prev => ({ ...prev, [requestId]: 'accept' }));
-        
+
         const toastId = toast.loading('Accepting friend request...');
-        
+
         await dispatch(FriendService.acceptFriendRequest(requestId)).unwrap();
-        
+
         toast.update(toastId, {
           render: 'Friend request accepted!',
           type: 'success',
           isLoading: false,
           autoClose: 2000,
         });
-        
+
         // Clear loading state for this request
         setLoadingStates(prev => {
           const newState = { ...prev };
@@ -101,11 +104,11 @@ const FriendList = () => {
         });
 
         loadFriends();
-        
+
       } catch (error) {
         console.error('Failed to accept friend request:', error);
         toast.error(error.message || 'Failed to accept request');
-        
+
         // Clear loading state on error too
         setLoadingStates(prev => {
           const newState = { ...prev };
@@ -121,29 +124,29 @@ const FriendList = () => {
       try {
         // Set loading state for this request
         setLoadingStates(prev => ({ ...prev, [requestId]: 'reject' }));
-        
+
         const toastId = toast.loading('Rejecting friend request...');
-        
+
         await dispatch(FriendService.rejectFriendRequest(requestId)).unwrap();
-        
+
         toast.update(toastId, {
           render: 'Friend request rejected',
           type: 'success',
           isLoading: false,
           autoClose: 2000,
         });
-        
+
         // Clear loading state for this request
         setLoadingStates(prev => {
           const newState = { ...prev };
           delete newState[requestId];
           return newState;
         });
-        
+
       } catch (error) {
         console.error('Failed to reject friend request:', error);
         toast.error(error.message || 'Failed to reject request');
-        
+
         // Clear loading state on error too
         setLoadingStates(prev => {
           const newState = { ...prev };
@@ -159,18 +162,18 @@ const FriendList = () => {
   const handleViewProfile = (senderId, requestId) => {
     navigate(`/user/profile?userId=${senderId}&requestId=${requestId}`);
   };
-  
+
   const handleStartChat = (friendId) => {
     navigate(`/chat/${friendId}`);
   };
-  
+
   const filteredFriends = friends.filter(friend => {
     const fullName = `${friend.profile?.first_name || ''} ${friend.profile?.last_name || ''}`.toLowerCase();
     const username = friend.username?.toLowerCase() || '';
     const query = searchQuery.toLowerCase();
     return fullName.includes(query) || username.includes(query);
   });
-  
+
   useEffect(() => {
     if (error || successMessage) {
       const timer = setTimeout(() => {
@@ -179,7 +182,7 @@ const FriendList = () => {
       return () => clearTimeout(timer);
     }
   }, [error, successMessage, dispatch]);
-  
+
   if (loading && friends.length === 0 && friendRequests.length === 0) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 flex items-center justify-center p-4">
@@ -192,28 +195,34 @@ const FriendList = () => {
   }
 
 
-  
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
 
-    {successMessage && (
-            <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 max-w-md w-full animate-fade-in">
-              <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white p-4 rounded-xl shadow-lg">
-                <div className="flex items-center">
-                  <CheckCircleIcon className="h-6 w-6 mr-3" />
-                  <div className="flex-1">
-                    <p className="font-semibold">{successMessage}</p>
-                  </div>
-                </div>
+      {successMessage && (
+        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 max-w-md w-full animate-fade-in">
+          <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white p-4 rounded-xl shadow-lg">
+            <div className="flex items-center">
+              <CheckCircleIcon className="h-6 w-6 mr-3" />
+              <div className="flex-1">
+                <p className="font-semibold">{successMessage}</p>
               </div>
             </div>
-          )}
+          </div>
+        </div>
+      )}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className=''>
+              <span 
+              onClick={()=>navigate(-1)}
+              className=' md:hidden flex flex-row  items-center mb-2 text-2xl'>
+                <IoIosArrowRoundBack />
+                <span className='text-gray-900 text-xl ml-1 '>Back</span>
+              </span>
               <h1 className="text-3xl md:text-4xl font-bold text-gray-900 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                 Language Learning Community
               </h1>
@@ -228,7 +237,7 @@ const FriendList = () => {
             </button>
           </div>
         </div>
-        
+
         {/* Stats Bar */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           <div className="bg-white rounded-2xl shadow-lg p-6 cursor-pointer"
@@ -238,15 +247,15 @@ const FriendList = () => {
               <div className="p-3 bg-blue-100 rounded-xl mr-4">
                 <UserGroupIcon className="h-8 w-8 text-blue-600" />
               </div>
-              <div 
-                // onClick={() => setActiveTab('friends')}
+              <div
+              // onClick={() => setActiveTab('friends')}
               >
                 <p className="text-sm text-gray-500">Total Friends</p>
                 <p className="text-3xl font-bold text-gray-900">{friends.length}</p>
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white rounded-2xl shadow-lg p-6 cursor-pointer"
             onClick={() => setActiveTab('requests')}
           >
@@ -262,7 +271,7 @@ const FriendList = () => {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white rounded-2xl shadow-lg p-6">
             <div className="flex items-center">
               <div className="p-3 bg-green-100 rounded-xl mr-4">
@@ -277,7 +286,7 @@ const FriendList = () => {
             </div>
           </div>
         </div>
-        
+
         {/* Messages */}
         {error && (
           <div className="mb-6 animate-fade-in">
@@ -289,19 +298,18 @@ const FriendList = () => {
             </div>
           </div>
         )}
-        
-        
+
+
         {/* Main Content */}
         <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
           {/* Tabs */}
           <div className="border-b border-gray-200">
             <nav className="flex -mb-px">
               <button
-                className={`cursor-pointer flex-1 md:flex-none px-6 py-4 text-center font-semibold text-sm md:text-lg border-b-2 transition-all duration-200 flex items-center justify-center gap-2 ${
-                  activeTab === 'friends' 
-                    ? 'border-blue-600 text-blue-600' 
+                className={`cursor-pointer flex-1 md:flex-none px-6 py-4 text-center font-semibold text-sm md:text-lg border-b-2 transition-all duration-200 flex items-center justify-center gap-2 ${activeTab === 'friends'
+                    ? 'border-blue-600 text-blue-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700'
-                }`}
+                  }`}
                 onClick={() => setActiveTab('friends')}
               >
                 <UserGroupIcon className="h-5 w-5" />
@@ -310,13 +318,12 @@ const FriendList = () => {
                   {friends.length}
                 </span>
               </button>
-              
+
               <button
-                className={`cursor-pointer flex-1 md:flex-none px-6 py-4 text-center font-semibold text-sm md:text-lg border-b-2 transition-all duration-200 flex items-center justify-center gap-2 ${
-                  activeTab === 'requests' 
-                    ? 'border-purple-600 text-purple-600' 
+                className={`cursor-pointer flex-1 md:flex-none px-6 py-4 text-center font-semibold text-sm md:text-lg border-b-2 transition-all duration-200 flex items-center justify-center gap-2 ${activeTab === 'requests'
+                    ? 'border-purple-600 text-purple-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700'
-                }`}
+                  }`}
                 onClick={() => setActiveTab('requests')}
               >
                 <EnvelopeIcon className="h-5 w-5" />
@@ -329,7 +336,7 @@ const FriendList = () => {
               </button>
             </nav>
           </div>
-          
+
           {/* Content */}
           <div className="p-6">
             {activeTab === 'friends' ? (
@@ -351,7 +358,7 @@ const FriendList = () => {
                     </div>
                   </div>
                 </div>
-                
+
                 {/* Friends Grid */}
                 {filteredFriends.length === 0 ? (
                   <div className="text-center py-12">
@@ -362,7 +369,7 @@ const FriendList = () => {
                       {searchQuery ? 'No matching friends found' : 'No friends yet'}
                     </h3>
                     <p className="text-gray-500 max-w-md mx-auto mb-6">
-                      {searchQuery 
+                      {searchQuery
                         ? 'Try searching with a different name or username'
                         : 'Start building your language learning community by adding friends'}
                     </p>
@@ -384,7 +391,7 @@ const FriendList = () => {
                         <div className="absolute top-4 right-4">
                           <div className={`w-3 h-3 rounded-full ${friend.isOnline ? 'bg-green-500' : 'bg-gray-300'} border-2 border-white`}></div>
                         </div>
-                        
+
                         {/* Avatar */}
                         <div className="p-6">
                           <div className="flex items-center mb-4">
@@ -402,28 +409,26 @@ const FriendList = () => {
                             </div>
                             <div className="ml-4">
                               <h3 className="font-bold text-gray-900 text-lg">
-                                {friend.profile?.first_name && friend.profile?.last_name 
+                                {friend.profile?.first_name && friend.profile?.last_name
                                   ? `${friend.profile.first_name} ${friend.profile.last_name}`
                                   : friend.username}
                               </h3>
-                              <p className="text-gray-500 text-sm">@{friend.username}</p>
-                            </div>
-                          </div>
-                          
-                          {/* Details */}
-                          <div className="space-y-3 mb-6">
-                            {friend.profile?.country && (
-                              <div className="flex items-center text-gray-600">
-                                <MapPinIcon className="h-4 w-4 mr-2 text-gray-400" />
-                                <span className="text-sm">{friend.profile.country}</span>
+                              {/* <p className="text-gray-500 text-sm">@{friend.username}</p> */}
+                              <div className="space-y-3">
+                                {friend.profile?.country && (
+                                  <div className="flex items-center text-gray-600">
+                                    <MapPinIcon className="h-4 w-4 mr-2 text-gray-400" />
+                                    <span className="text-sm">{friend.profile.country}</span>
+                                  </div>
+                                )}
+                                <div className="flex items-center text-gray-600">
+                                  <LanguageIcon className="h-4 w-4 mr-2 text-gray-400" />
+                                  <span className="text-sm">Native: {friend.native_language || 'Not specified'}</span>
+                                </div>
                               </div>
-                            )}
-                            <div className="flex items-center text-gray-600">
-                              <LanguageIcon className="h-4 w-4 mr-2 text-gray-400" />
-                              <span className="text-sm">Native: {friend.native_language || 'Not specified'}</span>
                             </div>
                           </div>
-                          
+
                           {/* Action Buttons */}
                           <div className="flex gap-2">
                             <button
@@ -476,9 +481,9 @@ const FriendList = () => {
 
                             <div className="flex items-start lg:items-center gap-4">
                               <div className="w-20 h-20 rounded-full bg-gradient-to-r from-purple-400 to-pink-500 flex items-center justify-center text-white font-bold text-2xl shadow-lg flex-shrink-0">
-                                {(request.sender?.profile?.first_name?.charAt(0) || '') + 
-                                (request.sender?.profile?.last_name?.charAt(0) || '') || 
-                                request.sender?.username?.charAt(0) || 'U'}
+                                {(request.sender?.profile?.first_name?.charAt(0) || '') +
+                                  (request.sender?.profile?.last_name?.charAt(0) || '') ||
+                                  request.sender?.username?.charAt(0) || 'U'}
                               </div>
                               <div>
                                 <h3 className="font-bold text-gray-900 text-xl mb-2">
@@ -504,17 +509,16 @@ const FriendList = () => {
                                 </div>
                               </div>
                             </div>
-                            
+
                             <div className="flex flex-wrap gap-3">
                               {/* Accept Button */}
                               <button
                                 onClick={() => !isDisabled && handleAcceptRequest(request.id)}
                                 disabled={isDisabled}
-                                className={`cursor-pointer inline-flex items-center justify-center gap-2 ${
-                                  isAccepting 
-                                    ? 'bg-gradient-to-r from-green-400 to-green-500 cursor-wait' 
+                                className={`cursor-pointer inline-flex items-center justify-center gap-2 ${isAccepting
+                                    ? 'bg-gradient-to-r from-green-400 to-green-500 cursor-wait'
                                     : 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700'
-                                } text-white py-3 px-6 rounded-xl font-semibold shadow-md hover:shadow-lg transition-all duration-200 flex-1 min-w-[120px] disabled:opacity-70 disabled:cursor-not-allowed`}
+                                  } text-white py-3 px-6 rounded-xl font-semibold shadow-md hover:shadow-lg transition-all duration-200 flex-1 min-w-[120px] disabled:opacity-70 disabled:cursor-not-allowed`}
                               >
                                 {isAccepting ? (
                                   <>
@@ -533,11 +537,10 @@ const FriendList = () => {
                               <button
                                 onClick={() => !isDisabled && handleRejectRequest(request.id)}
                                 disabled={isDisabled}
-                                className={`cursor-pointer inline-flex items-center justify-center gap-2 ${
-                                  isRejecting
+                                className={`cursor-pointer inline-flex items-center justify-center gap-2 ${isRejecting
                                     ? 'border-red-300 bg-red-50 cursor-wait'
                                     : 'border-red-200 hover:bg-red-50'
-                                } border text-red-700 py-3 px-6 rounded-xl font-semibold transition-all duration-200 flex-1 min-w-[120px] disabled:opacity-70 disabled:cursor-not-allowed`}
+                                  } border text-red-700 py-3 px-6 rounded-xl font-semibold transition-all duration-200 flex-1 min-w-[120px] disabled:opacity-70 disabled:cursor-not-allowed`}
                               >
                                 {isRejecting ? (
                                   <>
@@ -562,7 +565,7 @@ const FriendList = () => {
                                 View Profile
                               </button>
                             </div>
-                          
+
 
                           </div>
                           {/* Bio (if exists) */}
@@ -582,7 +585,7 @@ const FriendList = () => {
           </div>
         </div>
       </div>
-      
+
       {/* Add CSS for fade-in animation */}
       {/* <style jsx>{`
         @keyframes fade-in {

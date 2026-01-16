@@ -4,7 +4,14 @@ import { useSelector, useDispatch } from 'react-redux';
 import { FriendService } from '../../services/FriendService';
 import { clearSearchResults, clearMessages } from '../../store/friendSlice';
 
+import { useNavigate } from 'react-router-dom';
+
+import { IoIosArrowRoundBack } from "react-icons/io";
+
 const AddFriends = () => {
+
+  const navigate = useNavigate();
+
   const dispatch = useDispatch();
   const { searchResults, searchLoading, loading, error, successMessage } = useSelector((state) => state.friendSlice);
   
@@ -97,6 +104,12 @@ const AddFriends = () => {
     <div className="max-w-4xl mx-auto p-4">
       {/* Header */}
       <div className="mb-8">
+        <span 
+                      onClick={()=>navigate(-1)}
+                      className=' md:hidden flex flex-row  items-center mb-2 text-2xl'>
+                        <IoIosArrowRoundBack />
+                        <span className='text-gray-900 text-xl ml-1 '>Back</span>
+                      </span>
         <h1 className="text-2xl font-bold text-gray-800">Add Friends</h1>
         <p className="text-gray-600">Find and connect with other language learners</p>
       </div>
