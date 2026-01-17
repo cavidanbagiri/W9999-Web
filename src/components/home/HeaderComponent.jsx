@@ -183,7 +183,7 @@ export default function HeaderComponent({ username, t }) {
             
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-2 leading-tight">
               {username ? `${t('Dashboard.HeaderComponent.labels.welcome_back')}, ${username}!` : `${t('Dashboard.HeaderComponent.labels.ready_to_learn')}?`}
-              <span className="block text-lg sm:text-xl font-normal text-blue-100 mt-1">
+              <span className="block text-lg sm:text-xl font-normal text-blue-100 mt-5">
                 {getMotivationMessage()}
               </span>
             </h1>

@@ -21,7 +21,6 @@ const OnlineStatus = ({ userId, compact = false }) => {
     );
   }
 
-  console.log('user status ', userStatuses)
   const userStatus = userStatuses[userId];
   const isOnline = userStatus?.isOnline || false;
   const lastSeen = userStatus?.lastSeen;

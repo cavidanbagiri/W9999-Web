@@ -13,12 +13,7 @@ const initialState = {
     searchLoading: false,
     selectedUser: null,
 
-    // reject_accept_loading: {
-    //     isLoading: false,
-    //     key: null,
-    // },
-
-    requestLoading: {}, // { [requestId]: 'accept' | 'reject' }
+    requestLoading: {}, 
 
 };
 

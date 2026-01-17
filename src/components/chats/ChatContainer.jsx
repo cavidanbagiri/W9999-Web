@@ -45,6 +45,9 @@ const ChatContainer = () => {
     loading
   } = useSelector((state) => state.chatSlice);
 
+  console.log('------------> ', conversations)
+  console.log('------------> ', conversations?.participants?.[0]?.profile?.profile_image_url)
+
   const { user } = useSelector((state) => state.authSlice);
 
   const [conversationsLoading, setConversationsLoading] = useState(false);
@@ -319,14 +322,7 @@ const ChatContainer = () => {
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center">
-
-              {/* <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-semibold mr-3">
-                Y
-              </div> */}
               <div>
-                {/* <p className="text-sm font-medium text-gray-800">You</p> */}
-                {/* <p className="text-xs text-gray-500">Active</p> */}
-                {/* <p className='font-bold text-lg'>Friends</p> */}
                 <h1 className="text-xl font-bold text-gray-800">Friends</h1>
               
               </div>
@@ -334,11 +330,6 @@ const ChatContainer = () => {
             <button>
                 <IoIosArrowRoundForward   className='text-gray-600 hover:text-gray-800 text-2xl cursor-pointer' />
             </button>
-            {/* <button className="text-gray-400 hover:text-gray-600">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
-              </svg>
-            </button> */}
           </div>
         </div>
       </div>
@@ -348,19 +339,6 @@ const ChatContainer = () => {
         {/* 🎨 MOBILE HEADER - Always visible */}
         <div className="flex items-center justify-between p-4 bg-white  md:hidden">
           <div className="flex items-center">
-            {/* {activeConversation ? (
-              <button 
-                onClick={handleBackToConversations}
-                className="mr-3 p-2 hover:bg-gray-100 rounded-lg"
-              >
-                <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                </svg>
-              </button>
-            ) : (
-              <>
-              </>
-            )} */}
 
             <button 
                 ref={menuButtonRef}
@@ -373,7 +351,33 @@ const ChatContainer = () => {
               </button>
             
             <h1 className="text-lg font-semibold text-gray-800">
-              {activeConversation ? 'Chat' : 'Messages'}
+              {activeConversation ? 
+              <div className="flex items-center">
+                <div className="flex items-center">
+                  <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-semibold mr-3">
+                    {activeConversationData?.participants?.[0]?.profile?.profile_image_url ? (
+                      <img 
+                        src={activeConversationData.participants[0].profile.profile_image_url} 
+                        alt="User" 
+                        className="w-10 h-10 rounded-full object-cover"
+                      />
+                    ) : (
+                      activeConversationData?.participants?.[0]?.username?.charAt(0).toUpperCase() || 'U'
+                    )}
+                  </div>
+                  <div>
+                    <h2 className="font-semibold text-gray-800">
+                      {activeConversationData?.participants?.[0]?.username || 'User'}
+                    </h2>
+                    <OnlineStatus 
+                      userId={activeConversationData?.participants?.[0]?.id}
+                      className="text-xs text-gray-500"
+                    />
+                  </div>
+                </div>
+              </div>
+              : 
+              'Messages'}
             </h1>
           </div>
           

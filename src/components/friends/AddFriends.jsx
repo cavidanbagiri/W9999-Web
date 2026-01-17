@@ -134,13 +134,23 @@ const AddFriends = () => {
           )}
         </div>
         
-        <p className="mt-2 text-sm text-gray-500">
+        <div className="flex mt-2 text-sm text-gray-500 ">
           {searchResults.length > 0 
             ? `Found ${searchResults.length} user${searchResults.length === 1 ? '' : 's'}`
-            : debouncedSearch.trim() 
-              ? 'No users found' 
-              : 'Start typing to search for users'}
-        </p>
+            : debouncedSearch.trim() && !searchLoading
+              ? 
+              'No users found' 
+              : 
+              !searchLoading?
+                'Start typing to search for users'
+              :
+              <div className='w-full h-full flex justify-center py-4'>
+                <div className="animate-spin rounded-full h-24 w-24  border-b-2 border-blue-500"></div>
+              </div>
+              
+              }
+        </div>
+
       </div>
       
       {/* Messages */}

@@ -103,17 +103,11 @@ const HomePage = () => {
       </nav>
 
       {/* Hero Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-32">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-20">
         <div style={{fontFamily: 'IBM Plex Sans', fontWeight: 400}}
         className="text-center">
           {/* Badge */}
-          <div
-            style={fadeUpStyle(200)}
-            className="inline-flex items-center space-x-2 bg-purple-100 text-purple-700 px-4 py-2 rounded-full text-sm font-medium mb-8 font-sans"
-          >
-            <IoRocket className="text-purple-600" />
-            <span>Join 100K+ language learners worldwide</span>
-          </div>
+          
 
           {/* Main Heading */}
           <h1
@@ -126,31 +120,7 @@ const HomePage = () => {
             </span>
           </h1>
 
-          {/* Subtitle */}
-          <div
-            style={fadeUpStyle(400)}
-            className="text-xl md:text-2xl text-gray-600 mb-12 max-w-3xl mx-auto leading-relaxed font-sans h-14"
-          >
-            <TextType
-              text={[
-                "Master 80% of daily conversations with our top 9000+ essential words",
-  "AI-powered language tutor available 24/7 to guide your learning journey", 
-  "Learn smarter with personalized word collections and real-life examples",
-  "Join 100K+ learners mastering languages faster with intelligent technology",
-  "Start your fluency journey - the most effective way to learn languages"
-                // "Discover the smart way to learn languages with AI tutors",
-                // "Top 9000+ word collections",
-                // "Intelligent translation tools all in one platform.",
-                // "Happy learning!"
-              ]}
-              typingSpeed={25}
-              pauseDuration={900}
-              showCursor={true}
-              cursorCharacter="|"
-            />
-            {/* Discover the smart way to learn languages with AI tutors, 9000+ word collections, 
-            and intelligent translation tools all in one platform. */}
-          </div>
+          
 
           {/* CTA Buttons */}
           <div
@@ -173,23 +143,7 @@ const HomePage = () => {
             </Link>
           </div>
 
-          {/* Stats */}
-          <div
-            style={fadeUpStyle(600)}
-            className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-2xl mx-auto"
-          >
-            {[
-              { number: "100K+", label: "Learners" },
-              { number: "3", label: "Languages" },
-              { number: "9K+", label: "Words Each" },
-              { number: "24/7", label: "AI Tutor" }
-            ].map((stat, index) => (
-              <div key={index} className="text-center">
-                <div className="text-3xl font-bold text-gray-900 font-sans">{stat.number}</div>
-                <div className="text-gray-600 font-sans">{stat.label}</div>
-              </div>
-            ))}
-          </div>
+          
         </div>
       </section>
 
@@ -231,43 +185,7 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* Popular Languages Section */}
-      <section id="languages" className="bg-gradient-to-br from-slate-50 to-blue-50 py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Section Header */}
-          <div
-            style={fadeUpStyle(100)}
-            className="text-center mb-16"
-          >
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 font-sans">
-              Learn Popular
-              <span className="block bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-                Languages
-              </span>
-            </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto font-sans">
-              Choose from our most popular languages, each with 9000+ essential words and phrases
-            </p>
-          </div>
-
-          {/* Languages Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 mb-12">
-            {popularLanguages.map((language, index) => (
-              <div
-                key={index}
-                style={fadeUpStyle(language.delay)}
-                className="group bg-white rounded-2xl p-6 text-center border border-gray-200 hover:border-purple-300 hover:shadow-xl transition-all duration-500 cursor-pointer hover:scale-105"
-              >
-                <div className={`w-12 h-12 ${language.color} rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300`}>
-                  <IoStar className="text-lg" />
-                </div>
-                <h3 className="font-bold text-gray-900 mb-2 font-sans">{language.name}</h3>
-                <p className="text-sm text-gray-600 font-sans">{language.learners} learners</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      
 
       {/* CTA Section */}
       <section className="bg-gradient-to-r from-purple-600 to-blue-600 py-20">
