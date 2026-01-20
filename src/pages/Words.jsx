@@ -3,6 +3,8 @@ import { useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import {useTranslation} from 'react-i18next';
 
+import { useNavigate } from 'react-router-dom';
+
 import { setSelectedLanguage, setLoadingMore } from '../store/word_store.js';
 import WordService from '../services/WordService.js';
 
@@ -10,12 +12,15 @@ import FilterComponent from '../layouts/FilterComponent.jsx';
 import WordList from '../layouts/WordList.jsx';
 import EmptyStarredComponent from '../components/home/EmptyStarredComponent.jsx'
 
-
 import { setCurrentCategory, setCurrentPosName } from '../store/word_store';
 
 import { IoClose, IoArrowDown } from "react-icons/io5";
+import { FaArrowLeftLong } from "react-icons/fa6";
+
 
 export default function WordScreen() {
+
+    const navigate = useNavigate()
 
     const { t } = useTranslation();
 
@@ -380,9 +385,15 @@ export default function WordScreen() {
                     </div>
 
                     {/* Message */}
-                    <h2 className="text-2xl font-bold text-gray-800 text-center mb-2 font-sans">
+                    <h2 
+                    onClick={()=>navigate('/')}
+                    className="text-2xl font-bold text-gray-800 text-center font-sans">
                         {t('WordsScreen.main_screen.messages.choose_language')}
                     </h2>
+
+                    <FaArrowLeftLong
+                    onClick={()=>navigate('/')}
+                     className='text-2xl' />
 
                     {/* Tip */}
                     <p className="text-md text-gray-500 text-center mt-6 font-sans">
