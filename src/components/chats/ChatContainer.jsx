@@ -45,9 +45,6 @@ const ChatContainer = () => {
     loading
   } = useSelector((state) => state.chatSlice);
 
-  console.log('------------> ', conversations)
-  console.log('------------> ', conversations?.participants?.[0]?.profile?.profile_image_url)
-
   const { user } = useSelector((state) => state.authSlice);
 
   const [conversationsLoading, setConversationsLoading] = useState(false);

@@ -3,6 +3,7 @@ import { io } from 'socket.io-client';
 import store from '../store/index.js';
 import notificationService from './NotificationService.js';
 
+
 import {
   setSocketConnected,
   addMessage,
@@ -30,7 +31,11 @@ class SocketService {
       this.disconnect();
     }
 
-    this.socket = io('http://localhost:4000', {
+    const SOCKET_URL = import.meta.env.VITE_SOCKET_URL;
+
+    console.log('react url is ', SOCKET_URL)
+
+    this.socket = io(SOCKET_URL, {
       auth: { token },
       transports: ['websocket', 'polling'],
       reconnection: true,

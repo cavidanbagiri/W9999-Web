@@ -133,7 +133,6 @@ function App() {
       const token = localStorage.getItem('token');
       if (token) {
         console.log('🔄 Initializing socket connection...');
-        console.log('in app.jsx the token is ', token)
         SocketService.initializeSocket(token);
       }
     } else {
