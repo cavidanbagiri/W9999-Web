@@ -51,23 +51,22 @@ export default function LanguagesStatisticsComponents({t}) {
 
   if (!statistics || statistics.length === 0) {
     return (
-      <>
-      </>
-      // <div className="bg-white rounded-3xl shadow-xl p-8 text-center border border-gray-100">
-      //   <div className="w-24 h-24 bg-gradient-to-r from-blue-100 to-purple-100 rounded-3xl flex items-center justify-center mx-auto mb-6">
-      //     <IoBook className="text-4xl text-blue-600" />
-      //   </div>
-      //   <h3 className="text-2xl font-bold text-gray-900 mb-3">{t('Dashboard.LanguagesStatisticsComponents.titles.start_journey')}</h3>
-      //   <p className="text-gray-600 text-lg mb-6 max-w-md mx-auto">
-      //     {t('Dashboard.LanguagesStatisticsComponents.messages.begin_learning')}
-      //   </p>
-      //   <button 
-      //     onClick={() => navigate('/words')}
-      //     className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-3 rounded-2xl font-semibold hover:shadow-lg transition-all"
-      //   >
-      //     {t('Dashboard.LanguagesStatisticsComponents.buttons.start_learning')}
-      //   </button>
-      // </div>
+      <div className="hidden md:block bg-white rounded-3xl shadow-xl p-8 text-center border border-gray-100">
+        <div className="w-24 h-24 bg-gradient-to-r from-blue-100 to-purple-100 rounded-3xl flex items-center justify-center mx-auto mb-6">
+          <IoBook className="text-4xl text-blue-600" />
+        </div>
+        <h3 className="text-2xl font-bold text-gray-900 mb-3">{t('Dashboard.LanguagesStatisticsComponents.titles.start_journey')}</h3>
+        <p className="text-gray-600 text-lg mb-6 max-w-md mx-auto">
+          {t('Dashboard.LanguagesStatisticsComponents.messages.begin_learning')}
+        </p>
+        <button 
+          onClick={() => navigate('/words')}
+          className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-3 rounded-2xl font-semibold hover:shadow-lg transition-all"
+        >
+          {t('Dashboard.LanguagesStatisticsComponents.buttons.start_learning')}
+        </button>
+      </div>
+      
     );
   }
 

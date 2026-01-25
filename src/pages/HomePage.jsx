@@ -13,7 +13,8 @@ import {
   IoChevronForward
 } from 'react-icons/io5';
 
-import TextType from '../animations/TextType';
+
+import { Sparkles, Brain, Target, Users, Globe, Trophy, MessageSquare, BookOpen, Zap, Star, Shield, TrendingUp, Clock, Bookmark, Languages } from 'lucide-react';
 
 const HomePage = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -80,7 +81,10 @@ const HomePage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 pb-20 overflow-hidden">
       {/* Animated Background Elements */}
+      
       <div className="fixed inset-0 -z-10 pointer-events-none">
+
+      
         <div
           className="absolute top-20 left-10 w-72 h-72 bg-purple-100 rounded-full blur-3xl opacity-20"
           style={{ animation: 'float 8s ease-in-out infinite' }}
@@ -103,10 +107,16 @@ const HomePage = () => {
       </nav>
 
       {/* Hero Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-20">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-2">
         <div style={{fontFamily: 'IBM Plex Sans', fontWeight: 400}}
         className="text-center">
+          
           {/* Badge */}
+
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100  text-blue-700 rounded-full text-sm font-medium mb-6">
+              <Sparkles size={16} />
+              <span>9,000+ Most Common Words • Completely Free</span>
+            </div>
           
 
           {/* Main Heading */}
@@ -116,7 +126,7 @@ const HomePage = () => {
           >
             Master Languages
             <span className="block bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-              With AI Power
+              With AI Power Vocabulary
             </span>
           </h1>
 
@@ -146,6 +156,34 @@ const HomePage = () => {
           
         </div>
       </section>
+
+      {/* Hero Section */}
+      <section className=" pb-6 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <div className="text-center max-w-4xl mx-auto">
+          
+          {/* Stats */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-3xl mx-auto">
+            <div className="bg-white  backdrop-blur-sm rounded-2xl p-6 border border-gray-100 shadow">
+              <div className="text-3xl font-bold text-gray-900 ">9,000+</div>
+              <div className="text-gray-600 dark:text-gray-400">Essential Words</div>
+            </div>
+            <div className="bg-white  backdrop-blur-sm rounded-2xl p-6 border border-gray-100 shadow">
+              <div className="text-3xl font-bold text-gray-900 ">3</div>
+              <div className="text-gray-600 dark:text-gray-400">Languages</div>
+            </div>
+            <div className="bg-white  backdrop-blur-sm rounded-2xl p-6 border border-gray-100 shadow">
+              <div className="text-3xl font-bold text-gray-900 ">AI</div>
+              <div className="text-gray-600 dark:text-gray-400">Powered Tutor</div>
+            </div>
+            <div className="bg-white backdrop-blur-sm rounded-2xl p-6 border border-gray-100 shadow">
+              <div className="text-3xl font-bold text-gray-900 ">100%</div>
+              <div className="text-gray-600 dark:text-gray-400">Free Forever</div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
 
       {/* Features Section */}
       <section id="features" className="bg-white py-20">
@@ -239,14 +277,6 @@ const HomePage = () => {
         </div>
       </footer>
 
-      {/* Add this CSS to your App.css */}
-      {/* <style jsx>{`
-        @keyframes float {
-          0% { transform: translateY(0px) scale(1); }
-          50% { transform: translateY(-20px) scale(1.05); }
-          100% { transform: translateY(0px) scale(1); }
-        }
-      `}</style> */}
     </div>
   );
 };
