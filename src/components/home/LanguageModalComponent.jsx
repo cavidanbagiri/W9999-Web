@@ -5,16 +5,18 @@ import English from '../../assets/flags/england.png';
 import Spanish from '../../assets/flags/spanish.png';
 import Russian from '../../assets/flags/russian.png';
 import Turkish from '../../assets/flags/turkish.png';
+import India from '../../assets/flags/india.png';
 
 
 const LanguageModalComponent = ({ selectedLanguage, setSelectedLanguage, page }) => {
   const [modalVisible, setModalVisible] = useState(false);
 
   const languages = [
-    { code: 'English', label: 'English', flag: '🇺🇸', image: English },
-    { code: 'Russian', label: 'Russian', flag: '🇷🇺', image: Russian },
-    { code: 'Spanish', label: 'Spanish', flag: '🇪🇸', image: Spanish },
-    { code: 'Turkish', label: 'Turkish', flag: '🇹🇷', image: Turkish },
+    { code: 'English', label: ' English', flag: '🇺🇸', image: English },
+    { code: 'Russian', label: ' Russian', flag: '🇷🇺', image: Russian },
+    { code: 'Spanish', label: ' Spanish', flag: '🇪🇸', image: Spanish },
+    { code: 'Turkish', label: ' Turkish', flag: '🇹🇷', image: Turkish },
+    { code: 'India', label: ' India', flag: 'HI', image: India },
   ];
 
   const selectedLang = languages.find(lang => lang.code === selectedLanguage);
