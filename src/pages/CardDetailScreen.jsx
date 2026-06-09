@@ -7,6 +7,8 @@ import { setCurrentWord } from '../store/ai_store';
 import VoiceButtonComponent from '../layouts/VoiceButtonComponent';
 import { IoSparkles, IoSend } from "react-icons/io5";
 
+import { useScrollRestore } from '../hooks/useScrollRestore';
+
 
 import { IoCheckmark } from "react-icons/io5";
 import { IoCheckmarkDoneOutline } from "react-icons/io5";
@@ -16,6 +18,9 @@ import { FaStar } from "react-icons/fa";
 
 
 export default function CardDetailScreen() {
+  
+  useScrollRestore('card-detail');
+
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();

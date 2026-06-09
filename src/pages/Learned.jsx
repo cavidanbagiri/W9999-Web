@@ -11,7 +11,12 @@ import { IoClose } from "react-icons/io5";
 
 import {useTranslation} from 'react-i18next';
 
+
+import { useScrollRestore } from '../hooks/useScrollRestore';
+
 export default function LearnedScreen() {
+  
+  useScrollRestore('learned');
 
   const { t } = useTranslation();
 

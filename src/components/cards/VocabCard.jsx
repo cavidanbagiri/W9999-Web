@@ -12,6 +12,7 @@ import { FaStar, FaRegStar, FaChartLine, FaCheck, FaCheckCircle } from 'react-ic
 import { FaRegNoteSticky } from "react-icons/fa6";
 import { IoSparklesOutline } from "react-icons/io5";
 
+import { saveScroll } from '../../hooks/useScrollRestore';
 
 export default function VocabCard({ word, language }) {
   const dispatch = useDispatch();
@@ -57,7 +58,8 @@ export default function VocabCard({ word, language }) {
   }, [word.id, word.is_starred, word.is_learned]);
 
   const handleCardClick = () => {
-    sessionStorage.setItem('wordscreen_scroll', window.scrollY.toString()); // ✅ save here
+    // sessionStorage.setItem('wordscreen_scroll', window.scrollY.toString()); // ✅ save here
+    saveScroll('words'); // or whatever page you're on
     dispatch(setCurrentWord(word));
     navigate('/card-detail', { state: { word } });
 };

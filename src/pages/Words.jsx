@@ -18,8 +18,13 @@ import { IoClose, IoArrowDown } from "react-icons/io5";
 import { FaArrowLeftLong } from "react-icons/fa6";
 
 
-export default function WordScreen() {
+import { useScrollRestore } from '../hooks/useScrollRestore';
 
+
+export default function WordScreen() {
+    
+    useScrollRestore('words');
+    
     const navigate = useNavigate()
 
     const { t } = useTranslation();
@@ -53,28 +58,28 @@ export default function WordScreen() {
 
 
     // Restore on mount using location.key (changes every navigation) -4
-    useEffect(() => {
-        const saved = sessionStorage.getItem('wordscreen_scroll');
-        if (!saved || parseInt(saved) === 0) return;
+    // useEffect(() => {
+    //     const saved = sessionStorage.getItem('wordscreen_scroll');
+    //     if (!saved || parseInt(saved) === 0) return;
 
-        let attempts = 0;
-        const maxAttempts = 20;
+    //     let attempts = 0;
+    //     const maxAttempts = 20;
 
-        const tryScroll = setInterval(() => {
-            const targetY = parseInt(saved);
-            const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-            attempts++;
+    //     const tryScroll = setInterval(() => {
+    //         const targetY = parseInt(saved);
+    //         const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+    //         attempts++;
 
-            // Wait until the page is tall enough to scroll to saved position
-            if (maxScroll >= targetY || attempts >= maxAttempts) {
-                window.scrollTo({ top: targetY, behavior: 'instant' });
-                sessionStorage.removeItem('wordscreen_scroll');
-                clearInterval(tryScroll);
-            }
-        }, 50);
+    //         // Wait until the page is tall enough to scroll to saved position
+    //         if (maxScroll >= targetY || attempts >= maxAttempts) {
+    //             window.scrollTo({ top: targetY, behavior: 'instant' });
+    //             sessionStorage.removeItem('wordscreen_scroll');
+    //             clearInterval(tryScroll);
+    //         }
+    //     }, 50);
 
-        return () => clearInterval(tryScroll);
-    }, [location.key]);
+    //     return () => clearInterval(tryScroll);
+    // }, [location.key]);
     //////////////////////////////////////////
 
 
