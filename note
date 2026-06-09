@@ -1,31 +1,13 @@
 
-Features:
+W9999.app
 
-1 - Notes can be protected, public and private
-2 - Notes can be starred and favorited
-3 - Can share the books
-4 - Add profile image and bio
-
-
-Problems
-
-1 - Profile, Chat, Friends need to interfaces langs. 
-
-2 - Check the words always calling from backend after the change the screen
-
-3 - Friends section 
-    3.1 - During fething friends show loading
-    
-
-
-Today:
-
-Now, I'm working on the FriendsList.jsx file. When l click the chat button, l need to create a new chat with the user. 
-
-FriendsList.jsx
-
-  
-const handleStartChat = (friendId) => {
-  navigate(`/chat/${friendId}`);
-};
-  
+Lanaguage learnning app with top 9000+ words in English, Turkish, Spanish and Russian langs with  English, Turkish, Spanish, Russian and India langs translations as native you can choose
+1) After registration you choose the which lang you want to choose from 4 langs for learning and native language from 5 languages
+2) In DASHBOARD(Page), you can see Daily Learning words and Daily progress. Everyday day 20 words streak
+3) In WORDS (Page) you can see 20 words with native lang translation and you can add more words with pagination 20+. You can set as learned, star, generate ai and copy.
+4) In LEARNED (Page) you can see all learning words. * We can add test page for testing learned words
+5) In WORDS and LEARNED page you can filter words with part of speech(8 pos), Category(15 cat)
+6) In WORDS and LEARNED page, after choosing the words opened Words Detail page
+7) In WORDS DETAIL(Page), pos, category, 5 sentences with native translations, and AI generate button
+8) In AI TUTOR(Page), after clicking the words, the ai gives an information about the words in your native language.
+9) In NOTES(Page) you can create a note, edit, update, delete functions. Also after generating ai, you can directly copy the information to ai.

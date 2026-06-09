@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import {useTranslation} from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 import { useNavigate } from 'react-router-dom';
 
@@ -51,6 +51,35 @@ export default function WordScreen() {
 
     const { is_auth } = useSelector((state) => state.authSlice);
 
+
+    // Restore on mount using location.key (changes every navigation) -4
+    useEffect(() => {
+        const saved = sessionStorage.getItem('wordscreen_scroll');
+        if (!saved || parseInt(saved) === 0) return;
+
+        let attempts = 0;
+        const maxAttempts = 20;
+
+        const tryScroll = setInterval(() => {
+            const targetY = parseInt(saved);
+            const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+            attempts++;
+
+            // Wait until the page is tall enough to scroll to saved position
+            if (maxScroll >= targetY || attempts >= maxAttempts) {
+                window.scrollTo({ top: targetY, behavior: 'instant' });
+                sessionStorage.removeItem('wordscreen_scroll');
+                clearInterval(tryScroll);
+            }
+        }, 50);
+
+        return () => clearInterval(tryScroll);
+    }, [location.key]);
+    //////////////////////////////////////////
+
+
+
+
     // Check scroll position
     useEffect(() => {
         const checkScrollPosition = () => {
@@ -75,9 +104,75 @@ export default function WordScreen() {
     }, [is_auth, dispatch]);
 
 
+
+    useEffect(() => {
+        if (statistics?.length === 1 && !selectedLanguage) {
+            const lang_code = statistics[0]['language_code'];
+            dispatch(setSelectedLanguage(lang_code));
+            setFilter('all');
+        }
+    }, [statistics, dispatch, selectedLanguage]);
+
+    useEffect(() => {
+
+        if (!is_auth || !selectedLanguage) return;
+
+        const shouldFetch = (() => {
+            // Case 1: Initial mount, no words loaded
+            if (!hasFetchedInitial.current && unlearned_words.length === 0) {
+                hasFetchedInitial.current = true;
+                return true;
+            }
+
+            // Case 2: Filter actually changed (not just initial render)
+            if (prevFilter.current !== filter && hasFetchedInitial.current) {
+                prevFilter.current = filter;
+                return true;
+            }
+
+            else if (prevFilter.current !== filter) {
+                prevFilter.current = filter;
+                return true;
+            }
+
+            // Case 3: Selected language when changed
+
+
+            return false;
+        })();
+
+        prevFilter.current = filter;
+
+        if (shouldFetch) {
+            fetchWords(true);
+        }
+
+        // Update previous filter
+        prevFilter.current = filter;
+    }, [filter, is_auth, selectedLanguage, unlearned_words.length]);
+
+    useEffect(() => {
+        if (!is_auth || !selectedLanguage) return;
+
+        // Check if language was changed manually
+        const languageChangedManually = localStorage.getItem('language_changed_manually') === 'true';
+
+        if (languageChangedManually) {
+            fetchWords(true);
+            localStorage.removeItem('language_changed_manually'); // Clear the flag
+        }
+        // Only do initial fetch if no words loaded
+        else if (unlearned_words.length === 0) {
+            fetchWords(true);
+        }
+    }, [selectedLanguage, is_auth]);
+
+
+
+
     // Fetch words function with pagination - FIXED
     const fetchWords = useCallback(async (reset = true) => {
-   
+
         if (isFetching || !is_auth || !selectedLanguage) return;
 
         setIsFetching(true);
@@ -142,71 +237,6 @@ export default function WordScreen() {
     }, [isFetching, pagination.unlearned.hasMore, words_pending, unlearned_words.length, pagination.unlearned.totalWords, pagination.unlearned.pageSize, fetchWords]);
 
 
-    useEffect(() => {
-        if (statistics?.length === 1 && !selectedLanguage) {
-            const lang_code = statistics[0]['language_code'];
-            dispatch(setSelectedLanguage(lang_code));
-            setFilter('all');
-        }
-    }, [statistics, dispatch, selectedLanguage]);
-
-    useEffect(() => {
-
-        if (!is_auth || !selectedLanguage) return;
-
-        const shouldFetch = (() => {
-            // Case 1: Initial mount, no words loaded
-            if (!hasFetchedInitial.current && unlearned_words.length === 0) {
-                hasFetchedInitial.current = true;
-                return true;
-            }
-
-            // Case 2: Filter actually changed (not just initial render)
-            if (prevFilter.current !== filter && hasFetchedInitial.current) {
-                prevFilter.current = filter;
-                return true;
-            }
-
-            else if (prevFilter.current !== filter) {
-                prevFilter.current = filter;
-                return true;
-            }
-
-            // Case 3: Selected language when changed
-
-
-            return false;
-        })();
-
-        prevFilter.current = filter;
-
-        if (shouldFetch) {
-            fetchWords(true);
-        }
-
-        // Update previous filter
-        prevFilter.current = filter;
-    }, [filter, is_auth, selectedLanguage, unlearned_words.length]);
-
-
-
-    useEffect(() => {
-        if (!is_auth || !selectedLanguage) return;
-
-        // Check if language was changed manually
-        const languageChangedManually = localStorage.getItem('language_changed_manually') === 'true';
-
-        if (languageChangedManually) {
-            fetchWords(true);
-            localStorage.removeItem('language_changed_manually'); // Clear the flag
-        }
-        // Only do initial fetch if no words loaded
-        else if (unlearned_words.length === 0) {
-            fetchWords(true);
-        }
-    }, [selectedLanguage, is_auth]);
-
-
     const PaginationControls = () => (
         <div className="flex flex-col items-center justify-center mt-8 space-y-4 px-4">
             {/* Manual Load More Button - Make it more visible */}
@@ -228,7 +258,7 @@ export default function WordScreen() {
                         ) : (
                             <>
                                 {/* <span>📥 Load {pagination.unlearned.totalWords - unlearned_words.length} More Words</span> */}
-                                <span>📥 
+                                <span>📥
                                     {t('WordsScreen.main_screen.loading.load_n_more_words', { count: pagination.unlearned.totalWords - unlearned_words.length })}
                                 </span>
                             </>
@@ -385,15 +415,15 @@ export default function WordScreen() {
                     </div>
 
                     {/* Message */}
-                    <h2 
-                    onClick={()=>navigate('/')}
-                    className="text-2xl font-bold text-gray-800 text-center font-sans">
+                    <h2
+                        onClick={() => navigate('/')}
+                        className="text-2xl font-bold text-gray-800 text-center font-sans">
                         {t('WordsScreen.main_screen.messages.choose_language')}
                     </h2>
 
                     <FaArrowLeftLong
-                    onClick={()=>navigate('/')}
-                     className='text-2xl' />
+                        onClick={() => navigate('/')}
+                        className='text-2xl' />
 
                     {/* Tip */}
                     <p className="text-md text-gray-500 text-center mt-6 font-sans">

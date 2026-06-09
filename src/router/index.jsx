@@ -34,7 +34,7 @@ import EditProfile from "../pages/EditProfile";
 import TestChat from '../components/chats/TestChat'
 
 
-const router = createBrowserRouter([
+const routes = [
     {
         path: "/",
         element: <Navbar />,
@@ -154,6 +154,10 @@ const router = createBrowserRouter([
             }
         ]
     },
-]);
+]
+
+const router = createBrowserRouter(routes, {
+    // scrollBehavior: () => false  // disable auto scroll reset
+});
 
 export default router;

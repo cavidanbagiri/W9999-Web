@@ -65,18 +65,6 @@ export default function CardDetailScreen() {
     }
 
 
-
-
-
-
-
-    // dispatch(
-    //   WordService.setStatus({
-    //     word_id: detail?.id,
-    //     action: actionType,
-    //   })
-    // );
-
   };
 
   if (loading || !detail || !Array.isArray(detail.meanings)) {

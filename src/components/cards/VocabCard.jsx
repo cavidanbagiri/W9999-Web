@@ -57,9 +57,10 @@ export default function VocabCard({ word, language }) {
   }, [word.id, word.is_starred, word.is_learned]);
 
   const handleCardClick = () => {
+    sessionStorage.setItem('wordscreen_scroll', window.scrollY.toString()); // ✅ save here
     dispatch(setCurrentWord(word));
     navigate('/card-detail', { state: { word } });
-  };
+};
 
   // Get level color based on word level
   const getLevelColor = (level) => {
