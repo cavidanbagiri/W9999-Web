@@ -43,8 +43,6 @@ export default function WordScreen() {
         pagination
     } = useSelector((state) => state.wordSlice);
 
-
-
     const location = useLocation();
     const prevLocationRef = useRef(location.pathname);
     const prevSelectedLangRef = useRef(null);
@@ -62,6 +60,57 @@ export default function WordScreen() {
         window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth' });
         setShowScrollToBottom(false);
     };
+
+    
+    const fetchWords = useCallback(async (reset = true) => {
+
+        if (isFetching || !is_auth || !selectedLanguage) return;
+
+        setIsFetching(true);
+
+        const skip = reset ? 0 : unlearned_words.length;
+        const limit = pagination.unlearned.pageSize;
+
+
+        try {
+            if (currentCategory.id) {
+                await dispatch(WordService.getWordsByCategoryId({
+                    categoryId: currentCategory.id,
+                    langCode: selectedLanguage,
+                    only_starred: filter === 'starred',
+                    only_learned: filter === 'learned',
+                    skip: reset ? 0 : skip, // ✅ Use reset directly
+                    limit: limit
+                })).unwrap();
+            }
+            else if (currentPosName.name) {
+                await dispatch(WordService.getWordsByPosName({
+                    posName: currentPosName.name,
+                    langCode: selectedLanguage,
+                    only_starred: filter === 'starred',
+                    only_learned: filter === 'learned',
+                    skip: reset ? 0 : skip, // ✅ Use reset directly
+                    limit: limit
+                })).unwrap();
+            }
+            else {
+                await dispatch(WordService.handleLanguageSelect({
+                    filter,
+                    langCode: selectedLanguage,
+                    skip: reset ? 0 : skip, // ✅ Use reset directly
+                    limit: limit
+                })).unwrap();
+            }
+        } catch (error) {
+            // console.error('Error fetching words:', error);
+        } finally {
+            setIsFetching(false);
+            if (!reset) {
+                dispatch(setLoadingMore(false));
+            }
+        }
+    }, [is_auth, selectedLanguage, currentCategory.id, currentPosName.name, filter, unlearned_words.length, pagination.unlearned.pageSize, dispatch, isFetching]);
+
 
     useEffect(() => {
         if (is_auth) {
@@ -142,57 +191,6 @@ export default function WordScreen() {
             fetchWords(true);
         }
     }, [selectedLanguage, is_auth]);
-
-    // Fetch words function with pagination - FIXED
-    const fetchWords = useCallback(async (reset = true) => {
-
-        if (isFetching || !is_auth || !selectedLanguage) return;
-
-        setIsFetching(true);
-
-        const skip = reset ? 0 : unlearned_words.length;
-        const limit = pagination.unlearned.pageSize;
-
-
-        try {
-            if (currentCategory.id) {
-                await dispatch(WordService.getWordsByCategoryId({
-                    categoryId: currentCategory.id,
-                    langCode: selectedLanguage,
-                    only_starred: filter === 'starred',
-                    only_learned: filter === 'learned',
-                    skip: reset ? 0 : skip, // ✅ Use reset directly
-                    limit: limit
-                })).unwrap();
-            }
-            else if (currentPosName.name) {
-                await dispatch(WordService.getWordsByPosName({
-                    posName: currentPosName.name,
-                    langCode: selectedLanguage,
-                    only_starred: filter === 'starred',
-                    only_learned: filter === 'learned',
-                    skip: reset ? 0 : skip, // ✅ Use reset directly
-                    limit: limit
-                })).unwrap();
-            }
-            else {
-                await dispatch(WordService.handleLanguageSelect({
-                    filter,
-                    langCode: selectedLanguage,
-                    skip: reset ? 0 : skip, // ✅ Use reset directly
-                    limit: limit
-                })).unwrap();
-            }
-        } catch (error) {
-            // console.error('Error fetching words:', error);
-        } finally {
-            setIsFetching(false);
-            if (!reset) {
-                dispatch(setLoadingMore(false));
-            }
-        }
-    }, [is_auth, selectedLanguage, currentCategory.id, currentPosName.name, filter, unlearned_words.length, pagination.unlearned.pageSize, dispatch, isFetching]);
-
 
     return (
         <div className="min-h-screen bg-white flex flex-col pb-8 md:pb-0">

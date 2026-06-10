@@ -39,7 +39,8 @@ export default function LearnedScreen() {
   const [filter, setFilter] = useState('all');
   const [totalLearned, setTotalLearned] = useState(0);
   const [isFetching, setIsFetching] = useState(false);
-  const [lastScreenContext, setLastScreenContext] = useState('');
+  // const [lastScreenContext, setLastScreenContext] = useState('');
+  const lastScreenContextRef = useRef('');
 
     // Header stats
   const learnedStats = {
@@ -102,16 +103,29 @@ export default function LearnedScreen() {
   );
 
   useEffect(() => {
-    if (is_auth && selectedLanguage) {
-      const currentContext = `${selectedLanguage}-${currentCategory.id}-${currentPosName.name || ''}-${filter}`;
+  if (!is_auth || !selectedLanguage) return;
 
-      // Only fetch if context actually changed
-      if (currentContext !== lastScreenContext) {
-        setLastScreenContext(currentContext);
-        fetchWords(true);
-      }
-    }
-  }, [selectedLanguage, currentCategory.id, currentPosName.name, filter, is_auth, lastScreenContext, fetchWords]);
+  const currentContext = `${selectedLanguage}-${currentCategory.id || ''}-${currentPosName.name || ''}-${filter}`;
+
+  if (currentContext === lastScreenContextRef.current) return;
+
+  lastScreenContextRef.current = currentContext;
+
+  if (learned_words.length > 0) return;
+
+  fetchWords(true);
+}, [
+  selectedLanguage,
+  currentCategory.id,
+  currentPosName.name,
+  filter,
+  is_auth,
+  learned_words.length,
+  fetchWords
+]);
+
+
+
 
   // Fetch statistics on component mount
   useEffect(() => {
