@@ -118,7 +118,6 @@ export default function WordScreen() {
         }
     }, [is_auth, dispatch]);
 
-    // Check scroll position
     useEffect(() => {
         const checkScrollPosition = () => {
             const isNearBottom = window.innerHeight + document.documentElement.scrollTop

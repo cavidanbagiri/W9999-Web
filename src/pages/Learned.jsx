@@ -11,7 +11,7 @@ import WordList from '../layouts/WordList.jsx';
 import EmptyWordsComponents from '../components/learned/EmptyWordsComponents.jsx';
 import PaginationControls from '../layouts/PaginationControls.jsx';
 
-import { setCurrentCategory, setLoadingMore, setCurrentPosName } from '../store/word_store';
+import { setCurrentCategory, setLoadingMore, setCurrentPosName, setSelectedLanguage } from '../store/word_store';
 
 import { useScrollRestore } from '../hooks/useScrollRestore';
 
@@ -42,7 +42,7 @@ export default function LearnedScreen() {
   // const [lastScreenContext, setLastScreenContext] = useState('');
   const lastScreenContextRef = useRef('');
 
-    // Header stats
+  // Header stats
   const learnedStats = {
     totalWords: totalLearned || 0,
     languages: statistics?.length || 0,
@@ -103,29 +103,28 @@ export default function LearnedScreen() {
   );
 
   useEffect(() => {
-  if (!is_auth || !selectedLanguage) return;
+    console.log('is auth ', is_auth)
+    console.log('selected Languages ', selectedLanguage)
+    if (!is_auth || !selectedLanguage) return;
 
-  const currentContext = `${selectedLanguage}-${currentCategory.id || ''}-${currentPosName.name || ''}-${filter}`;
+    const currentContext = `${selectedLanguage}-${currentCategory.id || ''}-${currentPosName.name || ''}-${filter}`;
 
-  if (currentContext === lastScreenContextRef.current) return;
+    if (currentContext === lastScreenContextRef.current) return;
 
-  lastScreenContextRef.current = currentContext;
+    lastScreenContextRef.current = currentContext;
 
-  if (learned_words.length > 0) return;
+    if (learned_words.length > 0) return;
 
-  fetchWords(true);
-}, [
-  selectedLanguage,
-  currentCategory.id,
-  currentPosName.name,
-  filter,
-  is_auth,
-  learned_words.length,
-  fetchWords
-]);
-
-
-
+    fetchWords(true);
+  }, [
+    selectedLanguage,
+    currentCategory.id,
+    currentPosName.name,
+    filter,
+    is_auth,
+    learned_words.length,
+    fetchWords
+  ]);
 
   // Fetch statistics on component mount
   useEffect(() => {
@@ -134,13 +133,20 @@ export default function LearnedScreen() {
     }
   }, [is_auth, dispatch]);
 
-
   useEffect(() => {
     if (statistics?.length > 0) {
       const selectedLang = statistics.find(stat => stat.language_code === selectedLanguage);
       setTotalLearned(selectedLang?.learned_words);
     }
   }, [statistics, selectedLanguage]);
+
+  useEffect(() => {
+          if (statistics?.length === 1 && !selectedLanguage) {
+              const lang_code = statistics[0]['language_code'];
+              dispatch(setSelectedLanguage(lang_code));
+              setFilter('all');
+          }
+      }, [statistics, dispatch, selectedLanguage]);
 
 
   return (
