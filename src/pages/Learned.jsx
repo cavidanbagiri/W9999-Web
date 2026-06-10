@@ -1,21 +1,22 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { IoClose } from "react-icons/io5";
+
 import WordService from '../services/WordService';
 import LanguageSelected from '../layouts/LanguageSelected.jsx';
 import FilterComponent from '../layouts/FilterComponent.jsx';
 import WordList from '../layouts/WordList.jsx';
 import EmptyWordsComponents from '../components/learned/EmptyWordsComponents.jsx';
+import PaginationControls from '../layouts/PaginationControls.jsx';
+
 import { setCurrentCategory, setLoadingMore, setCurrentPosName } from '../store/word_store';
-import { IoClose } from "react-icons/io5";
-
-import {useTranslation} from 'react-i18next';
-
 
 import { useScrollRestore } from '../hooks/useScrollRestore';
 
 export default function LearnedScreen() {
-  
+
   useScrollRestore('learned');
 
   const { t } = useTranslation();
@@ -38,20 +39,14 @@ export default function LearnedScreen() {
   const [filter, setFilter] = useState('all');
   const [totalLearned, setTotalLearned] = useState(0);
   const [isFetching, setIsFetching] = useState(false);
+  const [lastScreenContext, setLastScreenContext] = useState('');
 
-  // Fetch statistics on component mount
-  useEffect(() => {
-    if (is_auth) {
-      dispatch(WordService.getStatisticsForDashboard());
-    }
-  }, [is_auth, dispatch]);
-
-  useEffect(() => {
-    if (statistics?.length > 0) {
-      const selectedLang = statistics.find(stat => stat.language_code === selectedLanguage);
-      setTotalLearned(selectedLang?.learned_words);
-    }
-  }, [statistics, selectedLanguage]);
+    // Header stats
+  const learnedStats = {
+    totalWords: totalLearned || 0,
+    languages: statistics?.length || 0,
+    progress: statistics?.find(stat => stat.language_code === selectedLanguage)?.learned_words || 0
+  };
 
   const fetchWords = useCallback(async (reset = true) => {
     if (isFetching || !is_auth || !selectedLanguage) return;
@@ -106,9 +101,6 @@ export default function LearnedScreen() {
     [is_auth, selectedLanguage, currentCategory.id, currentPosName.name, filter, learned_words.length, pagination.learned.pageSize, dispatch, isFetching]
   );
 
-
-  const [lastScreenContext, setLastScreenContext] = useState('');
-
   useEffect(() => {
     if (is_auth && selectedLanguage) {
       const currentContext = `${selectedLanguage}-${currentCategory.id}-${currentPosName.name || ''}-${filter}`;
@@ -121,70 +113,20 @@ export default function LearnedScreen() {
     }
   }, [selectedLanguage, currentCategory.id, currentPosName.name, filter, is_auth, lastScreenContext, fetchWords]);
 
-
-
-
-  // Load more function - FIXED
-  const loadMoreWords = useCallback(() => {
-    if (!isFetching && pagination.learned.hasMore && !words_pending) {
-      fetchWords(false);
+  // Fetch statistics on component mount
+  useEffect(() => {
+    if (is_auth) {
+      dispatch(WordService.getStatisticsForDashboard());
     }
-  }, [isFetching, pagination.learned.hasMore, words_pending, fetchWords]);
+  }, [is_auth, dispatch]);
 
 
-  // Header stats
-  const learnedStats = {
-    totalWords: totalLearned || 0,
-    languages: statistics?.length || 0,
-    progress: statistics?.find(stat => stat.language_code === selectedLanguage)?.learned_words || 0
-  };
-
-  const PaginationControls = () => (
-    <div className="flex flex-col items-center justify-center mt-8 space-y-4">
-      {/* Load More Button */}
-      {pagination.learned.hasMore && (
-        <button
-          onClick={loadMoreWords}
-          disabled={isFetching || words_pending}
-          className="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors font-medium flex items-center space-x-2 cursor-pointer"
-        >
-          {isFetching ? (
-            <>
-              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-              <span>
-                {t('LearnedScreen.main_screen.loading.loading')}
-              </span>
-            </>
-          ) : (
-            <>
-              <span>{t('LearnedScreen.main_screen.pagination.load_more_words')}</span>
-              <span className="text-blue-100">({learned_words.length} of {totalLearned})</span>
-            </>
-          )}
-        </button>
-      )}
-
-      {/* Progress Text */}
-      {learned_words.length > 0 && (
-        <div className="text-center text-gray-600 text-sm">
-          {/* Showing {learned_words.length} of {totalLearned} learned words
-          {pagination.learned.hasMore && ' • Scroll down to load more'} */}
-          {t('LearnedScreen.main_screen.pagination.showing_of_words', { loaded: learned_words.length, total: totalLearned })}
-        </div>
-      )}
-
-      {/* Back to Top */}
-      {learned_words.length >= 40 && (
-        <button
-          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          className="text-blue-500 hover:text-blue-700 text-sm font-medium transition-colors"
-        >
-          {t('LearnedScreen.main_screen.pagination.back_to_top')}
-        </button>
-      )}
-    </div>
-  );
-
+  useEffect(() => {
+    if (statistics?.length > 0) {
+      const selectedLang = statistics.find(stat => stat.language_code === selectedLanguage);
+      setTotalLearned(selectedLang?.learned_words);
+    }
+  }, [statistics, selectedLanguage]);
 
 
   return (
@@ -267,7 +209,7 @@ export default function LearnedScreen() {
       <div className="max-w-8xl mx-auto">
         {/* Main Content Area */}
         <div className="flex flex-col lg:flex-row gap-6 p-4 lg:p-6">
-          
+
 
           {/* Main Content */}
           <div className="flex-1">
@@ -374,10 +316,10 @@ export default function LearnedScreen() {
                     </div>
                   </div>
 
-                  <WordList screen={'LearnedScreen' } t={t} />
+                  <WordList screen={'LearnedScreen'} t={t} />
 
                   {/* Pagination Controls */}
-                  <PaginationControls />
+                  <PaginationControls isFetching={isFetching} fetchWords={fetchWords} t={t} totalLearned={totalLearned} />
                 </div>
               )}
 
