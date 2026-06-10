@@ -39,10 +39,9 @@ export default function LearnedScreen() {
   const [filter, setFilter] = useState('all');
   const [totalLearned, setTotalLearned] = useState(0);
   const [isFetching, setIsFetching] = useState(false);
-  // const [lastScreenContext, setLastScreenContext] = useState('');
   const lastScreenContextRef = useRef('');
 
-  // Header stats
+  
   const learnedStats = {
     totalWords: totalLearned || 0,
     languages: statistics?.length || 0,
@@ -103,8 +102,6 @@ export default function LearnedScreen() {
   );
 
   useEffect(() => {
-    console.log('is auth ', is_auth)
-    console.log('selected Languages ', selectedLanguage)
     if (!is_auth || !selectedLanguage) return;
 
     const currentContext = `${selectedLanguage}-${currentCategory.id || ''}-${currentPosName.name || ''}-${filter}`;
@@ -126,7 +123,6 @@ export default function LearnedScreen() {
     fetchWords
   ]);
 
-  // Fetch statistics on component mount
   useEffect(() => {
     if (is_auth) {
       dispatch(WordService.getStatisticsForDashboard());
@@ -141,12 +137,12 @@ export default function LearnedScreen() {
   }, [statistics, selectedLanguage]);
 
   useEffect(() => {
-          if (statistics?.length === 1 && !selectedLanguage) {
-              const lang_code = statistics[0]['language_code'];
-              dispatch(setSelectedLanguage(lang_code));
-              setFilter('all');
-          }
-      }, [statistics, dispatch, selectedLanguage]);
+    if (statistics?.length === 1 && !selectedLanguage) {
+      const lang_code = statistics[0]['language_code'];
+      dispatch(setSelectedLanguage(lang_code));
+      setFilter('all');
+    }
+  }, [statistics, dispatch, selectedLanguage]);
 
 
   return (

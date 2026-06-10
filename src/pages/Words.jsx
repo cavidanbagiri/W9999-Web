@@ -61,7 +61,6 @@ export default function WordScreen() {
         setShowScrollToBottom(false);
     };
 
-    
     const fetchWords = useCallback(async (reset = true) => {
 
         if (isFetching || !is_auth || !selectedLanguage) return;
@@ -110,7 +109,6 @@ export default function WordScreen() {
             }
         }
     }, [is_auth, selectedLanguage, currentCategory.id, currentPosName.name, filter, unlearned_words.length, pagination.unlearned.pageSize, dispatch, isFetching]);
-
 
     useEffect(() => {
         if (is_auth) {
