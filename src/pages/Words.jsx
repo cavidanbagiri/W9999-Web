@@ -20,6 +20,8 @@ import { FaArrowLeftLong } from "react-icons/fa6";
 
 import { useScrollRestore } from '../hooks/useScrollRestore';
 
+import PaginationControls from '../layouts/PaginationControls.jsx';
+
 
 export default function WordScreen() {
     
@@ -56,34 +58,16 @@ export default function WordScreen() {
 
     const { is_auth } = useSelector((state) => state.authSlice);
 
+    const scrollToBottom = () => {
+        window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth' });
+        setShowScrollToBottom(false);
+    };
 
-    // Restore on mount using location.key (changes every navigation) -4
-    // useEffect(() => {
-    //     const saved = sessionStorage.getItem('wordscreen_scroll');
-    //     if (!saved || parseInt(saved) === 0) return;
-
-    //     let attempts = 0;
-    //     const maxAttempts = 20;
-
-    //     const tryScroll = setInterval(() => {
-    //         const targetY = parseInt(saved);
-    //         const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-    //         attempts++;
-
-    //         // Wait until the page is tall enough to scroll to saved position
-    //         if (maxScroll >= targetY || attempts >= maxAttempts) {
-    //             window.scrollTo({ top: targetY, behavior: 'instant' });
-    //             sessionStorage.removeItem('wordscreen_scroll');
-    //             clearInterval(tryScroll);
-    //         }
-    //     }, 50);
-
-    //     return () => clearInterval(tryScroll);
-    // }, [location.key]);
-    //////////////////////////////////////////
-
-
-
+    useEffect(() => {
+        if (is_auth) {
+            dispatch(WordService.getStatisticsForDashboard());
+        }
+    }, [is_auth, dispatch]);
 
     // Check scroll position
     useEffect(() => {
@@ -96,19 +80,6 @@ export default function WordScreen() {
         window.addEventListener('scroll', checkScrollPosition);
         return () => window.removeEventListener('scroll', checkScrollPosition);
     }, []);
-
-    const scrollToBottom = () => {
-        window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth' });
-        setShowScrollToBottom(false);
-    };
-
-    useEffect(() => {
-        if (is_auth) {
-            dispatch(WordService.getStatisticsForDashboard());
-        }
-    }, [is_auth, dispatch]);
-
-
 
     useEffect(() => {
         if (statistics?.length === 1 && !selectedLanguage) {
@@ -172,9 +143,6 @@ export default function WordScreen() {
         }
     }, [selectedLanguage, is_auth]);
 
-
-
-
     // Fetch words function with pagination - FIXED
     const fetchWords = useCallback(async (reset = true) => {
 
@@ -224,69 +192,6 @@ export default function WordScreen() {
             }
         }
     }, [is_auth, selectedLanguage, currentCategory.id, currentPosName.name, filter, unlearned_words.length, pagination.unlearned.pageSize, dispatch, isFetching]);
-
-
-    const loadMoreWords = useCallback(() => {
-
-        if (!isFetching && pagination.unlearned.hasMore && !words_pending && unlearned_words.length > 0) {
-
-            const currentLoaded = unlearned_words.length;
-            const total = pagination.unlearned.totalWords || 0;
-
-            if (currentLoaded >= total) {
-                return;
-            }
-            fetchWords(false);
-        } else {
-        }
-    }, [isFetching, pagination.unlearned.hasMore, words_pending, unlearned_words.length, pagination.unlearned.totalWords, pagination.unlearned.pageSize, fetchWords]);
-
-
-    const PaginationControls = () => (
-        <div className="flex flex-col items-center justify-center mt-8 space-y-4 px-4">
-            {/* Manual Load More Button - Make it more visible */}
-            {pagination.unlearned.hasMore && (
-                <div className="text-center">
-                    <button
-                        onClick={loadMoreWords}
-                        disabled={isFetching || words_pending}
-                        className="bg-indigo-600 text-white px-8 py-4 rounded-xl hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors font-medium flex items-center space-x-3 shadow-lg cursor-pointer"
-                    >
-                        {isFetching ? (
-                            <>
-                                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                {/* <span>Loading {pagination.unlearned.totalWords - unlearned_words.length} More Words...</span> */}
-                                <span>
-                                    {t('WordsScreen.main_screen.loading.loading_n_more_words', { count: pagination.unlearned.totalWords - unlearned_words.length })}
-                                </span>
-                            </>
-                        ) : (
-                            <>
-                                {/* <span>📥 Load {pagination.unlearned.totalWords - unlearned_words.length} More Words</span> */}
-                                <span>📥
-                                    {t('WordsScreen.main_screen.loading.load_n_more_words', { count: pagination.unlearned.totalWords - unlearned_words.length })}
-                                </span>
-                            </>
-                        )}
-                    </button>
-                    <p className="text-sm text-gray-600 mt-2">
-                        {/* {unlearned_words.length} of {pagination.unlearned.totalWords} words loaded • {pagination.unlearned.totalWords - unlearned_words.length} remaining */}
-                        {t('WordsScreen.main_screen.pagination.words_loaded', { loaded: unlearned_words.length, total: pagination.unlearned.totalWords })}
-                    </p>
-                </div>
-            )}
-
-            {/* Back to Top */}
-            {unlearned_words.length >= 20 && (
-                <button
-                    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                    className="text-indigo-500 hover:text-indigo-700 text-sm font-medium transition-colors"
-                >
-                    {t('WordsScreen.main_screen.pagination.back_to_top')}
-                </button>
-            )}
-        </div>
-    );
 
 
     return (
@@ -383,7 +288,7 @@ export default function WordScreen() {
                     )}
 
                     {/* Pagination Controls */}
-                    {unlearned_words.length > 0 && <PaginationControls />}
+                    {unlearned_words.length > 0 && <PaginationControls page={'UnLearned'} isFetching={isFetching} fetchWords={fetchWords} t={t} totalLearned={0} />}
 
                     {/* Initial Loading State */}
                     {words_pending && unlearned_words.length === 0 && (

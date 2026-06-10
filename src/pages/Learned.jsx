@@ -319,7 +319,7 @@ export default function LearnedScreen() {
                   <WordList screen={'LearnedScreen'} t={t} />
 
                   {/* Pagination Controls */}
-                  <PaginationControls isFetching={isFetching} fetchWords={fetchWords} t={t} totalLearned={totalLearned} />
+                  <PaginationControls page={'Learned'} isFetching={isFetching} fetchWords={fetchWords} t={t} totalLearned={totalLearned} />
                 </div>
               )}
 
